@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Database Schema & ERD</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; line-height: 1.6; }
+    h1, h2, h3 { color: #2c3e50; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    .mermaid { display: flex; justify-content: center; margin: 30px 0; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+</head>
+<body>
+
+<h1>Database Schema & Entity Relationship Diagram (ERD)</h1>
+<p>This document outlines the complete database schema for the <strong>School Finance Administration System (SFAS)</strong>.</p>
+
+<h2>1. Entity Relationship Diagram (ERD)</h2>
+<div class="mermaid">
+erDiagram
+    USER ||--o{ BILL : "creates"
+    USER ||--o{ REQUEST_FUND : "submits"
+    USER ||--o{ REPORT : "generates"
+    
+    USER {
+        uuid id PK
+        string name
+        string email UK
+        string password
+        enum role "ADMIN, FINANCE_OFFICER"
+        timestamp created_date
+    }
+    
+    BILL {
+        uuid id PK
+        uuid created_by FK
+        string title
+        string vendor
+        decimal amount
+        decimal tax
+        datetime date
+        string image_path
+        string description
+        enum status "PENDING, APPROVED, REJECTED"
+        timestamp created_date
+    }
+
+    REQUEST_FUND {
+        uuid id PK
+        uuid created_by FK
+        string title
+        string description
+        decimal amount_of_fund
+        enum urgency_level "LOW, MEDIUM, HIGH, CRITICAL"
+        datetime date
+        string image_path
+        timestamp created_date
+    }
+
+    COLLECTION {
+        uuid id PK
+        date date
+        enum type "DAILY, WEEKLY, MONTHLY, ANNUAL"
+        decimal amount
+        timestamp created_date
+    }
+
+    REPORT {
+        uuid id PK
+        uuid created_by FK
+        datetime date
+        string title
+        string description
+        enum type_of_report "EMAIL, IN_APP"
+        timestamp created_date
+    }
+</div>
+
+<h2>2. Detailed Database Schema (Tables)</h2>
+
+<h3><code>users</code></h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>id</td><td>UUID</td><td>PRIMARY KEY</td><td>Unique identifier for the user.</td></tr>
+  <tr><td>name</td><td>VARCHAR</td><td>NOT NULL</td><td>Full name of the user.</td></tr>
+  <tr><td>email</td><td>VARCHAR</td><td>NOT NULL, UNIQUE</td><td>Used for login.</td></tr>
+  <tr><td>password</td><td>VARCHAR</td><td>NOT NULL</td><td>BCrypt hashed password.</td></tr>
+  <tr><td>role</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: ADMIN or FINANCE_OFFICER.</td></tr>
+</table>
+
+<h3><code>bills</code></h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>id</td><td>UUID</td><td>PRIMARY KEY</td><td>Unique identifier.</td></tr>
+  <tr><td>title</td><td>VARCHAR</td><td>NOT NULL</td><td>Short title of the bill.</td></tr>
+  <tr><td>vendor</td><td>VARCHAR</td><td>NOT NULL</td><td>Entity requesting the payment.</td></tr>
+  <tr><td>amount</td><td>NUMERIC</td><td>NOT NULL</td><td>Total amount.</td></tr>
+  <tr><td>tax</td><td>NUMERIC</td><td>-</td><td>Applied tax.</td></tr>
+  <tr><td>date</td><td>TIMESTAMP</td><td>NOT NULL</td><td>Due/issuance date.</td></tr>
+  <tr><td>image_path</td><td>VARCHAR</td><td>-</td><td>Reference to the bill proof.</td></tr>
+  <tr><td>status</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: PENDING, APPROVED, REJECTED.</td></tr>
+  <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
+</table>
+
+<h3><code>request_funds</code></h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>id</td><td>UUID</td><td>PRIMARY KEY</td><td>Unique identifier.</td></tr>
+  <tr><td>title</td><td>VARCHAR</td><td>NOT NULL</td><td>Title of the request.</td></tr>
+  <tr><td>amount_of_fund</td><td>NUMERIC</td><td>NOT NULL</td><td>Requested budget.</td></tr>
+  <tr><td>urgency_level</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: LOW, MEDIUM, HIGH, CRITICAL.</td></tr>
+  <tr><td>date</td><td>TIMESTAMP</td><td>NOT NULL</td><td>Required date.</td></tr>
+  <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
+</table>
+
+<h3><code>collections</code></h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>id</td><td>UUID</td><td>PRIMARY KEY</td><td>Unique identifier.</td></tr>
+  <tr><td>date</td><td>DATE</td><td>NOT NULL</td><td>Collection date.</td></tr>
+  <tr><td>type</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: DAILY, WEEKLY, MONTHLY, ANNUAL.</td></tr>
+  <tr><td>amount</td><td>NUMERIC</td><td>NOT NULL</td><td>Amount collected.</td></tr>
+</table>
+
+<h3><code>reports</code></h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>id</td><td>UUID</td><td>PRIMARY KEY</td><td>Unique identifier.</td></tr>
+  <tr><td>date</td><td>TIMESTAMP</td><td>NOT NULL</td><td>Generation date.</td></tr>
+  <tr><td>title</td><td>VARCHAR</td><td>NOT NULL</td><td>Report title.</td></tr>
+  <tr><td>type_of_report</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: EMAIL, IN_APP.</td></tr>
+  <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
+</table>
+
+</body>
+</html>

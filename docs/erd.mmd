@@ -1,0 +1,64 @@
+erDiagram
+    %% Relationships
+    USER ||--o{ BILL : "creates"
+    USER ||--o{ REQUEST_FUND : "submits"
+    USER ||--o{ REPORT : "generates"
+    
+    %% Tables
+    USER {
+        uuid id PK
+        string name
+        string email UK "Unique index"
+        string password "Hashed"
+        enum role "ADMIN, FINANCE_OFFICER"
+        timestamp created_date
+        timestamp last_modified_date
+    }
+    
+    BILL {
+        uuid id PK
+        uuid created_by FK "Refers to User.id"
+        string title
+        string vendor
+        decimal amount
+        decimal tax
+        datetime date
+        string image_path
+        string description
+        enum status "PENDING, APPROVED, REJECTED"
+        timestamp created_date
+        timestamp last_modified_date
+    }
+
+    REQUEST_FUND {
+        uuid id PK
+        uuid created_by FK "Refers to User.id"
+        string title
+        string description
+        decimal amount_of_fund
+        enum urgency_level "LOW, MEDIUM, HIGH, CRITICAL"
+        datetime date
+        string image_path
+        timestamp created_date
+        timestamp last_modified_date
+    }
+
+    COLLECTION {
+        uuid id PK
+        date date
+        enum type "DAILY, WEEKLY, MONTHLY, ANNUAL"
+        decimal amount
+        timestamp created_date
+        timestamp last_modified_date
+    }
+
+    REPORT {
+        uuid id PK
+        uuid created_by FK "Refers to User.id"
+        datetime date
+        string title
+        string description
+        enum type_of_report "EMAIL, IN_APP"
+        timestamp created_date
+        timestamp last_modified_date
+    }

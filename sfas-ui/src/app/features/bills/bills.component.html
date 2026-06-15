@@ -1,0 +1,186 @@
+<div class="page-container">
+  <div class="page-header-wrapper" gsapFade [delay]="0" [yOffset]="20">
+    <app-page-header title="Bills Management" subtitle="Manage and review financial bills">
+      @if (authStore.isAdmin()) {
+        <button class="btn-primary" (click)="openAddModal()">
+          <i class="ri-add-line"></i> Add New Bill
+        </button>
+      }
+    </app-page-header>
+  </div>
+
+  <div class="table-container surface" gsapFade [delay]="0.2">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Bill Details</th>
+          <th>Vendor</th>
+          <th>Date</th>
+          <th>Amount / Tax</th>
+          <th>Status</th>
+          @if (authStore.isFinanceOfficer()) {
+            <th>Actions</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (bill of bills(); track bill.id) {
+          <tr>
+            <td>
+              <div class="bill-info">
+                <span class="bill-title">{{ bill.title }}</span>
+                @if (bill.description) { <span class="bill-desc">{{ bill.description }}</span> }
+              </div>
+            </td>
+            <td>
+              <div class="vendor-badge">
+                <i class="ri-building-4-line"></i>
+                {{ bill.vendor.name }}
+              </div>
+            </td>
+            <td>{{ bill.date | date:'mediumDate' }}</td>
+            <td>
+              <div class="amount-group">
+                <span class="amount-total">{{ bill.amount | currency }}</span>
+                @if (bill.tax > 0) { <span class="amount-tax">Tax: {{ bill.tax | currency }}</span> }
+              </div>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="bill.status.toLowerCase()">
+                {{ bill.status }}
+              </span>
+            </td>
+            @if (authStore.isFinanceOfficer()) {
+              <td>
+                @if (bill.status === 'PENDING') {
+                  <div class="action-buttons">
+                    <button class="btn-approve" (click)="updateStatus(bill, 'APPROVED')" title="Approve">
+                      <i class="ri-check-line"></i> Approve
+                    </button>
+                    <button class="btn-reject" (click)="updateStatus(bill, 'REJECTED')" title="Reject">
+                      <i class="ri-close-line"></i> Reject
+                    </button>
+                  </div>
+                }
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td [colSpan]="authStore.isFinanceOfficer() ? 6 : 5" class="empty-state">
+              <div class="empty-content">
+                <i class="ri-receipt-line empty-icon"></i>
+                <p>No bills found.</p>
+                <p class="empty-subtext">There are currently no bills in the system.</p>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Modal -->
+@if (showAddModal()) {
+  <div class="modal-backdrop" gsapFade [duration]="0.3" [yOffset]="0">
+    <div class="modal-content surface" gsapFade [delay]="0.1" [yOffset]="-30">
+      <div class="modal-header">
+        <h2>Submit New Bill</h2>
+        <button class="btn-icon" (click)="closeAddModal()"><i class="ri-close-line"></i></button>
+      </div>
+      
+      <form [formGroup]="billForm" (ngSubmit)="submitBill()">
+        <div class="form-grid">
+          
+          <div class="form-group full-width">
+            <label class="form-label">Title <span class="required">*</span></label>
+            <input type="text" class="form-control" [class.is-invalid]="f.title.invalid && f.title.touched" formControlName="title" placeholder="e.g. Q3 Office Supplies">
+            @if (f.title.invalid && f.title.touched) {
+              <div class="form-error">
+                @if (f.title.errors?.['required']) { <span>Title is required.</span> }
+                @if (f.title.errors?.['minlength']) { <span>Minimum 3 characters needed.</span> }
+              </div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Vendor <span class="required">*</span></label>
+            <select class="form-control" [class.is-invalid]="f.vendorId.invalid && f.vendorId.touched" formControlName="vendorId">
+              <option value="" disabled selected>Select a vendor</option>
+              @for (vendor of vendors(); track vendor.id) {
+                <option [value]="vendor.id">{{ vendor.name }}</option>
+              }
+            </select>
+            @if (f.vendorId.invalid && f.vendorId.touched) {
+              <div class="form-error">
+                @if (f.vendorId.errors?.['required']) { <span>Please select a vendor.</span> }
+              </div>
+            }
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Amount ($) <span class="required">*</span></label>
+            <input type="number" class="form-control" [class.is-invalid]="f.amount.invalid && f.amount.touched" formControlName="amount" placeholder="0.00" step="0.01">
+            @if (f.amount.invalid && f.amount.touched) {
+              <div class="form-error">
+                @if (f.amount.errors?.['required']) { <span>Amount is required.</span> }
+                @if (f.amount.errors?.['min']) { <span>Amount must be greater than 0.</span> }
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tax ($) <span class="required">*</span></label>
+            <input type="number" class="form-control" [class.is-invalid]="f.tax.invalid && f.tax.touched" formControlName="tax" placeholder="0.00" step="0.01">
+            @if (f.tax.invalid && f.tax.touched) {
+              <div class="form-error">
+                @if (f.tax.errors?.['required']) { <span>Tax amount is required.</span> }
+                @if (f.tax.errors?.['min']) { <span>Tax cannot be negative.</span> }
+              </div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Date <span class="required">*</span></label>
+            <input type="date" class="form-control" [class.is-invalid]="f.date.invalid && f.date.touched" formControlName="date">
+            @if (f.date.invalid && f.date.touched) {
+              <div class="form-error">
+                @if (f.date.errors?.['required']) { <span>Date is required.</span> }
+              </div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Description (Optional)</label>
+            <textarea class="form-control" formControlName="description" rows="2" placeholder="Brief details about the bill..."></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Receipt Image / Document</label>
+            <div class="file-upload-wrapper">
+              <input type="file" id="receipt" class="file-input" (change)="onFileSelected($event)" accept="image/*,.pdf">
+              <label for="receipt" class="file-upload-label">
+                <i class="ri-upload-cloud-2-line"></i>
+                <span>Choose file</span>
+              </label>
+              @if (f.imagePath.value) { <span class="file-name">{{ f.imagePath.value }}</span> }
+            </div>
+          </div>
+          
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeAddModal()" [disabled]="isSubmitting()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="billForm.invalid || isSubmitting()">
+            @if (isSubmitting()) {
+              Saving...
+            } @else {
+              Submit Bill
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

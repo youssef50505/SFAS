@@ -1,0 +1,28 @@
+@if (confirmationService.config(); as config) {
+  <div class="modal-backdrop">
+    <div class="modal-content surface">
+      <div class="modal-header">
+        <h2 [ngClass]="{'text-danger': config.isDanger}">
+          @if (config.isDanger) {
+            <i class="ri-error-warning-line title-icon"></i>
+          } @else {
+            <i class="ri-question-line title-icon"></i>
+          }
+          {{ config.title }}
+        </h2>
+        <button class="btn-icon" (click)="confirmationService.respond(false)"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <p>{{ config.message }}</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="confirmationService.respond(false)">
+          {{ config.cancelText || 'Cancel' }}
+        </button>
+        <button [class]="config.isDanger ? 'btn-danger' : 'btn-primary'" (click)="confirmationService.respond(true)">
+          {{ config.confirmText || 'Confirm' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,139 @@
+<div class="page-container">
+  <div class="page-header-wrapper" gsapFade [delay]="0" [yOffset]="20">
+    <app-page-header title="Vendors Directory" subtitle="Manage school suppliers and contractors">
+      @if (authStore.isAdmin()) {
+        <button class="btn-primary" (click)="openAddModal()"><i class="ri-add-line"></i> Add Vendor</button>
+      }
+    </app-page-header>
+  </div>
+
+  <div class="table-container surface" gsapFade [delay]="0.2">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Contact Info</th>
+          <th>Tax ID</th>
+          <th>Address</th>
+          <th>Added By</th>
+          @if (authStore.isAdmin()) {
+            <th class="actions-col">Actions</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (vendor of vendors(); track vendor.id) {
+          <tr>
+            <td>
+              <div class="vendor-name-cell">
+                <div class="vendor-avatar">{{ vendor.name.charAt(0) }}</div>
+                <span class="vendor-name">{{ vendor.name }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="contact-info">
+                <span class="email"><i class="ri-mail-line"></i> {{ vendor.contactEmail }}</span>
+                <span class="phone"><i class="ri-phone-line"></i> {{ vendor.phoneNumber }}</span>
+              </div>
+            </td>
+            <td><span class="badge-neutral">{{ vendor.taxId }}</span></td>
+            <td><span class="address-text">{{ vendor.address }}</span></td>
+            <td>{{ vendor.createdBy?.name || 'System' }}</td>
+            @if (authStore.isAdmin()) {
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" (click)="openEditModal(vendor)" title="Edit Vendor">
+                    <i class="ri-edit-line"></i>
+                  </button>
+                  <button class="btn-icon text-danger" (click)="deleteVendor(vendor.id)" title="Delete Vendor">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                </div>
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="empty-state">
+              <div class="empty-content">
+                <i class="ri-building-4-line empty-icon"></i>
+                <p>No vendors found.</p>
+                <p class="empty-subtext">Add a vendor to get started.</p>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Modal -->
+@if (showAddModal()) {
+  <div class="modal-backdrop" gsapFade [duration]="0.3" [yOffset]="0">
+    <div class="modal-content surface" gsapFade [delay]="0.1" [yOffset]="-30">
+      <div class="modal-header">
+        <h2>{{ isEditing() ? 'Edit Vendor' : 'Add New Vendor' }}</h2>
+        <button class="btn-icon" (click)="closeAddModal()"><i class="ri-close-line"></i></button>
+      </div>
+      
+      <form [formGroup]="vendorForm" (ngSubmit)="submitVendor()">
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label class="form-label">Vendor Name <span class="required">*</span></label>
+            <input type="text" class="form-control" [class.is-invalid]="f.name.invalid && f.name.touched" formControlName="name" placeholder="e.g. Acme Supplies Ltd">
+            <div *ngIf="f.name.invalid && f.name.touched" class="form-error">
+              <span *ngIf="f.name.errors?.['required']">Vendor name is required.</span>
+              <span *ngIf="f.name.errors?.['minlength']">Minimum 3 characters needed.</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Contact Email <span class="required">*</span></label>
+            <input type="email" class="form-control" [class.is-invalid]="f.contactEmail.invalid && f.contactEmail.touched" formControlName="contactEmail" placeholder="contact@acme.com">
+            <div *ngIf="f.contactEmail.invalid && f.contactEmail.touched" class="form-error">
+              <span *ngIf="f.contactEmail.errors?.['required']">Email is required.</span>
+              <span *ngIf="f.contactEmail.errors?.['email']">Enter a valid email address.</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Phone Number <span class="required">*</span></label>
+            <input type="text" class="form-control" [class.is-invalid]="f.phoneNumber.invalid && f.phoneNumber.touched" formControlName="phoneNumber" placeholder="+1 234 567 8900">
+            <div *ngIf="f.phoneNumber.invalid && f.phoneNumber.touched" class="form-error">
+              <span *ngIf="f.phoneNumber.errors?.['required']">Phone is required.</span>
+              <span *ngIf="f.phoneNumber.errors?.['pattern']">Enter a valid phone number.</span>
+            </div>
+          </div>
+          
+          <div class="form-group full-width">
+            <label class="form-label">Tax ID <span class="required">*</span></label>
+            <input type="text" class="form-control" [class.is-invalid]="f.taxId.invalid && f.taxId.touched" formControlName="taxId" placeholder="e.g. XX-XXXXXXX">
+            <div *ngIf="f.taxId.invalid && f.taxId.touched" class="form-error">
+              <span *ngIf="f.taxId.errors?.['required']">Tax ID is required.</span>
+            </div>
+          </div>
+          
+          <div class="form-group full-width">
+            <label class="form-label">Address <span class="required">*</span></label>
+            <input type="text" class="form-control" [class.is-invalid]="f.address.invalid && f.address.touched" formControlName="address" placeholder="123 Business Rd, City">
+            <div *ngIf="f.address.invalid && f.address.touched" class="form-error">
+              <span *ngIf="f.address.errors?.['required']">Address is required.</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeAddModal()" [disabled]="isSubmitting()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="vendorForm.invalid || isSubmitting()">
+            @if (isSubmitting()) {
+              Saving...
+            } @else {
+              {{ isEditing() ? 'Update Vendor' : 'Save Vendor' }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

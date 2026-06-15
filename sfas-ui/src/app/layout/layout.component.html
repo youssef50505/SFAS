@@ -1,0 +1,16 @@
+<div class="layout-container" [class.sidebar-closed]="!layoutService.sidebarOpen()">
+  <!-- Mobile Overlay -->
+  @if (layoutService.sidebarOpen()) {
+    <div class="sidebar-overlay" (click)="layoutService.closeSidebar()"></div>
+  }
+  
+  <app-sidebar class="sidebar-wrapper"></app-sidebar>
+  <div class="main-wrapper">
+    <app-header class="header"></app-header>
+    <div class="page-scroll-container">
+      <main class="page-content surface">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  </div>
+</div>

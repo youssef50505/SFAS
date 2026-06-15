@@ -1,0 +1,55 @@
+<div class="login-container">
+  <div class="login-box surface">
+    <div class="login-header">
+      <div class="logo-icon"><i class="ri-funds-box-line"></i></div>
+      <h2>SFAS Portal</h2>
+      <p>Sign in to your account</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email" class="form-label">Email address</label>
+        <input 
+          id="email" 
+          type="email" 
+          class="form-control" 
+          [class.is-invalid]="emailControl?.invalid && emailControl?.touched"
+          formControlName="email" 
+          placeholder="admin@school.com"
+        >
+        @if (emailControl?.invalid && emailControl?.touched) {
+          <div class="form-error">
+            @if (emailControl?.errors?.['required']) { <span>Email is required.</span> }
+            @if (emailControl?.errors?.['email']) { <span>Please enter a valid email address.</span> }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input 
+          id="password" 
+          type="password" 
+          class="form-control" 
+          [class.is-invalid]="passwordControl?.invalid && passwordControl?.touched"
+          formControlName="password" 
+          placeholder="••••••••"
+        >
+        @if (passwordControl?.invalid && passwordControl?.touched) {
+          <div class="form-error">
+            @if (passwordControl?.errors?.['required']) { <span>Password is required.</span> }
+            @if (passwordControl?.errors?.['minlength']) { <span>Password must be at least 6 characters.</span> }
+          </div>
+        }
+      </div>
+
+      <button type="submit" class="btn-primary w-full mt-4" [disabled]="isLoading() || loginForm.invalid">
+        @if (isLoading()) {
+          Signing in...
+        } @else {
+          Sign in
+        }
+      </button>
+    </form>
+  </div>
+</div>

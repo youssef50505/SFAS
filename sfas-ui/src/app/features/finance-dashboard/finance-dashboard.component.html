@@ -1,0 +1,59 @@
+<div class="dashboard-container">
+  <div class="page-header-wrapper" gsapFade [delay]="0" [yOffset]="20">
+    <app-page-header title="Finance Dashboard" subtitle="Pending items requiring your attention"></app-page-header>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state surface">
+      <div class="spinner"></div>
+      <p>Loading finance queue...</p>
+    </div>
+  } @else {
+    <div class="metrics-grid">
+      <app-metric-card 
+        [delay]="0.1" gsapFade
+        label="Pending Bills for Review" 
+        [value]="pendingBillsCount().toString()" 
+        iconClass="ri-file-list-3-line" 
+        iconColor="var(--accent-warning)" 
+        valueClass="text-warning">
+      </app-metric-card>
+      
+      <app-metric-card 
+        [delay]="0.2" gsapFade
+        label="Pending Fund Requests" 
+        [value]="pendingFundsCount().toString()" 
+        iconClass="ri-bank-card-line" 
+        iconColor="var(--accent-danger)" 
+        valueClass="text-danger">
+      </app-metric-card>
+    </div>
+
+    <div class="quick-actions" gsapFade [delay]="0.3">
+      <h3 class="section-title">Quick Actions</h3>
+      <div class="action-cards">
+        <a routerLink="/bills" class="action-card surface">
+          <div class="action-icon">
+            <i class="ri-article-line"></i>
+          </div>
+          <div class="action-content">
+            <h4>Review Bills</h4>
+            <p>Approve or reject vendor bills</p>
+          </div>
+          <i class="ri-arrow-right-line action-arrow"></i>
+        </a>
+        
+        <a routerLink="/funds" class="action-card surface">
+          <div class="action-icon">
+            <i class="ri-hand-coin-line"></i>
+          </div>
+          <div class="action-content">
+            <h4>Review Fund Requests</h4>
+            <p>Process pending department funds</p>
+          </div>
+          <i class="ri-arrow-right-line action-arrow"></i>
+        </a>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,167 @@
+<div class="page-container">
+  <div class="page-header-wrapper" gsapFade [delay]="0" [yOffset]="20">
+    <app-page-header title="Fund Requests" subtitle="Submit and review department funding requests">
+      @if (authStore.isAdmin()) {
+        <button class="btn-primary" (click)="openAddModal()">
+          <i class="ri-add-line"></i> Request Funds
+        </button>
+      }
+    </app-page-header>
+  </div>
+
+  <div class="table-container surface" gsapFade [delay]="0.2">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Request Details</th>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Urgency</th>
+          <th>Status</th>
+          @if (authStore.isFinanceOfficer()) {
+            <th>Actions</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (fund of funds(); track fund.id) {
+          <tr>
+            <td>
+              <div class="fund-info">
+                <span class="fund-title">{{ fund.title }}</span>
+                <span class="fund-desc" [title]="fund.description">{{ fund.description }}</span>
+              </div>
+            </td>
+            <td>{{ fund.date | date:'mediumDate' }}</td>
+            <td class="amount">{{ fund.amountOfFund | currency }}</td>
+            <td>
+              <span class="urgency-badge" [ngClass]="fund.urgencyLevel.toLowerCase()">
+                @if (fund.urgencyLevel === 'CRITICAL') { <i class="ri-alert-fill"></i> }
+                @else if (fund.urgencyLevel === 'HIGH') { <i class="ri-arrow-up-circle-fill"></i> }
+                @else if (fund.urgencyLevel === 'MEDIUM') { <i class="ri-subtract-line"></i> }
+                @else { <i class="ri-arrow-down-circle-line"></i> }
+                {{ fund.urgencyLevel }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="fund.status.toLowerCase()">
+                {{ fund.status }}
+              </span>
+            </td>
+            @if (authStore.isFinanceOfficer()) {
+              <td>
+                @if (fund.status === 'PENDING') {
+                  <div class="action-buttons">
+                    <button class="btn-approve" (click)="updateStatus(fund, 'APPROVED')" title="Approve">
+                      <i class="ri-check-line"></i> Approve
+                    </button>
+                    <button class="btn-reject" (click)="updateStatus(fund, 'REJECTED')" title="Reject">
+                      <i class="ri-close-line"></i> Reject
+                    </button>
+                  </div>
+                }
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td [colSpan]="authStore.isFinanceOfficer() ? 6 : 5" class="empty-state">
+              <div class="empty-content">
+                <i class="ri-hand-coin-line empty-icon"></i>
+                <p>No fund requests found.</p>
+                <p class="empty-subtext">There are currently no funding requests in the system.</p>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Modal -->
+@if (showAddModal()) {
+  <div class="modal-backdrop" gsapFade [duration]="0.3" [yOffset]="0">
+    <div class="modal-content surface" gsapFade [delay]="0.1" [yOffset]="-30">
+      <div class="modal-header">
+        <h2>Submit Funding Request</h2>
+        <button class="btn-icon" (click)="closeAddModal()"><i class="ri-close-line"></i></button>
+      </div>
+      
+      <form [formGroup]="fundForm" (ngSubmit)="submitFund()">
+        <div class="form-grid">
+          
+          <div class="form-group full-width">
+            <label class="form-label">Title <span class="required">*</span></label>
+            <input type="text" class="form-control" [class.is-invalid]="f.title.invalid && f.title.touched" formControlName="title" placeholder="e.g. New Lab Equipment">
+            @if (f.title.invalid && f.title.touched) {
+              <div class="form-error">
+                @if (f.title.errors?.['required']) { <span>Title is required.</span> }
+                @if (f.title.errors?.['minlength']) { <span>Minimum 3 characters needed.</span> }
+              </div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Description <span class="required">*</span></label>
+            <textarea class="form-control" [class.is-invalid]="f.description.invalid && f.description.touched" formControlName="description" rows="3" placeholder="Explain the business need..."></textarea>
+            @if (f.description.invalid && f.description.touched) {
+              <div class="form-error">
+                @if (f.description.errors?.['required']) { <span>Description is required.</span> }
+                @if (f.description.errors?.['minlength']) { <span>Please provide more detail (min 10 chars).</span> }
+              </div>
+            }
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Amount Required ($) <span class="required">*</span></label>
+            <input type="number" class="form-control" [class.is-invalid]="f.amountOfFund.invalid && f.amountOfFund.touched" formControlName="amountOfFund" placeholder="0.00" step="0.01">
+            @if (f.amountOfFund.invalid && f.amountOfFund.touched) {
+              <div class="form-error">
+                @if (f.amountOfFund.errors?.['required']) { <span>Amount is required.</span> }
+                @if (f.amountOfFund.errors?.['min']) { <span>Amount must be greater than 0.</span> }
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Urgency Level <span class="required">*</span></label>
+            <select class="form-control" [class.is-invalid]="f.urgencyLevel.invalid && f.urgencyLevel.touched" formControlName="urgencyLevel">
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH">High</option>
+              <option value="CRITICAL">Critical</option>
+            </select>
+            @if (f.urgencyLevel.invalid && f.urgencyLevel.touched) {
+              <div class="form-error">
+                @if (f.urgencyLevel.errors?.['required']) { <span>Urgency level is required.</span> }
+              </div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Date Required By <span class="required">*</span></label>
+            <input type="date" class="form-control" [class.is-invalid]="f.date.invalid && f.date.touched" formControlName="date">
+            @if (f.date.invalid && f.date.touched) {
+              <div class="form-error">
+                @if (f.date.errors?.['required']) { <span>Date is required.</span> }
+              </div>
+            }
+          </div>
+          
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeAddModal()" [disabled]="isSubmitting()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="fundForm.invalid || isSubmitting()">
+            @if (isSubmitting()) {
+              Submitting...
+            } @else {
+              Submit Request
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

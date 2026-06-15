@@ -1,0 +1,61 @@
+<div class="dashboard-container">
+  <div class="page-header-wrapper" gsapFade [delay]="0" [yOffset]="20">
+    <app-page-header title="Admin Dashboard" subtitle="Real-time financial pulse and activity summary"></app-page-header>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state surface">
+      <div class="spinner"></div>
+      <p>Loading financial data...</p>
+    </div>
+  } @else {
+    <div class="metrics-grid">
+      <app-metric-card 
+        [delay]="0.1" gsapFade
+        label="Total Collections" 
+        [value]="'$' + (totalCollections() | number:'1.0-0')" 
+        iconClass="ri-money-dollar-circle-line" 
+        iconColor="var(--accent-success)" 
+        valueClass="text-success">
+      </app-metric-card>
+      
+      <app-metric-card 
+        [delay]="0.2" gsapFade
+        label="Pending Bills" 
+        [value]="pendingBillsCount().toString()" 
+        iconClass="ri-article-line" 
+        iconColor="var(--accent-warning)" 
+        valueClass="text-warning">
+      </app-metric-card>
+  
+      <app-metric-card 
+        [delay]="0.3" gsapFade
+        label="Active Fund Requests" 
+        [value]="activeFundsCount().toString()" 
+        iconClass="ri-alert-line" 
+        iconColor="var(--accent-danger)" 
+        valueClass="text-danger">
+      </app-metric-card>
+    </div>
+  
+    <div class="chart-container surface" gsapFade [delay]="0.4">
+      @defer (on viewport) {
+        <apx-chart
+          [series]="chartOptions.series"
+          [chart]="chartOptions.chart"
+          [xaxis]="chartOptions.xaxis"
+          [stroke]="chartOptions.stroke"
+          [colors]="chartOptions.colors"
+          [dataLabels]="chartOptions.dataLabels"
+          [fill]="chartOptions.fill"
+          [title]="chartOptions.title"
+          [tooltip]="chartOptions.tooltip"
+        ></apx-chart>
+      } @placeholder {
+        <div style="height: 350px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+          Loading chart...
+        </div>
+      }
+    </div>
+  }
+</div>

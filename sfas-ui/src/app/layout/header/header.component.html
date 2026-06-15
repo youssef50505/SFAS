@@ -1,0 +1,74 @@
+<div class="header-wrapper">
+  <div class="header-left">
+    <button class="header-btn mobile-menu-btn" (click)="layoutService.toggleSidebar()" aria-label="Toggle sidebar">
+      <i class="ri-menu-line"></i>
+    </button>
+    <h2 class="page-title">SFAS Workspace</h2>
+  </div>
+
+  <div class="header-right">
+    <!-- Theme Toggle -->
+    <button
+      class="header-btn"
+      (click)="toggleTheme()"
+      [attr.aria-label]="themeService.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+      [attr.title]="themeService.isDark() ? 'Switch to light mode' : 'Switch to dark mode'">
+      @if (themeService.isDark()) {
+        <i class="ri-sun-line"></i>
+      } @else {
+        <i class="ri-moon-line"></i>
+      }
+    </button>
+
+    <!-- Notifications -->
+    <div class="notification-wrapper">
+      <button class="header-btn" (click)="toggleNotifications()" aria-label="View notifications" title="Notifications">
+        <i class="ri-notification-3-line"></i>
+        @if (notificationService.unreadCount() > 0) {
+          <span class="notification-badge">{{ notificationService.unreadCount() }}</span>
+        }
+      </button>
+
+      @if (showNotifications) {
+        <div class="notification-dropdown surface-elevated">
+          <div class="dropdown-header">
+            <h4>Notifications</h4>
+            <button class="btn-clear" (click)="notificationService.clearNotifications()">Clear All</button>
+          </div>
+          <div class="dropdown-body">
+            @if (notificationService.unreadCount() === 0) {
+              <div class="dropdown-empty">
+                <i class="ri-notification-off-line"></i>
+                <p>No new notifications</p>
+              </div>
+            } @else {
+              @for (notif of notificationService.notifications(); track $index) {
+                <div class="notif-item">
+                  <div class="notif-indicator"></div>
+                  <p>{{ notif }}</p>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Separator -->
+    <div class="header-separator"></div>
+
+    <!-- User Profile -->
+    <div class="user-profile">
+      <div class="avatar">{{ authStore.currentUser()?.name?.charAt(0) || 'U' }}</div>
+      <div class="user-info">
+        <span class="user-name">{{ authStore.currentUser()?.name || 'User' }}</span>
+        <span class="user-role">{{ authStore.currentUser()?.role === 'FINANCE_OFFICER' ? 'Finance Officer' : authStore.currentUser()?.role || 'Role' }}</span>
+      </div>
+    </div>
+
+    <!-- Logout -->
+    <button class="header-btn header-btn--logout" (click)="logout()" aria-label="Sign out" title="Sign Out">
+      <i class="ri-logout-box-r-line"></i>
+    </button>
+  </div>
+</div>

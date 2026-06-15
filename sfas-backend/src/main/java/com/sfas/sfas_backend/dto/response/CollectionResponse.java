@@ -12,6 +12,7 @@ public record CollectionResponse(
         LocalDate date,
         CollectionType type,
         BigDecimal amount,
+        UserResponse createdBy,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {}

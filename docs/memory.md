@@ -186,3 +186,14 @@ The database design was successfully upgraded, and the codebase was refactored t
 2. **Bill Normalization:** Removed the string-based `vendor` field from the `Bill` entity and replaced it with a strictly typed Many-To-One relationship to the new `Vendor` entity using `@JoinColumn(name = "vendor_id")`.
 3. **Database Documentation:** Updated `erd.mmd` and `schema_erd.html` to reflect the new `vendors` table and its 1-to-N relationship with the `bills` table.
 4. **Exception Handling & Safety:** Ensured robust exception handling (e.g., `ResourceNotFoundException`) in the Service layer to safely handle vendor existence checks. Recompiled flawlessly in a Java 21 environment.
+
+## 11. Strict Database Relationships & Auditing Upgrade
+
+**Context:** A review of the DB relationships identified several logical gaps where audit trails and workflow tracking were missing for a highly exemplary enterprise finance application.
+
+**Decisions Made:**
+1. **Vendor Audit Trail:** Added a `createdBy` relationship (`@ManyToOne` User) to the `Vendor` entity to track which Admin onboarded the vendor.
+2. **Collection Audit Trail:** Added a `createdBy` relationship (`@ManyToOne` User) to the `Collection` entity to track who entered the collection data.
+3. **Bill Approval Tracking:** Added a `reviewedBy` relationship (`@ManyToOne` User, nullable) to the `Bill` entity to record which Finance Officer approved or rejected the bill.
+4. **RequestFund Workflow:** Added a `status` field (using a newly created `FundStatus` enum: `PENDING`, `APPROVED`, `REJECTED`) and a `reviewedBy` relationship to the `RequestFund` entity, allowing Finance Officers to review and approve/reject fund requests properly.
+5. All associated DTOs and Mappers were updated to handle these new fields, ensuring full data fidelity from the database to the REST API responses. ERD diagrams were updated accordingly.

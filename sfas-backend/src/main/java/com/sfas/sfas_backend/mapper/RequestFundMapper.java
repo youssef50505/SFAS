@@ -10,7 +10,9 @@ import org.mapstruct.Mapping;
 public interface RequestFundMapper {
     
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "reviewedBy", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     RequestFund toEntity(RequestFundRequest request);

@@ -8,5 +8,6 @@ public record VendorResponse(
         String contactEmail,
         String phoneNumber,
         String taxId,
-        String address
+        String address,
+        UserResponse createdBy
 ) {}

@@ -1,5 +1,6 @@
 package com.sfas.sfas_backend.domain.entity;
 
+import com.sfas.sfas_backend.domain.enums.FundStatus;
 import com.sfas.sfas_backend.domain.enums.UrgencyLevel;
 import jakarta.persistence.*;
 import lombok.*;
@@ -61,6 +62,17 @@ public class RequestFund {
     @JoinColumn(name = "created_by_id", nullable = false)
     @NonNull
     private User createdBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @NonNull
+    @Builder.Default
+    private FundStatus status = FundStatus.PENDING;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewed_by_id")
+    @Nullable
+    private User reviewedBy;
 
     @CreatedDate
     @Column(updatable = false)

@@ -3,6 +3,10 @@ erDiagram
     USER ||--o{ BILL : "creates"
     USER ||--o{ REQUEST_FUND : "submits"
     USER ||--o{ REPORT : "generates"
+    USER ||--o{ VENDOR : "registers"
+    USER ||--o{ COLLECTION : "enters"
+    USER ||--o{ BILL : "reviews"
+    USER ||--o{ REQUEST_FUND : "reviews"
     VENDOR ||--o{ BILL : "provides"
     
     %% Tables
@@ -23,6 +27,7 @@ erDiagram
         string phone_number
         string tax_id
         string address
+        uuid created_by FK "Refers to User.id"
         timestamp created_date
         timestamp last_modified_date
     }
@@ -38,6 +43,7 @@ erDiagram
         string image_path
         string description
         enum status "PENDING, APPROVED, REJECTED"
+        uuid reviewed_by FK "Refers to User.id"
         timestamp created_date
         timestamp last_modified_date
     }
@@ -51,6 +57,8 @@ erDiagram
         enum urgency_level "LOW, MEDIUM, HIGH, CRITICAL"
         datetime date
         string image_path
+        enum status "PENDING, APPROVED, REJECTED"
+        uuid reviewed_by FK "Refers to User.id"
         timestamp created_date
         timestamp last_modified_date
     }
@@ -60,6 +68,7 @@ erDiagram
         date date
         enum type "DAILY, WEEKLY, MONTHLY, ANNUAL"
         decimal amount
+        uuid created_by FK "Refers to User.id"
         timestamp created_date
         timestamp last_modified_date
     }

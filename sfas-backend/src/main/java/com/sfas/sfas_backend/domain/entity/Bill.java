@@ -72,6 +72,11 @@ public class Bill {
     @NonNull
     private User createdBy;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewed_by_id")
+    @Nullable
+    private User reviewedBy;
+
     @CreatedDate
     @Column(updatable = false)
     @Nullable

@@ -46,6 +46,11 @@ public class Vendor {
     @Nullable
     private String address;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "created_by_id", nullable = false)
+    @NonNull
+    private User createdBy;
+
     @CreatedDate
     @Column(updatable = false)
     @Nullable

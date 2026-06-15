@@ -17,6 +17,7 @@ public record BillResponse(
         String description,
         BillStatus status,
         UserResponse createdBy,
+        UserResponse reviewedBy,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {}

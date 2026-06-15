@@ -1,5 +1,6 @@
 package com.sfas.sfas_backend.dto.response;
 
+import com.sfas.sfas_backend.domain.enums.FundStatus;
 import com.sfas.sfas_backend.domain.enums.UrgencyLevel;
 
 import java.math.BigDecimal;
@@ -14,7 +15,9 @@ public record RequestFundResponse(
         UrgencyLevel urgencyLevel,
         LocalDateTime date,
         String imagePath,
+        FundStatus status,
         UserResponse createdBy,
+        UserResponse reviewedBy,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {}

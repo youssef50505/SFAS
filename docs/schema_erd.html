@@ -22,9 +22,12 @@
 <h2>1. Entity Relationship Diagram (ERD)</h2>
 <div class="mermaid">
 erDiagram
-    USER ||--o{ BILL : "creates"
     USER ||--o{ REQUEST_FUND : "submits"
     USER ||--o{ REPORT : "generates"
+    USER ||--o{ VENDOR : "registers"
+    USER ||--o{ COLLECTION : "enters"
+    USER ||--o{ BILL : "reviews"
+    USER ||--o{ REQUEST_FUND : "reviews"
     VENDOR ||--o{ BILL : "provides"
     
     USER {
@@ -43,6 +46,7 @@ erDiagram
         string phone_number
         string tax_id
         string address
+        uuid created_by FK
         timestamp created_date
     }
 
@@ -57,6 +61,7 @@ erDiagram
         string image_path
         string description
         enum status "PENDING, APPROVED, REJECTED"
+        uuid reviewed_by FK
         timestamp created_date
     }
 
@@ -69,6 +74,8 @@ erDiagram
         enum urgency_level "LOW, MEDIUM, HIGH, CRITICAL"
         datetime date
         string image_path
+        enum status "PENDING, APPROVED, REJECTED"
+        uuid reviewed_by FK
         timestamp created_date
     }
 
@@ -77,6 +84,7 @@ erDiagram
         date date
         enum type "DAILY, WEEKLY, MONTHLY, ANNUAL"
         decimal amount
+        uuid created_by FK
         timestamp created_date
     }
 
@@ -112,6 +120,7 @@ erDiagram
   <tr><td>phone_number</td><td>VARCHAR</td><td>NOT NULL</td><td>Phone number.</td></tr>
   <tr><td>tax_id</td><td>VARCHAR</td><td>-</td><td>Tax Identification Number.</td></tr>
   <tr><td>address</td><td>VARCHAR</td><td>-</td><td>Physical address.</td></tr>
+  <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
 </table>
 
 <h3><code>bills</code></h3>
@@ -126,6 +135,7 @@ erDiagram
   <tr><td>image_path</td><td>VARCHAR</td><td>-</td><td>Reference to the bill proof.</td></tr>
   <tr><td>status</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: PENDING, APPROVED, REJECTED.</td></tr>
   <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
+  <tr><td>reviewed_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
 </table>
 
 <h3><code>request_funds</code></h3>
@@ -136,7 +146,9 @@ erDiagram
   <tr><td>amount_of_fund</td><td>NUMERIC</td><td>NOT NULL</td><td>Requested budget.</td></tr>
   <tr><td>urgency_level</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: LOW, MEDIUM, HIGH, CRITICAL.</td></tr>
   <tr><td>date</td><td>TIMESTAMP</td><td>NOT NULL</td><td>Required date.</td></tr>
+  <tr><td>status</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: PENDING, APPROVED, REJECTED.</td></tr>
   <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
+  <tr><td>reviewed_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
 </table>
 
 <h3><code>collections</code></h3>
@@ -146,6 +158,7 @@ erDiagram
   <tr><td>date</td><td>DATE</td><td>NOT NULL</td><td>Collection date.</td></tr>
   <tr><td>type</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: DAILY, WEEKLY, MONTHLY, ANNUAL.</td></tr>
   <tr><td>amount</td><td>NUMERIC</td><td>NOT NULL</td><td>Amount collected.</td></tr>
+  <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
 </table>
 
 <h3><code>reports</code></h3>

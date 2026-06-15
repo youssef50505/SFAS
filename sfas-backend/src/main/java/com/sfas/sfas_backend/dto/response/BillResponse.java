@@ -9,7 +9,7 @@ import java.util.UUID;
 public record BillResponse(
         UUID id,
         String title,
-        String vendor,
+        VendorResponse vendor,
         BigDecimal amount,
         BigDecimal tax,
         LocalDateTime date,

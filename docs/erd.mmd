@@ -3,6 +3,7 @@ erDiagram
     USER ||--o{ BILL : "creates"
     USER ||--o{ REQUEST_FUND : "submits"
     USER ||--o{ REPORT : "generates"
+    VENDOR ||--o{ BILL : "provides"
     
     %% Tables
     USER {
@@ -14,12 +15,23 @@ erDiagram
         timestamp created_date
         timestamp last_modified_date
     }
+
+    VENDOR {
+        uuid id PK
+        string name
+        string contact_email
+        string phone_number
+        string tax_id
+        string address
+        timestamp created_date
+        timestamp last_modified_date
+    }
     
     BILL {
         uuid id PK
+        uuid vendor_id FK "Refers to Vendor.id"
         uuid created_by FK "Refers to User.id"
         string title
-        string vendor
         decimal amount
         decimal tax
         datetime date

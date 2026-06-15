@@ -7,9 +7,11 @@ import com.sfas.sfas_backend.dto.request.BillRequest;
 import com.sfas.sfas_backend.dto.request.BillStatusUpdateRequest;
 import com.sfas.sfas_backend.dto.response.BillResponse;
 import com.sfas.sfas_backend.event.NotificationEvent;
+import com.sfas.sfas_backend.domain.entity.Vendor;
 import com.sfas.sfas_backend.mapper.BillMapper;
 import com.sfas.sfas_backend.repository.BillRepository;
 import com.sfas.sfas_backend.repository.UserRepository;
+import com.sfas.sfas_backend.repository.VendorRepository;
 import com.sfas.sfas_backend.service.BillService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,6 +27,7 @@ public class BillServiceImpl implements BillService {
 
     private final BillRepository billRepository;
     private final UserRepository userRepository;
+    private final VendorRepository vendorRepository;
     private final BillMapper billMapper;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -34,9 +37,13 @@ public class BillServiceImpl implements BillService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        Vendor vendor = vendorRepository.findById(request.vendorId())
+                .orElseThrow(() -> new IllegalArgumentException("Vendor not found with id: " + request.vendorId()));
+
         Bill bill = billMapper.toEntity(request);
         bill.setStatus(BillStatus.PENDING);
         bill.setCreatedBy(user);
+        bill.setVendor(vendor);
 
         Bill savedBill = billRepository.save(bill);
 

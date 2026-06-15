@@ -18,7 +18,31 @@
         }
       }
     },
-    "2_Bills_الفواتير": {
+    "2_Vendors_الموردين": {
+      "Create_Vendor": {
+        "description": "إضافة مورد جديد",
+        "method": "POST",
+        "endpoint": "/api/v1/vendors",
+        "requestBody": {
+          "name": "مكتبة جرير",
+          "contactEmail": "sales@jarir.com",
+          "phoneNumber": "0501234567",
+          "taxId": "TAX-998877",
+          "address": "الرياض، المملكة العربية السعودية"
+        },
+        "responseExample": {
+          "id": "abc12345-e89b-12d3-a456-426614174000",
+          "name": "مكتبة جرير"
+        }
+      },
+      "Get_All_Vendors": {
+        "description": "عرض جميع الموردين",
+        "method": "GET",
+        "endpoint": "/api/v1/vendors",
+        "requestBody": null
+      }
+    },
+    "3_Bills_الفواتير": {
       "Create_Bill": {
         "description": "إضافة فاتورة جديدة",
         "method": "POST",
@@ -28,7 +52,7 @@
           "tax": 150.05,
           "dueDate": "2026-07-01",
           "description": "شراء كتب للمكتبة",
-          "vendorName": "مكتبة جرير",
+          "vendorId": "abc12345-e89b-12d3-a456-426614174000",
           "category": "SUPPLIES"
         },
         "responseExample": {
@@ -57,7 +81,7 @@
         "requestBody": null
       }
     },
-    "3_Request_Funds_طلبات_التمويل": {
+    "4_Request_Funds_طلبات_التمويل": {
       "Create_Fund_Request": {
         "description": "تقديم طلب تمويل جديد",
         "method": "POST",
@@ -76,7 +100,7 @@
         "requestBody": null
       }
     },
-    "4_Collections_التحصيلات": {
+    "5_Collections_التحصيلات": {
       "Record_Collection": {
         "description": "تسجيل تحصيل مالي جديد",
         "method": "POST",
@@ -96,7 +120,7 @@
         "requestBody": null
       }
     },
-    "5_Reports_التقارير": {
+    "6_Reports_التقارير": {
       "Create_Report": {
         "description": "إنشاء تقرير جديد",
         "method": "POST",
@@ -115,7 +139,7 @@
         "requestBody": null
       }
     },
-    "6_Notifications_الإشعارات": {
+    "7_Notifications_الإشعارات": {
       "Get_All_Notifications": {
         "description": "عرض الإشعارات المتاحة للمستخدم",
         "method": "GET",

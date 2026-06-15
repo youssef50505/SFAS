@@ -25,6 +25,7 @@ erDiagram
     USER ||--o{ BILL : "creates"
     USER ||--o{ REQUEST_FUND : "submits"
     USER ||--o{ REPORT : "generates"
+    VENDOR ||--o{ BILL : "provides"
     
     USER {
         uuid id PK
@@ -35,11 +36,21 @@ erDiagram
         timestamp created_date
     }
     
+    VENDOR {
+        uuid id PK
+        string name
+        string contact_email
+        string phone_number
+        string tax_id
+        string address
+        timestamp created_date
+    }
+
     BILL {
         uuid id PK
+        uuid vendor_id FK
         uuid created_by FK
         string title
-        string vendor
         decimal amount
         decimal tax
         datetime date
@@ -92,12 +103,23 @@ erDiagram
   <tr><td>role</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: ADMIN or FINANCE_OFFICER.</td></tr>
 </table>
 
+<h3><code>vendors</code></h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>id</td><td>UUID</td><td>PRIMARY KEY</td><td>Unique identifier for the vendor.</td></tr>
+  <tr><td>name</td><td>VARCHAR</td><td>NOT NULL</td><td>Name of the vendor/company.</td></tr>
+  <tr><td>contact_email</td><td>VARCHAR</td><td>NOT NULL</td><td>Contact email.</td></tr>
+  <tr><td>phone_number</td><td>VARCHAR</td><td>NOT NULL</td><td>Phone number.</td></tr>
+  <tr><td>tax_id</td><td>VARCHAR</td><td>-</td><td>Tax Identification Number.</td></tr>
+  <tr><td>address</td><td>VARCHAR</td><td>-</td><td>Physical address.</td></tr>
+</table>
+
 <h3><code>bills</code></h3>
 <table>
   <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
   <tr><td>id</td><td>UUID</td><td>PRIMARY KEY</td><td>Unique identifier.</td></tr>
   <tr><td>title</td><td>VARCHAR</td><td>NOT NULL</td><td>Short title of the bill.</td></tr>
-  <tr><td>vendor</td><td>VARCHAR</td><td>NOT NULL</td><td>Entity requesting the payment.</td></tr>
+  <tr><td>vendor_id</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to vendors.id.</td></tr>
   <tr><td>amount</td><td>NUMERIC</td><td>NOT NULL</td><td>Total amount.</td></tr>
   <tr><td>tax</td><td>NUMERIC</td><td>-</td><td>Applied tax.</td></tr>
   <tr><td>date</td><td>TIMESTAMP</td><td>NOT NULL</td><td>Due/issuance date.</td></tr>

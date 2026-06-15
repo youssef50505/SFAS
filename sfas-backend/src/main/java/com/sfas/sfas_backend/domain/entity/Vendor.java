@@ -1,6 +1,5 @@
 package com.sfas.sfas_backend.domain.entity;
 
-import com.sfas.sfas_backend.domain.enums.BillStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -10,22 +9,18 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "bills", indexes = {
-    @Index(name = "idx_bill_status", columnList = "status"),
-    @Index(name = "idx_bill_created_by", columnList = "created_by_id")
-})
+@Table(name = "vendors")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Bill {
+public class Vendor {
 
     @Id
     @GeneratedValue
@@ -35,42 +30,21 @@ public class Bill {
 
     @Column(nullable = false)
     @NonNull
-    private String title;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "vendor_id", nullable = false)
-    @NonNull
-    private Vendor vendor;
+    private String name;
 
     @Column(nullable = false)
     @NonNull
-    private BigDecimal amount;
+    private String contactEmail;
 
     @Column(nullable = false)
     @NonNull
-    private BigDecimal tax;
+    private String phoneNumber;
 
-    @Column(nullable = false)
-    @NonNull
-    private LocalDateTime date;
-
-    @Column(name = "image_path")
     @Nullable
-    private String imagePath;
+    private String taxId;
 
-    @Column(columnDefinition = "TEXT")
     @Nullable
-    private String description;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @NonNull
-    private BillStatus status;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "created_by_id", nullable = false)
-    @NonNull
-    private User createdBy;
+    private String address;
 
     @CreatedDate
     @Column(updatable = false)

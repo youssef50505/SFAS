@@ -11,8 +11,8 @@ public record BillRequest(
         @NotBlank(message = "Title is required")
         String title,
 
-        @NotBlank(message = "Vendor is required")
-        String vendor,
+        @NotNull(message = "Vendor ID is required")
+        java.util.UUID vendorId,
 
         @NotNull(message = "Amount is required")
         @DecimalMin(value = "0.0", inclusive = false, message = "Amount must be greater than zero")

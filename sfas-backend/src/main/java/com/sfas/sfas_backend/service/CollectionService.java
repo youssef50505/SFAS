@@ -6,6 +6,6 @@ import com.sfas.sfas_backend.dto.response.CollectionResponse;
 import java.util.List;
 
 public interface CollectionService {
-    CollectionResponse createCollection(CollectionRequest request);
+    CollectionResponse createCollection(CollectionRequest request, String userEmail);
     List<CollectionResponse> getAllCollections();
 }

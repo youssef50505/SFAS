@@ -12,9 +12,9 @@ import java.util.UUID;
 @Repository
 public interface BillRepository extends JpaRepository<Bill, UUID> {
 
-    @EntityGraph(attributePaths = {"createdBy"})
+    @EntityGraph(attributePaths = {"createdBy", "vendor", "reviewedBy"})
     List<Bill> findAll();
 
-    @EntityGraph(attributePaths = {"createdBy"})
+    @EntityGraph(attributePaths = {"createdBy", "vendor", "reviewedBy"})
     Optional<Bill> findById(UUID id);
 }

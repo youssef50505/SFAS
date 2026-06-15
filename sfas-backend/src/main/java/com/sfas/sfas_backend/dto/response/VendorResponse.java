@@ -1,5 +1,6 @@
 package com.sfas.sfas_backend.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record VendorResponse(
@@ -9,5 +10,7 @@ public record VendorResponse(
         String phoneNumber,
         String taxId,
         String address,
-        UserResponse createdBy
+        UserResponse createdBy,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {}

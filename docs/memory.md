@@ -214,3 +214,82 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.show-sql=true
 ```
+
+## 13. Comprehensive Backend Refactoring & Architecture Perfection
+
+**Context:** A deep cross-reference audit of `memory.md`, `erd.mmd`, and `endpoints.json` against the implemented backend codebase identified **24 discrepancies** (5 Critical, 10 High, 9 Medium). A comprehensive 7-phase refactoring plan was executed to bring the backend to production-grade quality. All changes compiled with **zero errors** (`BUILD SUCCESS`).
+
+### Phase 1: Critical Data Integrity Fixes
+1. **Vendor `createdBy` — NOT NULL Violation Fixed:** `VendorServiceImpl.createVendor()` was saving entities without populating the required `createdBy` FK. The service now accepts the authenticated user's email, resolves the `User` entity, and sets `vendor.setCreatedBy(user)`. `VendorController` was updated to inject `@AuthenticationPrincipal` and pass the username.
+2. **Collection `createdBy` — NOT NULL Violation Fixed:** `CollectionServiceImpl.createCollection()` had the identical defect. The service and controller were updated with the same pattern to populate `createdBy` correctly.
+3. **Bill `reviewedBy` — Audit Trail Fixed:** `BillServiceImpl.updateBillStatus()` was updating the status without recording which Finance Officer performed the review. The method now accepts the reviewer's email, resolves the user, and sets `bill.setReviewedBy(reviewer)`. `BillController` was updated accordingly.
+
+### Phase 2: Missing Fund Status Review Endpoint
+4. **New Endpoint — `PATCH /api/v1/funds/{id}/status`:** As mandated by §11 (which added `status` and `reviewedBy` to `RequestFund`), the missing endpoint was implemented. A new `FundStatusUpdateRequest` Record DTO was created. `RequestFundService` interface was extended with `updateFundStatus(UUID id, FundStatus status, String reviewerEmail)`. The implementation resolves the reviewer, updates both `status` and `reviewedBy`, publishes a notification event, and is secured with `@PreAuthorize("hasRole('FINANCE_OFFICER')")`.
+
+### Phase 3: Exception Handling & Architecture Standardization
+5. **`GlobalExceptionHandler` now extends `ResponseEntityExceptionHandler`:** Per §9.2 strict rules. This ensures all standard Spring MVC exceptions (type mismatches, missing parameters, unsupported methods, etc.) are handled with RFC 7807 `ProblemDetail` responses. The `handleMethodArgumentNotValid` method is now a proper `@Override`.
+6. **Consistent `ResourceNotFoundException` (404):** All service implementations (`BillServiceImpl`, `RequestFundServiceImpl`, `ReportServiceImpl`) previously threw `IllegalArgumentException` for "not found" scenarios, which the `GlobalExceptionHandler` mapped to 400 Bad Request. All such throws were replaced with `ResourceNotFoundException`, correctly returning 404 Not Found.
+7. **Domain Isolation — `AuthService` Created:** Per §9.2 ("Entities MUST NEVER leak into Controllers"), the `AuthController` was directly importing `com.sfas.sfas_backend.domain.entity.User`. A new `AuthService` interface and `AuthServiceImpl` were created to encapsulate authentication logic and response construction. `AuthController` now delegates entirely to the service layer, with zero entity imports.
+
+### Phase 4: N+1 Query Prevention
+8. **`@EntityGraph` Optimization Across All Repositories:**
+   - `BillRepository`: `@EntityGraph` expanded from `{"createdBy"}` to `{"createdBy", "vendor", "reviewedBy"}` — preventing 2 extra queries per bill.
+   - `RequestFundRepository`: `@EntityGraph` expanded from `{"createdBy"}` to `{"createdBy", "reviewedBy"}`.
+   - `CollectionRepository`: Added `@EntityGraph(attributePaths = {"createdBy"})` overrides for `findAll()` and `findById()` — previously had no EntityGraph at all.
+   - `VendorRepository`: Added `@EntityGraph(attributePaths = {"createdBy"})` overrides for `findAll()` and `findById()` — previously had no EntityGraph at all.
+
+### Phase 5: Security & Configuration Hardening
+9. **JWT Secret Externalized:** The hardcoded JWT secret string in `JwtUtil` was replaced with `@Value("${jwt.secret}")` injection from `application.properties`. A strong 256-bit key is now configured as `jwt.secret` in the properties file.
+10. **Java 21 Virtual Threads Enabled:** Added `spring.threads.virtual.enabled=true` to `application.properties` as mandated by §9.1.
+11. **CORS Configuration:** Added a `CorsConfigurationSource` bean in `SecurityConfig` allowing the Angular dev server (`http://localhost:4200`) with proper methods (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`), headers (`Authorization`, `Content-Type`, `Accept`), and credentials support.
+12. **Deprecated Property Removed:** Removed `spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect` as Hibernate auto-detects the dialect in modern versions.
+
+### Phase 6: DTO Response Completeness
+13. **`VendorResponse` Timestamps:** Added `LocalDateTime createdAt` and `LocalDateTime updatedAt` fields to `VendorResponse` to match the ERD definition and maintain consistency with all other response DTOs.
+
+### Phase 7: Documentation Synchronization
+14. **`endpoints.json` Fully Synced:** All request body field names were updated to match the actual Java Record DTOs:
+    - Bill: Added `title`, renamed `dueDate` → `date` (LocalDateTime), removed non-existent `category` field.
+    - Funds: `amount`/`reason` → `amountOfFund`/`title`/`description`/`urgencyLevel`/`date`/`imagePath`.
+    - Collections: `source`/`description`/`collectionType` → `date`/`type`/`amount`.
+    - Reports: `reportType`/`parameters` → `typeOfReport`/`date`/`title`/`description`.
+    - Added missing Vendor endpoints (`GET /{id}`, `PUT /{id}`, `DELETE /{id}`).
+    - Added missing `PATCH /api/v1/funds/{id}/status` endpoint.
+    - Clarified Bill status update uses `@RequestBody` (not query parameter).
+15. **`erd.mmd` Column Names Synced:** Updated ERD column names to match the actual Hibernate-generated column names (`created_at`/`updated_at` instead of `created_date`/`last_modified_date`). FK columns updated to include `_id` suffix (`created_by_id`, `reviewed_by_id`, `vendor_id`) matching the `@JoinColumn` definitions in the entities.
+
+**Updated `application.properties`:**
+```properties
+spring.application.name=sfas-backend
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/sfas
+spring.datasource.username=postgres
+spring.datasource.password=password
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# Virtual Threads (Java 21)
+spring.threads.virtual.enabled=true
+
+# JWT Configuration
+jwt.secret=v9y/B?E(H+MbQeThWmZq4t7w!z%C&F)J@KaPdSgVkYp3s6v9
+```
+
+**Files Created (3):**
+- `service/AuthService.java` — Interface for authentication logic.
+- `service/impl/AuthServiceImpl.java` — Implementation encapsulating login, JWT generation, and response construction.
+- `dto/request/FundStatusUpdateRequest.java` — Record DTO for fund status update endpoint.
+
+**Files Modified (27):**
+- Service Interfaces: `BillService`, `VendorService`, `CollectionService`, `RequestFundService`.
+- Service Implementations: `BillServiceImpl`, `VendorServiceImpl`, `CollectionServiceImpl`, `RequestFundServiceImpl`, `ReportServiceImpl`.
+- Controllers: `AuthController`, `BillController`, `VendorController`, `CollectionController`, `RequestFundController`.
+- Repositories: `BillRepository`, `RequestFundRepository`, `CollectionRepository`, `VendorRepository`.
+- Security: `JwtUtil`, `SecurityConfig`.
+- Exception: `GlobalExceptionHandler`.
+- DTOs: `VendorResponse`.
+- Config: `application.properties`.
+- Docs: `endpoints.json`, `erd.mmd`.

@@ -12,9 +12,9 @@ import java.util.UUID;
 @Repository
 public interface RequestFundRepository extends JpaRepository<RequestFund, UUID> {
 
-    @EntityGraph(attributePaths = {"createdBy"})
+    @EntityGraph(attributePaths = {"createdBy", "reviewedBy"})
     List<RequestFund> findAll();
 
-    @EntityGraph(attributePaths = {"createdBy"})
+    @EntityGraph(attributePaths = {"createdBy", "reviewedBy"})
     Optional<RequestFund> findById(UUID id);
 }

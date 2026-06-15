@@ -14,13 +14,17 @@
           "password": "password123"
         },
         "responseExample": {
-          "token": "eyJhbGciOiJIUzI1NiIsInR..."
+          "token": "eyJhbGciOiJIUzI1NiIsInR...",
+          "userId": "abc12345-e89b-12d3-a456-426614174000",
+          "name": "مدير المدرسة",
+          "email": "admin@school.com",
+          "role": "ADMIN"
         }
       }
     },
     "2_Vendors_الموردين": {
       "Create_Vendor": {
-        "description": "إضافة مورد جديد",
+        "description": "إضافة مورد جديد (يتطلب صلاحية ADMIN)",
         "method": "POST",
         "endpoint": "/api/v1/vendors",
         "requestBody": {
@@ -32,7 +36,19 @@
         },
         "responseExample": {
           "id": "abc12345-e89b-12d3-a456-426614174000",
-          "name": "مكتبة جرير"
+          "name": "مكتبة جرير",
+          "contactEmail": "sales@jarir.com",
+          "phoneNumber": "0501234567",
+          "taxId": "TAX-998877",
+          "address": "الرياض، المملكة العربية السعودية",
+          "createdBy": {
+            "id": "...",
+            "name": "مدير المدرسة",
+            "email": "admin@school.com",
+            "role": "ADMIN"
+          },
+          "createdAt": "2026-06-15T12:00:00",
+          "updatedAt": "2026-06-15T12:00:00"
         }
       },
       "Get_All_Vendors": {
@@ -40,23 +56,50 @@
         "method": "GET",
         "endpoint": "/api/v1/vendors",
         "requestBody": null
+      },
+      "Get_Vendor_By_ID": {
+        "description": "عرض تفاصيل مورد معين بالـ ID",
+        "method": "GET",
+        "endpoint": "/api/v1/vendors/{id}",
+        "requestBody": null
+      },
+      "Update_Vendor": {
+        "description": "تعديل بيانات مورد (يتطلب صلاحية ADMIN)",
+        "method": "PUT",
+        "endpoint": "/api/v1/vendors/{id}",
+        "requestBody": {
+          "name": "مكتبة جرير - فرع جدة",
+          "contactEmail": "jeddah@jarir.com",
+          "phoneNumber": "0509876543",
+          "taxId": "TAX-998877",
+          "address": "جدة، المملكة العربية السعودية"
+        }
+      },
+      "Delete_Vendor": {
+        "description": "حذف مورد (يتطلب صلاحية ADMIN)",
+        "method": "DELETE",
+        "endpoint": "/api/v1/vendors/{id}",
+        "requestBody": null,
+        "note": "يرجع 204 No Content عند النجاح"
       }
     },
     "3_Bills_الفواتير": {
       "Create_Bill": {
-        "description": "إضافة فاتورة جديدة",
+        "description": "إضافة فاتورة جديدة (يتطلب صلاحية ADMIN)",
         "method": "POST",
         "endpoint": "/api/v1/bills",
         "requestBody": {
+          "title": "شراء كتب للمكتبة",
+          "vendorId": "abc12345-e89b-12d3-a456-426614174000",
           "amount": 1500.50,
           "tax": 150.05,
-          "dueDate": "2026-07-01",
-          "description": "شراء كتب للمكتبة",
-          "vendorId": "abc12345-e89b-12d3-a456-426614174000",
-          "category": "SUPPLIES"
+          "date": "2026-07-01T00:00:00",
+          "imagePath": null,
+          "description": "شراء كتب للمكتبة المدرسية"
         },
         "responseExample": {
           "id": "123e4567-e89b-12d3-a456-426614174000",
+          "title": "شراء كتب للمكتبة",
           "amount": 1500.50,
           "status": "PENDING"
         }
@@ -74,22 +117,27 @@
         "requestBody": null
       },
       "Update_Bill_Status": {
-        "description": "تحديث حالة الفاتورة (للمسؤول المالي)",
+        "description": "تحديث حالة الفاتورة (للمسؤول المالي - يتطلب صلاحية FINANCE_OFFICER)",
         "method": "PATCH",
-        "endpoint": "/api/v1/bills/{id}/status?status=APPROVED",
-        "note": "الحالات المتاحة: PENDING, APPROVED, REJECTED",
-        "requestBody": null
+        "endpoint": "/api/v1/bills/{id}/status",
+        "requestBody": {
+          "status": "APPROVED"
+        },
+        "note": "الحالات المتاحة: PENDING, APPROVED, REJECTED. يسجّل المراجع (reviewedBy) تلقائياً."
       }
     },
     "4_Request_Funds_طلبات_التمويل": {
       "Create_Fund_Request": {
-        "description": "تقديم طلب تمويل جديد",
+        "description": "تقديم طلب تمويل جديد (يتطلب صلاحية ADMIN)",
         "method": "POST",
         "endpoint": "/api/v1/funds",
         "requestBody": {
-          "amount": 5000.00,
-          "reason": "تجهيز معمل الحاسب الآلي",
-          "urgencyLevel": "HIGH"
+          "title": "تجهيز معمل الحاسب الآلي",
+          "description": "شراء أجهزة حاسب وطاولات للمعمل",
+          "amountOfFund": 5000.00,
+          "urgencyLevel": "HIGH",
+          "date": "2026-07-01T00:00:00",
+          "imagePath": null
         },
         "note": "مستويات الأهمية المتاحة: LOW, MEDIUM, HIGH, CRITICAL"
       },
@@ -98,18 +146,26 @@
         "method": "GET",
         "endpoint": "/api/v1/funds",
         "requestBody": null
+      },
+      "Update_Fund_Status": {
+        "description": "تحديث حالة طلب التمويل (للمسؤول المالي - يتطلب صلاحية FINANCE_OFFICER)",
+        "method": "PATCH",
+        "endpoint": "/api/v1/funds/{id}/status",
+        "requestBody": {
+          "status": "APPROVED"
+        },
+        "note": "الحالات المتاحة: PENDING, APPROVED, REJECTED. يسجّل المراجع (reviewedBy) تلقائياً."
       }
     },
     "5_Collections_التحصيلات": {
       "Record_Collection": {
-        "description": "تسجيل تحصيل مالي جديد",
+        "description": "تسجيل تحصيل مالي جديد (يتطلب صلاحية ADMIN)",
         "method": "POST",
         "endpoint": "/api/v1/collections",
         "requestBody": {
-          "amount": 12000.00,
-          "source": "مصروفات دراسية",
-          "collectionType": "MONTHLY",
-          "description": "رسوم شهر يونيو"
+          "date": "2026-06-15",
+          "type": "MONTHLY",
+          "amount": 12000.00
         },
         "note": "أنواع التحصيلات المتاحة: DAILY, WEEKLY, MONTHLY, ANNUAL"
       },
@@ -122,13 +178,14 @@
     },
     "6_Reports_التقارير": {
       "Create_Report": {
-        "description": "إنشاء تقرير جديد",
+        "description": "إنشاء تقرير جديد (يتطلب صلاحية ADMIN)",
         "method": "POST",
         "endpoint": "/api/v1/reports",
         "requestBody": {
+          "date": "2026-06-15T12:00:00",
           "title": "التقرير المالي لشهر يونيو",
-          "reportType": "EMAIL",
-          "parameters": "Month: June, Year: 2026"
+          "description": "ملخص المصروفات والإيرادات لشهر يونيو 2026",
+          "typeOfReport": "EMAIL"
         },
         "note": "أنواع التقارير المتاحة: EMAIL, IN_APP"
       },

@@ -49,7 +49,8 @@ public class BillController {
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('FINANCE_OFFICER')")
     public ResponseEntity<BillResponse> updateBillStatus(@PathVariable UUID id,
-                                                         @Valid @RequestBody BillStatusUpdateRequest request) {
-        return ResponseEntity.ok(billService.updateBillStatus(id, request));
+                                                         @Valid @RequestBody BillStatusUpdateRequest request,
+                                                         @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(billService.updateBillStatus(id, request, userDetails.getUsername()));
     }
 }

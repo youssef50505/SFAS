@@ -11,5 +11,5 @@ public interface BillService {
     BillResponse createBill(BillRequest request, String userEmail);
     List<BillResponse> getAllBills();
     BillResponse getBillById(UUID id);
-    BillResponse updateBillStatus(UUID id, BillStatusUpdateRequest request);
+    BillResponse updateBillStatus(UUID id, BillStatusUpdateRequest request, String reviewerEmail);
 }

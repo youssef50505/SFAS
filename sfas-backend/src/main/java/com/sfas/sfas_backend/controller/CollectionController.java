@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -22,8 +24,9 @@ public class CollectionController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CollectionResponse> createCollection(@Valid @RequestBody CollectionRequest request) {
-        CollectionResponse createdCollection = collectionService.createCollection(request);
+    public ResponseEntity<CollectionResponse> createCollection(@Valid @RequestBody CollectionRequest request,
+                                                               @AuthenticationPrincipal UserDetails userDetails) {
+        CollectionResponse createdCollection = collectionService.createCollection(request, userDetails.getUsername());
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(createdCollection.id()).toUri();
         return ResponseEntity.created(location).body(createdCollection);

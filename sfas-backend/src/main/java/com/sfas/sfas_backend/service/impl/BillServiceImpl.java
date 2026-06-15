@@ -8,6 +8,7 @@ import com.sfas.sfas_backend.dto.request.BillStatusUpdateRequest;
 import com.sfas.sfas_backend.dto.response.BillResponse;
 import com.sfas.sfas_backend.event.NotificationEvent;
 import com.sfas.sfas_backend.domain.entity.Vendor;
+import com.sfas.sfas_backend.exception.ResourceNotFoundException;
 import com.sfas.sfas_backend.mapper.BillMapper;
 import com.sfas.sfas_backend.repository.BillRepository;
 import com.sfas.sfas_backend.repository.UserRepository;
@@ -35,10 +36,10 @@ public class BillServiceImpl implements BillService {
     @Transactional
     public BillResponse createBill(BillRequest request, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
 
         Vendor vendor = vendorRepository.findById(request.vendorId())
-                .orElseThrow(() -> new IllegalArgumentException("Vendor not found with id: " + request.vendorId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Vendor not found with id: " + request.vendorId()));
 
         Bill bill = billMapper.toEntity(request);
         bill.setStatus(BillStatus.PENDING);
@@ -64,17 +65,21 @@ public class BillServiceImpl implements BillService {
     @Transactional(readOnly = true)
     public BillResponse getBillById(UUID id) {
         Bill bill = billRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Bill not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Bill not found with id: " + id));
         return billMapper.toResponse(bill);
     }
 
     @Override
     @Transactional
-    public BillResponse updateBillStatus(UUID id, BillStatusUpdateRequest request) {
+    public BillResponse updateBillStatus(UUID id, BillStatusUpdateRequest request, String reviewerEmail) {
         Bill bill = billRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Bill not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Bill not found with id: " + id));
+
+        User reviewer = userRepository.findByEmail(reviewerEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + reviewerEmail));
 
         bill.setStatus(request.status());
+        bill.setReviewedBy(reviewer);
         Bill updatedBill = billRepository.save(bill);
 
         eventPublisher.publishEvent(new NotificationEvent("Bill Status Updated to " + request.status() + " for: " + bill.getTitle(), bill.getCreatedBy().getEmail()));

@@ -1,10 +1,12 @@
 package com.sfas.sfas_backend.service.impl;
 
+import com.sfas.sfas_backend.domain.entity.User;
 import com.sfas.sfas_backend.domain.entity.Vendor;
 import com.sfas.sfas_backend.dto.request.VendorRequest;
 import com.sfas.sfas_backend.dto.response.VendorResponse;
 import com.sfas.sfas_backend.exception.ResourceNotFoundException;
 import com.sfas.sfas_backend.mapper.VendorMapper;
+import com.sfas.sfas_backend.repository.UserRepository;
 import com.sfas.sfas_backend.repository.VendorRepository;
 import com.sfas.sfas_backend.service.VendorService;
 import lombok.RequiredArgsConstructor;
@@ -13,19 +15,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class VendorServiceImpl implements VendorService {
 
     private final VendorRepository vendorRepository;
+    private final UserRepository userRepository;
     private final VendorMapper vendorMapper;
 
     @Override
     @Transactional
-    public VendorResponse createVendor(VendorRequest request) {
+    public VendorResponse createVendor(VendorRequest request, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
+
         Vendor vendor = vendorMapper.toEntity(request);
+        vendor.setCreatedBy(user);
         Vendor savedVendor = vendorRepository.save(vendor);
         return vendorMapper.toResponse(savedVendor);
     }
@@ -35,7 +41,7 @@ public class VendorServiceImpl implements VendorService {
     public List<VendorResponse> getAllVendors() {
         return vendorRepository.findAll().stream()
                 .map(vendorMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

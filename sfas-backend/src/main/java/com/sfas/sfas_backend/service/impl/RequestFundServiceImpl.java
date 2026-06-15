@@ -2,9 +2,11 @@ package com.sfas.sfas_backend.service.impl;
 
 import com.sfas.sfas_backend.domain.entity.RequestFund;
 import com.sfas.sfas_backend.domain.entity.User;
+import com.sfas.sfas_backend.domain.enums.FundStatus;
 import com.sfas.sfas_backend.dto.request.RequestFundRequest;
 import com.sfas.sfas_backend.dto.response.RequestFundResponse;
 import com.sfas.sfas_backend.event.NotificationEvent;
+import com.sfas.sfas_backend.exception.ResourceNotFoundException;
 import com.sfas.sfas_backend.mapper.RequestFundMapper;
 import com.sfas.sfas_backend.repository.RequestFundRepository;
 import com.sfas.sfas_backend.repository.UserRepository;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +32,7 @@ public class RequestFundServiceImpl implements RequestFundService {
     @Transactional
     public RequestFundResponse createFundRequest(RequestFundRequest request, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
 
         RequestFund fundRequest = requestFundMapper.toEntity(request);
         fundRequest.setCreatedBy(user);
@@ -47,5 +50,25 @@ public class RequestFundServiceImpl implements RequestFundService {
         return requestFundRepository.findAll().stream()
                 .map(requestFundMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public RequestFundResponse updateFundStatus(UUID id, FundStatus status, String reviewerEmail) {
+        RequestFund fundRequest = requestFundRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Fund request not found with id: " + id));
+
+        User reviewer = userRepository.findByEmail(reviewerEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + reviewerEmail));
+
+        fundRequest.setStatus(status);
+        fundRequest.setReviewedBy(reviewer);
+        RequestFund updatedFund = requestFundRepository.save(fundRequest);
+
+        eventPublisher.publishEvent(new NotificationEvent(
+                "Fund Request Status Updated to " + status + " for: " + fundRequest.getTitle(),
+                fundRequest.getCreatedBy().getEmail()));
+
+        return requestFundMapper.toResponse(updatedFund);
     }
 }

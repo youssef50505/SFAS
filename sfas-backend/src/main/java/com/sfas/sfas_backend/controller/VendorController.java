@@ -5,11 +5,14 @@ import com.sfas.sfas_backend.dto.response.VendorResponse;
 import com.sfas.sfas_backend.service.VendorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,8 +25,12 @@ public class VendorController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<VendorResponse> createVendor(@Valid @RequestBody VendorRequest request) {
-        return new ResponseEntity<>(vendorService.createVendor(request), HttpStatus.CREATED);
+    public ResponseEntity<VendorResponse> createVendor(@Valid @RequestBody VendorRequest request,
+                                                       @AuthenticationPrincipal UserDetails userDetails) {
+        VendorResponse createdVendor = vendorService.createVendor(request, userDetails.getUsername());
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(createdVendor.id()).toUri();
+        return ResponseEntity.created(location).body(createdVendor);
     }
 
     @GetMapping

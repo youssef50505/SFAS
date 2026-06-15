@@ -16,8 +16,8 @@ erDiagram
         string email UK "Unique index"
         string password "Hashed"
         enum role "ADMIN, FINANCE_OFFICER"
-        timestamp created_date
-        timestamp last_modified_date
+        timestamp created_at
+        timestamp updated_at
     }
 
     VENDOR {
@@ -27,15 +27,15 @@ erDiagram
         string phone_number
         string tax_id
         string address
-        uuid created_by FK "Refers to User.id"
-        timestamp created_date
-        timestamp last_modified_date
+        uuid created_by_id FK "Refers to User.id"
+        timestamp created_at
+        timestamp updated_at
     }
     
     BILL {
         uuid id PK
         uuid vendor_id FK "Refers to Vendor.id"
-        uuid created_by FK "Refers to User.id"
+        uuid created_by_id FK "Refers to User.id"
         string title
         decimal amount
         decimal tax
@@ -43,14 +43,14 @@ erDiagram
         string image_path
         string description
         enum status "PENDING, APPROVED, REJECTED"
-        uuid reviewed_by FK "Refers to User.id"
-        timestamp created_date
-        timestamp last_modified_date
+        uuid reviewed_by_id FK "Refers to User.id"
+        timestamp created_at
+        timestamp updated_at
     }
 
     REQUEST_FUND {
         uuid id PK
-        uuid created_by FK "Refers to User.id"
+        uuid created_by_id FK "Refers to User.id"
         string title
         string description
         decimal amount_of_fund
@@ -58,9 +58,9 @@ erDiagram
         datetime date
         string image_path
         enum status "PENDING, APPROVED, REJECTED"
-        uuid reviewed_by FK "Refers to User.id"
-        timestamp created_date
-        timestamp last_modified_date
+        uuid reviewed_by_id FK "Refers to User.id"
+        timestamp created_at
+        timestamp updated_at
     }
 
     COLLECTION {
@@ -68,18 +68,18 @@ erDiagram
         date date
         enum type "DAILY, WEEKLY, MONTHLY, ANNUAL"
         decimal amount
-        uuid created_by FK "Refers to User.id"
-        timestamp created_date
-        timestamp last_modified_date
+        uuid created_by_id FK "Refers to User.id"
+        timestamp created_at
+        timestamp updated_at
     }
 
     REPORT {
         uuid id PK
-        uuid created_by FK "Refers to User.id"
+        uuid created_by_id FK "Refers to User.id"
         datetime date
         string title
         string description
         enum type_of_report "EMAIL, IN_APP"
-        timestamp created_date
-        timestamp last_modified_date
+        timestamp created_at
+        timestamp updated_at
     }

@@ -5,6 +5,7 @@ import com.sfas.sfas_backend.domain.entity.User;
 import com.sfas.sfas_backend.dto.request.ReportRequest;
 import com.sfas.sfas_backend.dto.response.ReportResponse;
 import com.sfas.sfas_backend.event.NotificationEvent;
+import com.sfas.sfas_backend.exception.ResourceNotFoundException;
 import com.sfas.sfas_backend.mapper.ReportMapper;
 import com.sfas.sfas_backend.repository.ReportRepository;
 import com.sfas.sfas_backend.repository.UserRepository;
@@ -29,7 +30,7 @@ public class ReportServiceImpl implements ReportService {
     @Transactional
     public ReportResponse createReport(ReportRequest request, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
 
         Report report = reportMapper.toEntity(request);
         report.setCreatedBy(user);

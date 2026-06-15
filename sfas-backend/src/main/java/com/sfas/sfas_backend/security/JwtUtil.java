@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +15,8 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // Ideally, this should be a strong 256-bit key from application properties
-    private final String secret = "v9y/B?E(H+MbQeThWmZq4t7w!z%C&F)J";
+    @Value("${jwt.secret}")
+    private String secret;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());

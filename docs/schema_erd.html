@@ -4,15 +4,68 @@
   <meta charset="utf-8">
   <title>Database Schema & ERD</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; line-height: 1.6; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; line-height: 1.6; background-color: #f4f6f8; }
     h1, h2, h3 { color: #2c3e50; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background: white; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     th { background-color: #f2f2f2; }
-    .mermaid { display: flex; justify-content: center; margin: 30px 0; }
+    
+    /* ERD Container Styles */
+    .erd-container { 
+        position: relative; 
+        width: 1600px; 
+        height: 1500px; 
+        background: #ffffff; 
+        border-radius: 12px; 
+        box-shadow: 0 8px 24px rgba(0,0,0,0.05); 
+        overflow: hidden; 
+        border: 1px solid #e0e0e0;
+        margin: 30px 0;
+    }
+    .erd-title-wrapper { text-align: center; padding-top: 30px; margin-bottom: 20px; }
+    .erd-title { font-size: 26px; color: #1a237e; font-weight: 700; display: inline-block; border-bottom: 2px solid #1a237e; padding-bottom: 5px; }
+    
+    .table-box { position: absolute; border-radius: 8px; border: 2px solid #ccc; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 280px; font-size: 13px; z-index: 10; }
+    .table-header { padding: 12px; text-align: center; font-weight: bold; font-size: 15px; border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom: 2px solid #ccc; }
+    
+    .users-table { left: 660px; top: 120px; border-color: #81c784; }
+    .users-table .table-header { background-color: #e8f5e9; color: #2e7d32; border-bottom-color: #81c784; }
+    
+    .vendors-table { left: 80px; top: 120px; border-color: #ba68c8; }
+    .vendors-table .table-header { background-color: #f3e5f5; color: #6a1b9a; border-bottom-color: #ba68c8; }
+    
+    .requests-table { left: 1240px; top: 120px; border-color: #ffb74d; }
+    .requests-table .table-header { background-color: #fff3e0; color: #e65100; border-bottom-color: #ffb74d; }
+    
+    .bills-table { left: 80px; top: 850px; border-color: #64b5f6; }
+    .bills-table .table-header { background-color: #e3f2fd; color: #1565c0; border-bottom-color: #64b5f6; }
+    
+    .collections-table { left: 660px; top: 850px; border-color: #4db6ac; }
+    .collections-table .table-header { background-color: #e0f2f1; color: #00695c; border-bottom-color: #4db6ac; }
+    
+    .reports-table { left: 1240px; top: 850px; border-color: #e57373; }
+    .reports-table .table-header { background-color: #ffebee; color: #c62828; border-bottom-color: #e57373; }
+
+    .erd-row { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
+    .erd-row:last-child { border-bottom: none; }
+    .col-name { font-weight: 600; color: #424242; }
+    .col-type { color: #757575; font-size: 12px; }
+    .col-key { font-weight: bold; margin-left: 5px; }
+    .pk { color: #d32f2f; }
+    .fk { color: #1976d2; }
+    .uk { color: #f57c00; }
+    
+    .erd-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .erd-line { fill: none; stroke: #546e7a; stroke-width: 2.5; }
+    .line-label { font-size: 14px; fill: #1a237e; font-weight: bold; }
+    .line-text-bg { fill: white; }
+    .cardinality { font-size: 16px; fill: #d84315; font-weight: 900; }
+
+    .erd-legend { position: absolute; bottom: 40px; right: 40px; border: 2px solid #e0e0e0; background: white; padding: 15px 20px; border-radius: 8px; font-size: 14px; z-index: 10; color: #424242; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .legend-row { margin-bottom: 8px; }
+    .legend-row:last-child { margin-bottom: 0; }
+    .legend-bold { font-weight: bold; display: inline-block; width: 40px; }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-  <script>mermaid.initialize({startOnLoad:true});</script>
 </head>
 <body>
 
@@ -20,83 +73,108 @@
 <p>This document outlines the complete database schema for the <strong>School Finance Administration System (SFAS)</strong>.</p>
 
 <h2>1. Entity Relationship Diagram (ERD)</h2>
-<div class="mermaid">
-erDiagram
-    USER ||--o{ REQUEST_FUND : "submits"
-    USER ||--o{ REPORT : "generates"
-    USER ||--o{ VENDOR : "registers"
-    USER ||--o{ COLLECTION : "enters"
-    USER ||--o{ BILL : "reviews"
-    USER ||--o{ REQUEST_FUND : "reviews"
-    VENDOR ||--o{ BILL : "provides"
-    
-    USER {
-        uuid id PK
-        string name
-        string email UK
-        string password
-        enum role "ADMIN, FINANCE_OFFICER"
-        timestamp created_date
-    }
-    
-    VENDOR {
-        uuid id PK
-        string name
-        string contact_email
-        string phone_number
-        string tax_id
-        string address
-        uuid created_by FK
-        timestamp created_date
-    }
 
-    BILL {
-        uuid id PK
-        uuid vendor_id FK
-        uuid created_by FK
-        string title
-        decimal amount
-        decimal tax
-        datetime date
-        string image_path
-        string description
-        enum status "PENDING, APPROVED, REJECTED"
-        uuid reviewed_by FK
-        timestamp created_date
-    }
+<div class="erd-container">
+    <div class="erd-title-wrapper">
+        <div class="erd-title">Fund & Bill Management System - ERD</div>
+    </div>
 
-    REQUEST_FUND {
-        uuid id PK
-        uuid created_by FK
-        string title
-        string description
-        decimal amount_of_fund
-        enum urgency_level "LOW, MEDIUM, HIGH, CRITICAL"
-        datetime date
-        string image_path
-        enum status "PENDING, APPROVED, REJECTED"
-        uuid reviewed_by FK
-        timestamp created_date
-    }
+    <svg id="erd-svg" class="erd-svg"></svg>
 
-    COLLECTION {
-        uuid id PK
-        date date
-        enum type "DAILY, WEEKLY, MONTHLY, ANNUAL"
-        decimal amount
-        uuid created_by FK
-        timestamp created_date
-    }
+    <!-- Vendors Table -->
+    <div id="vendors" class="table-box vendors-table">
+        <div class="table-header">Vendors</div>
+        <div class="erd-row"><span class="col-name">id</span><span class="col-type">uuid <span class="col-key pk">PK</span></span></div>
+        <div class="erd-row"><span class="col-name">name</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">contact_email</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">phone_number</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">tax_id</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">address</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">created_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
+        <div class="erd-row"><span class="col-name">created_date</span><span class="col-type">timestamp</span></div>
+        <div class="erd-row"><span class="col-name">last_modified_date</span><span class="col-type">timestamp</span></div>
+    </div>
 
-    REPORT {
-        uuid id PK
-        uuid created_by FK
-        datetime date
-        string title
-        string description
-        enum type_of_report "EMAIL, IN_APP"
-        timestamp created_date
-    }
+    <!-- Users Table -->
+    <div id="users" class="table-box users-table">
+        <div class="table-header">Users</div>
+        <div class="erd-row"><span class="col-name">id</span><span class="col-type">uuid <span class="col-key pk">PK</span></span></div>
+        <div class="erd-row"><span class="col-name">name</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">email</span><span class="col-type">string <span class="col-key uk">UK</span></span></div>
+        <div class="erd-row"><span class="col-name">password</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">role</span><span class="col-type">enum</span></div>
+        <div class="erd-row"><span class="col-name">created_date</span><span class="col-type">timestamp</span></div>
+        <div class="erd-row"><span class="col-name">last_modified_date</span><span class="col-type">timestamp</span></div>
+    </div>
+
+    <!-- Request Funds Table -->
+    <div id="request_funds" class="table-box requests-table">
+        <div class="table-header">Request Funds</div>
+        <div class="erd-row"><span class="col-name">id</span><span class="col-type">uuid <span class="col-key pk">PK</span></span></div>
+        <div class="erd-row"><span class="col-name">created_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
+        <div class="erd-row"><span class="col-name">title</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">description</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">amount_of_fund</span><span class="col-type">decimal</span></div>
+        <div class="erd-row"><span class="col-name">urgency_level</span><span class="col-type">enum</span></div>
+        <div class="erd-row"><span class="col-name">date</span><span class="col-type">datetime</span></div>
+        <div class="erd-row"><span class="col-name">image_path</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">status</span><span class="col-type">enum</span></div>
+        <div class="erd-row"><span class="col-name">reviewed_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
+        <div class="erd-row"><span class="col-name">created_date</span><span class="col-type">timestamp</span></div>
+        <div class="erd-row"><span class="col-name">last_modified_date</span><span class="col-type">timestamp</span></div>
+    </div>
+
+    <!-- Bills Table -->
+    <div id="bills" class="table-box bills-table">
+        <div class="table-header">Bills</div>
+        <div class="erd-row"><span class="col-name">id</span><span class="col-type">uuid <span class="col-key pk">PK</span></span></div>
+        <div class="erd-row"><span class="col-name">vendor_id</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
+        <div class="erd-row"><span class="col-name">created_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
+        <div class="erd-row"><span class="col-name">title</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">amount</span><span class="col-type">decimal</span></div>
+        <div class="erd-row"><span class="col-name">tax</span><span class="col-type">decimal</span></div>
+        <div class="erd-row"><span class="col-name">date</span><span class="col-type">datetime</span></div>
+        <div class="erd-row"><span class="col-name">image_path</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">description</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">status</span><span class="col-type">enum</span></div>
+        <div class="erd-row"><span class="col-name">reviewed_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
+        <div class="erd-row"><span class="col-name">created_date</span><span class="col-type">timestamp</span></div>
+        <div class="erd-row"><span class="col-name">last_modified_date</span><span class="col-type">timestamp</span></div>
+    </div>
+
+    <!-- Collections Table -->
+    <div id="collections" class="table-box collections-table">
+        <div class="table-header">Collections</div>
+        <div class="erd-row"><span class="col-name">id</span><span class="col-type">uuid <span class="col-key pk">PK</span></span></div>
+        <div class="erd-row"><span class="col-name">date</span><span class="col-type">date</span></div>
+        <div class="erd-row"><span class="col-name">type</span><span class="col-type">enum</span></div>
+        <div class="erd-row"><span class="col-name">amount</span><span class="col-type">decimal</span></div>
+        <div class="erd-row"><span class="col-name">created_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
+        <div class="erd-row"><span class="col-name">created_date</span><span class="col-type">timestamp</span></div>
+        <div class="erd-row"><span class="col-name">last_modified_date</span><span class="col-type">timestamp</span></div>
+    </div>
+
+    <!-- Reports Table -->
+    <div id="reports" class="table-box reports-table">
+        <div class="table-header">Reports</div>
+        <div class="erd-row"><span class="col-name">id</span><span class="col-type">uuid <span class="col-key pk">PK</span></span></div>
+        <div class="erd-row"><span class="col-name">created_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
+        <div class="erd-row"><span class="col-name">date</span><span class="col-type">datetime</span></div>
+        <div class="erd-row"><span class="col-name">title</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">description</span><span class="col-type">string</span></div>
+        <div class="erd-row"><span class="col-name">type_of_report</span><span class="col-type">enum</span></div>
+        <div class="erd-row"><span class="col-name">created_date</span><span class="col-type">timestamp</span></div>
+        <div class="erd-row"><span class="col-name">last_modified_date</span><span class="col-type">timestamp</span></div>
+    </div>
+
+    <!-- Legend -->
+    <div class="erd-legend">
+        <div class="legend-row"><span class="legend-bold">PK</span> Primary Key</div>
+        <div class="legend-row"><span class="legend-bold">FK</span> Foreign Key</div>
+        <div class="legend-row"><span class="legend-bold">UK</span> Unique Key</div>
+        <div class="legend-row"><span class="legend-bold" style="color:#d84315;">1</span> One</div>
+        <div class="legend-row"><span class="legend-bold" style="color:#d84315;">M</span> Many</div>
+    </div>
 </div>
 
 <h2>2. Detailed Database Schema (Tables)</h2>
@@ -170,6 +248,133 @@ erDiagram
   <tr><td>type_of_report</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: EMAIL, IN_APP.</td></tr>
   <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
 </table>
+
+<script>
+function drawLine(fromId, toId, label, cardinalityFrom, cardinalityTo, sideFrom, sideTo, offsetFrom=0, offsetTo=0, staggerY=0) {
+    const fromEl = document.getElementById(fromId);
+    const toEl = document.getElementById(toId);
+    const container = document.querySelector('.erd-container');
+    const svg = document.getElementById('erd-svg');
+    
+    if(!fromEl || !toEl) return;
+    
+    const fromRect = fromEl.getBoundingClientRect();
+    const toRect = toEl.getBoundingClientRect();
+    const cRect = container.getBoundingClientRect();
+    
+    let fx, fy, tx, ty;
+    
+    // Calculate coordinates
+    if (sideFrom === 'bottom') {
+        fx = (fromRect.left - cRect.left) + fromRect.width/2 + offsetFrom;
+        fy = (fromRect.bottom - cRect.top);
+    } else if (sideFrom === 'right') {
+        fx = (fromRect.right - cRect.left);
+        fy = (fromRect.top - cRect.top) + offsetFrom;
+    } else if (sideFrom === 'left') {
+        fx = (fromRect.left - cRect.left);
+        fy = (fromRect.top - cRect.top) + offsetFrom;
+    }
+    
+    if (sideTo === 'top') {
+        tx = (toRect.left - cRect.left) + toRect.width/2 + offsetTo;
+        ty = (toRect.top - cRect.top);
+    } else if (sideTo === 'right') {
+        tx = (toRect.right - cRect.left);
+        ty = (toRect.top - cRect.top) + offsetTo;
+    } else if (sideTo === 'left') {
+        tx = (toRect.left - cRect.left);
+        ty = (toRect.top - cRect.top) + offsetTo;
+    }
+    
+    let d = "";
+    let mx, my; 
+    let cx1, cy1, cx2, cy2; 
+    
+    if (sideFrom === 'bottom' && sideTo === 'top') {
+        d = `M ${fx} ${fy} L ${fx} ${staggerY} L ${tx} ${staggerY} L ${tx} ${ty}`;
+        mx = fx + (tx - fx) / 2;
+        my = staggerY;
+        
+        // Cardinalities always placed next to the vertical line leaving/entering the tables
+        cx1 = fx + 15; cy1 = fy + 20; 
+        cx2 = tx + 15; cy2 = ty - 10;
+        
+        if (Math.abs(fx - tx) < 10) {
+            // perfectly vertical line, place label in the middle of the vertical span
+            my = fy + (ty - fy) / 2;
+        }
+    } else {
+        d = `M ${fx} ${fy} L ${tx} ${ty}`;
+        mx = fx + (tx - fx)/2;
+        my = fy + (ty - fy)/2;
+        
+        let dir = tx > fx ? 1 : -1;
+        cx1 = fx + (dir * 20); cy1 = fy - 8;
+        cx2 = tx - (dir * 20); cy2 = ty - 8;
+    }
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", d);
+    path.setAttribute("class", "erd-line");
+    svg.appendChild(path);
+    
+    const textBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    textBg.setAttribute("class", "line-text-bg");
+    svg.appendChild(textBg);
+    
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", mx);
+    text.setAttribute("y", my + 5);
+    text.setAttribute("class", "line-label");
+    text.setAttribute("text-anchor", "middle");
+    text.textContent = label;
+    svg.appendChild(text);
+    
+    setTimeout(() => {
+        const bbox = text.getBBox();
+        textBg.setAttribute("x", bbox.x - 8);
+        textBg.setAttribute("y", bbox.y - 4);
+        textBg.setAttribute("width", bbox.width + 16);
+        textBg.setAttribute("height", bbox.height + 8);
+        textBg.setAttribute("rx", "4");
+    }, 10);
+    
+    const cardFrom = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    cardFrom.setAttribute("class", "cardinality");
+    cardFrom.setAttribute("text-anchor", "middle");
+    cardFrom.setAttribute("x", cx1);
+    cardFrom.setAttribute("y", cy1);
+    cardFrom.textContent = cardinalityFrom;
+    svg.appendChild(cardFrom);
+    
+    const cardTo = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    cardTo.setAttribute("class", "cardinality");
+    cardTo.setAttribute("text-anchor", "middle");
+    cardTo.setAttribute("x", cx2);
+    cardTo.setAttribute("y", cy2);
+    cardTo.textContent = cardinalityTo;
+    svg.appendChild(cardTo);
+}
+
+window.onload = function() {
+    setTimeout(() => {
+        // Horizontal relations (absolute offset from top of table)
+        drawLine('users', 'vendors', 'registers', '1', 'M', 'left', 'right', 140, 140);
+        
+        drawLine('users', 'request_funds', 'submits', '1', 'M', 'right', 'left', 100, 100);
+        drawLine('users', 'request_funds', 'reviews', '1', 'M', 'right', 'left', 180, 180);
+
+        // Vertical/Staggered relations (absolute offset from center of table width, staggerY is absolute Y coord)
+        drawLine('vendors', 'bills', 'provides', '1', 'M', 'bottom', 'top', 0, 0, 630);
+        drawLine('users', 'collections', 'enters', '1', 'M', 'bottom', 'top', 0, 0, 680);
+        drawLine('users', 'reports', 'generates', '1', 'M', 'bottom', 'top', 60, 0, 680);
+
+        drawLine('users', 'bills', 'creates', '1', 'M', 'bottom', 'top', -60, 80, 680);
+        drawLine('users', 'bills', 'reviews', '1', 'M', 'bottom', 'top', -110, 130, 740);
+    }, 100);
+}
+</script>
 
 </body>
 </html>

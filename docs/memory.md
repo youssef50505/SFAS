@@ -197,3 +197,20 @@ The database design was successfully upgraded, and the codebase was refactored t
 3. **Bill Approval Tracking:** Added a `reviewedBy` relationship (`@ManyToOne` User, nullable) to the `Bill` entity to record which Finance Officer approved or rejected the bill.
 4. **RequestFund Workflow:** Added a `status` field (using a newly created `FundStatus` enum: `PENDING`, `APPROVED`, `REJECTED`) and a `reviewedBy` relationship to the `RequestFund` entity, allowing Finance Officers to review and approve/reject fund requests properly.
 5. All associated DTOs and Mappers were updated to handle these new fields, ensuring full data fidelity from the database to the REST API responses. ERD diagrams were updated accordingly.
+
+## 12. Database Connection Configuration
+
+**Context:** The application has been connected to the PostgreSQL database, and the connection settings have been verified.
+**Configuration (`application.properties`):**
+```properties
+spring.application.name=sfas-backend
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/sfas
+spring.datasource.username=postgres
+spring.datasource.password=password
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.show-sql=true
+```

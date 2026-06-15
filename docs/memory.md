@@ -152,3 +152,37 @@ The entire backend for SFAS has been fully implemented based on the above instru
 7. **Exception Handling:** Implemented a `GlobalExceptionHandler` using the modern RFC 7807 `ProblemDetail` approach to return uniform JSON errors.
 
 The code compiles fully with zero errors on Java 21 (`BUILD SUCCESS`). An endpoints JSON file (`endpoints.json`) has been generated in the root directory formatted as a Postman Collection for future references.
+
+## 10. Database Redesign & Vendor Table Implementation
+
+**Database Redesign Prompt:**
+> You are a Principal Database Architect and Senior Java Spring Boot Developer. I have attached the official ERD image from our system's base documentation (School Finance Administration System).
+> 
+> Your objective is to upgrade our database design to be highly professional, normalized, and scalable, and then update our existing backend code accordingly. 
+> 
+> Please execute the following steps precisely:
+> 
+> 1. **Analyze the ERD Thoroughly:** 
+>    Carefully examine the attached ERD image to understand the base structure of our entities (Users, Roles, Bills, Request Funds, Collections, Reports) and their relationships.
+> 
+> 2. **Professional Database Redesign & Add Vendor Table:**
+>    - Elevate the current database schema to a highly professional enterprise standard.
+>    - **Crucial Requirement:** Extract the "Vendor" concept into its own dedicated and comprehensive table (`vendors`). The table should include professional fields (e.g., `id`, `name`, `contact_email`, `phone_number`, `tax_id`, `address`, `created_at`).
+>    - Establish the correct relationships (e.g., A `Vendor` has a One-to-Many relationship with `Bills`).
+> 
+> 3. **Contextual Awareness (Read-Only):**
+>    - Read the `docs/memory.md` file to fully understand the project's established rules, architecture, and current state. 
+>    - **DO NOT modify the `docs/memory.md` file.** Use it purely as read-only context to ensure your work adheres perfectly to our existing guidelines.
+> 
+> 4. **Update the Spring Boot Codebase:**
+>    - Based on your professional database redesign, update the Spring Boot backend code.
+>    - Create the new `Vendor` entity, along with its Repository, Service, Controller, and DTOs.
+>    - Refactor the `Bill` entity to reference the new `Vendor` entity instead of a plain string.
+>    - Ensure all code strictly follows Clean Architecture, SOLID principles, and Java 21 / Spring Boot 4.x best practices as outlined in the memory file.
+
+**What was accomplished:**
+The database design was successfully upgraded, and the codebase was refactored to adopt the new structure:
+1. **Vendor Entity & Layering:** Created a dedicated `Vendor` entity (`vendors` table) with fields for `id`, `name`, `contactEmail`, `phoneNumber`, `taxId`, `address`, `createdAt`, and `updatedAt`. Added full Clean Architecture support with `VendorRepository`, `VendorService`, `VendorServiceImpl`, `VendorController`, `VendorMapper`, and appropriate request/response DTOs.
+2. **Bill Normalization:** Removed the string-based `vendor` field from the `Bill` entity and replaced it with a strictly typed Many-To-One relationship to the new `Vendor` entity using `@JoinColumn(name = "vendor_id")`.
+3. **Database Documentation:** Updated `erd.mmd` and `schema_erd.html` to reflect the new `vendors` table and its 1-to-N relationship with the `bills` table.
+4. **Exception Handling & Safety:** Ensured robust exception handling (e.g., `ResourceNotFoundException`) in the Service layer to safely handle vendor existence checks. Recompiled flawlessly in a Java 21 environment.

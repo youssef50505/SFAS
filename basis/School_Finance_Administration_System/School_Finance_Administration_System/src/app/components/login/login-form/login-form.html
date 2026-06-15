@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div class="main-wrapper">
+        <div class="login-card">
+
+            <div class="left-section">
+                <h1 class="red-title">Welcome</h1>
+                <div class="white-card-logo">
+                    <img src="/images/NTG-Logo-Digital-Transformation.jpg" alt="NTG Logo" class="logo-img">
+                    <!-- <div class="red-badge">Simplifying Business Solutions</div> -->
+                </div>
+            </div>
+
+            <div class="right-section">
+                <h1 class="red-title">Login</h1>
+
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+                    <div class="input-container">
+                        <label>Email</label>
+                        <div class="field-wrapper">
+                            <i class="fa-regular fa-envelope icon"></i>
+                            <input type="email" formControlName="email" placeholder="Your Email...">
+                        </div>
+                    </div>
+
+                    <div class="input-container">
+                        <label>Password</label>
+                        <div class="field-wrapper">
+                            <i class="fa-solid fa-lock icon"></i>
+                            <input [type]="hidePassword ? 'password' : 'text'" formControlName="password"
+                                placeholder="Your Password...">
+                            <i class="fa-regular" [ngClass]="hidePassword ? 'fa-eye-slash' : 'fa-eye'"
+                                (click)="hidePassword = !hidePassword" class="eye-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="input-container">
+                        <label>Role</label>
+                        <div class="field-wrapper">
+                            <i class="fa-regular fa-user icon"></i>
+                            <select formControlName="role">
+                                <option *ngFor="let r of roles" [value]="r">{{r}}</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="login-btn" [disabled]="loginForm.invalid" (click)="onSubmit()">Login</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>

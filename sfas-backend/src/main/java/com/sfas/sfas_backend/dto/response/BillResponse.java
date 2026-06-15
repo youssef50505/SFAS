@@ -1,0 +1,22 @@
+package com.sfas.sfas_backend.dto.response;
+
+import com.sfas.sfas_backend.domain.enums.BillStatus;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record BillResponse(
+        UUID id,
+        String title,
+        String vendor,
+        BigDecimal amount,
+        BigDecimal tax,
+        LocalDateTime date,
+        String imagePath,
+        String description,
+        BillStatus status,
+        UserResponse createdBy,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
+) {}

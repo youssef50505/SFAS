@@ -1,0 +1,130 @@
+{
+  "baseUrl": "http://localhost:8080",
+  "Headers_Required_For_All_Endpoints_Except_Login": {
+    "Authorization": "Bearer <YOUR_JWT_TOKEN_HERE>"
+  },
+  "APIs": {
+    "1_Authentication": {
+      "Login": {
+        "description": "تسجيل الدخول للحصول على التوكن (Token)",
+        "method": "POST",
+        "endpoint": "/api/v1/auth/login",
+        "requestBody": {
+          "email": "admin@school.com",
+          "password": "password123"
+        },
+        "responseExample": {
+          "token": "eyJhbGciOiJIUzI1NiIsInR..."
+        }
+      }
+    },
+    "2_Bills_الفواتير": {
+      "Create_Bill": {
+        "description": "إضافة فاتورة جديدة",
+        "method": "POST",
+        "endpoint": "/api/v1/bills",
+        "requestBody": {
+          "amount": 1500.50,
+          "tax": 150.05,
+          "dueDate": "2026-07-01",
+          "description": "شراء كتب للمكتبة",
+          "vendorName": "مكتبة جرير",
+          "category": "SUPPLIES"
+        },
+        "responseExample": {
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "amount": 1500.50,
+          "status": "PENDING"
+        }
+      },
+      "Get_All_Bills": {
+        "description": "عرض جميع الفواتير",
+        "method": "GET",
+        "endpoint": "/api/v1/bills",
+        "requestBody": null
+      },
+      "Get_Bill_By_ID": {
+        "description": "عرض تفاصيل فاتورة معينة بالـ ID",
+        "method": "GET",
+        "endpoint": "/api/v1/bills/{id}",
+        "requestBody": null
+      },
+      "Update_Bill_Status": {
+        "description": "تحديث حالة الفاتورة (للمسؤول المالي)",
+        "method": "PATCH",
+        "endpoint": "/api/v1/bills/{id}/status?status=APPROVED",
+        "note": "الحالات المتاحة: PENDING, APPROVED, REJECTED",
+        "requestBody": null
+      }
+    },
+    "3_Request_Funds_طلبات_التمويل": {
+      "Create_Fund_Request": {
+        "description": "تقديم طلب تمويل جديد",
+        "method": "POST",
+        "endpoint": "/api/v1/funds",
+        "requestBody": {
+          "amount": 5000.00,
+          "reason": "تجهيز معمل الحاسب الآلي",
+          "urgencyLevel": "HIGH"
+        },
+        "note": "مستويات الأهمية المتاحة: LOW, MEDIUM, HIGH, CRITICAL"
+      },
+      "Get_All_Funds": {
+        "description": "عرض جميع طلبات التمويل",
+        "method": "GET",
+        "endpoint": "/api/v1/funds",
+        "requestBody": null
+      }
+    },
+    "4_Collections_التحصيلات": {
+      "Record_Collection": {
+        "description": "تسجيل تحصيل مالي جديد",
+        "method": "POST",
+        "endpoint": "/api/v1/collections",
+        "requestBody": {
+          "amount": 12000.00,
+          "source": "مصروفات دراسية",
+          "collectionType": "MONTHLY",
+          "description": "رسوم شهر يونيو"
+        },
+        "note": "أنواع التحصيلات المتاحة: DAILY, WEEKLY, MONTHLY, ANNUAL"
+      },
+      "Get_All_Collections": {
+        "description": "عرض جميع التحصيلات",
+        "method": "GET",
+        "endpoint": "/api/v1/collections",
+        "requestBody": null
+      }
+    },
+    "5_Reports_التقارير": {
+      "Create_Report": {
+        "description": "إنشاء تقرير جديد",
+        "method": "POST",
+        "endpoint": "/api/v1/reports",
+        "requestBody": {
+          "title": "التقرير المالي لشهر يونيو",
+          "reportType": "EMAIL",
+          "parameters": "Month: June, Year: 2026"
+        },
+        "note": "أنواع التقارير المتاحة: EMAIL, IN_APP"
+      },
+      "Get_All_Reports": {
+        "description": "عرض جميع التقارير",
+        "method": "GET",
+        "endpoint": "/api/v1/reports",
+        "requestBody": null
+      }
+    },
+    "6_Notifications_الإشعارات": {
+      "Get_All_Notifications": {
+        "description": "عرض الإشعارات المتاحة للمستخدم",
+        "method": "GET",
+        "endpoint": "/api/v1/notifications",
+        "requestBody": null,
+        "responseExample": [
+          "Notification to admin@school.com: تم إنشاء فاتورة جديدة بقيمة 1500.5"
+        ]
+      }
+    }
+  }
+}

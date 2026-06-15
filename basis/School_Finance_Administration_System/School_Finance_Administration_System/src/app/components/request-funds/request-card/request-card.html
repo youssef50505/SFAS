@@ -1,0 +1,29 @@
+<article class="request-card">
+  <div class="request-card-top">
+    <div class="request-card-info">
+      <div class="request-card-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3.5 2.75H12.5V13.25H3.5V2.75Z" stroke="#dc2626" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M5.5 6.75H10.5" stroke="#dc2626" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <p class="request-title">{{ request.title }}</p>
+        <div class="request-meta">
+          <span>{{ request.date }}</span>
+          <span class="meta-dot"></span>
+          <span class="urgency-pill {{ request.urgency | lowercase }}">{{ request.urgency }}</span>
+          <span class="meta-dot"></span>
+          <span class="request-id">ID: {{ request.id }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="request-card-right">
+      <p class="amount-label">Amount Requested</p>
+      <p class="amount-value">EG {{ request.amount }}</p>
+      <span class="status-pill {{ request.status | lowercase }}">{{ request.status }}</span>
+      <span class="arrow">›</span>
+    </div>
+  </div>
+  <p class="request-description">{{ request.description }}</p>
+</article>

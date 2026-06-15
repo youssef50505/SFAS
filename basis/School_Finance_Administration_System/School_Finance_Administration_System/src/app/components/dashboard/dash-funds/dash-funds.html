@@ -1,0 +1,17 @@
+<div class="container-fluid pt-4 pb-2">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="fw-bold" style="color: var(--ntg-secondary);">Financial Dashboard</h1>
+            <p class="fw-medium text-muted">Welcome back, [User Name]! Here's your School's current standing:</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-3">
+        <div class="col-md-6 col-lg-5">
+            <app-card [cardData]="approvedFunds"></app-card>
+        </div>
+        <div class="col-md-6 col-lg-5">
+            <app-card [cardData]="totalFunds"></app-card>
+        </div>
+    </div>
+</div>

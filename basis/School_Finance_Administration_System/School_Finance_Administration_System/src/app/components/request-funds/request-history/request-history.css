@@ -1,0 +1,110 @@
+.history-panel {
+  background: white;
+  border-radius: 30px;
+  padding: 1.75rem;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.06);
+  display: grid;
+  gap: 1.5rem;
+}
+
+.history-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.history-label {
+  margin: 0;
+  color: #111827;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.history-top h2 {
+  margin: 0.35rem 0 0;
+  font-size: 1.9rem;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.filter-button {
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  border-radius: 999px;
+  padding: 0.8rem 1rem;
+  font-weight: 700;
+}
+
+.history-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.history-tabs button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.1rem;
+  font-weight: 700;
+  color: #64748b;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.history-tabs button.active {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+}
+
+.history-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.empty-state {
+  padding: 1.6rem;
+  border-radius: 22px;
+  background: #f8fafc;
+  border: 1px dashed rgba(203, 213, 225, 0.85);
+  color: #475569;
+}
+
+.empty-state p {
+  margin: 0.35rem 0;
+}
+
+.pagination {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-top: 0.5rem;
+}
+
+.pagination button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: white;
+  color: #475569;
+  font-weight: 700;
+}
+
+.pagination button.active {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+@media (max-width: 680px) {
+  .history-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

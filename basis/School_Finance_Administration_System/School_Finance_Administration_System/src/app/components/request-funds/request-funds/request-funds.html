@@ -1,0 +1,25 @@
+<section class="summary-shell">
+  <div class="summary-heading">
+    <p class="summary-label">Funding dashboard</p>
+    <h2>Healthy request flow in one place</h2>
+  </div>
+
+  <div class="summary-grid">
+    <article class="summary-card card-highlight">
+      <p class="summary-title">Requests submitted</p>
+      <p class="summary-value">{{ totalRequests }}</p>
+    </article>
+    <article class="summary-card">
+      <p class="summary-title">Approved</p>
+      <p class="summary-value">{{ approvedRequests }}</p>
+    </article>
+    <article class="summary-card">
+      <p class="summary-title">Pending review</p>
+      <p class="summary-value">{{ pendingRequests }}</p>
+    </article>
+  </div>
+
+  <p class="summary-footnote">
+    Latest request: <strong>{{ requests[0]?.title || 'No requests yet' }}</strong>
+  </p>
+</section>

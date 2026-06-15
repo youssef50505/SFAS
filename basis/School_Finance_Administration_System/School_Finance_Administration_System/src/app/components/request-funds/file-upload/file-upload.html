@@ -1,0 +1,43 @@
+                            <div class="upload-card">
+                                <div class="upload-content">
+
+                                    <div class="icon">💲</div>
+
+                                    <div>
+                                        <h5>Upload Bill Image</h5>
+
+                                        <p>
+                                            Drag & drop images here, or
+                                            <button type="button" class="browse" (click)="fileInput.click()">
+                                                Browse
+                                            </button>
+                                        </p>
+
+                                        <div class="meta">
+                                            <span class="muted">
+                                                Supported: JPG, PNG, GIF • Max per file: 5MB
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <input #fileInput type="file" multiple accept="image/*"
+                                    (change)="onFilesSelected($event)" class="visually-hidden">
+
+                                <div class="gallery" *ngIf="images.length">
+                                    <div class="grid">
+                                        <div class="grid-item" *ngFor="let img of images; let i = index">
+                                            <img [src]="img.url" [alt]="img.name">
+
+                                            <div class="overlay">
+                                                <div class="filename">{{ img.name }}</div>
+
+                                                <button type="button" class="remove" (click)="removeImage(i)">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>

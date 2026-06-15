@@ -1,0 +1,63 @@
+<div class="history-panel">
+  <div class="history-top">
+    <div>
+      <p class="history-label">Request History</p>
+      <h2>Track past funding requests</h2>
+    </div>
+  </div>
+
+  <div class="history-tabs">
+    <button
+      type="button"
+      [class.active]="selectedTab === 'All'"
+      (click)="selectTab('All')"
+    >
+      All
+    </button>
+    <button
+      type="button"
+      [class.active]="selectedTab === 'Approved'"
+      (click)="selectTab('Approved')"
+    >
+      Approved
+    </button>
+    <button
+      type="button"
+      [class.active]="selectedTab === 'Pending'"
+      (click)="selectTab('Pending')"
+    >
+      Pending
+    </button>
+    <button
+      type="button"
+      [class.active]="selectedTab === 'Rejected'"
+      (click)="selectTab('Rejected')"
+    >
+      Rejected
+    </button>
+  </div>
+
+  <div class="history-list" *ngIf="filteredRequests.length; else emptyState">
+    <app-request-card
+      *ngFor="let request of filteredRequests"
+      [request]="request"
+    ></app-request-card>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <p>No requests found yet.</p>
+      <p>Submit a new request to see history.</p>
+    </div>
+  </ng-template>
+
+  <div class="pagination">
+    <button
+      *ngFor="let page of pages"
+      [class.active]="page === currentPage"
+      type="button"
+    >
+      {{ page }}
+    </button>
+  </div>
+</div>

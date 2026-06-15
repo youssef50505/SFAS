@@ -1,0 +1,73 @@
+<nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm py-2">
+    <div class="container-fluid px-4">
+
+        <a class="navbar-brand d-flex align-items-center" style="cursor: default;">
+            <img src="/images/NTG-Logo-Digital-Transformation.jpg" alt="NTG Logo" height="40" class="me-2">
+            <span class="fw-bold fs-4 text-danger-custom">Financial System</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-4 fw-semibold">
+                <li class="nav-item">
+                    <a class="nav-link custom-nav-link" routerLink="/dashboard" routerLinkActive="active"
+                        [routerLinkActiveOptions]="{exact: true}">Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link custom-nav-link" routerLink="/bills" routerLinkActive="active">Bills</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link custom-nav-link" routerLink="/request-funds"
+                        routerLinkActive="active">Request Funds
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link custom-nav-link" routerLink="/report" routerLinkActive="active">Reports</a>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center mt-3 mt-lg-0">
+                <div class="position-relative me-3 dropdown" style="cursor: pointer;" (click)="toggleDropdown()">
+                    <i class="bi bi-bell text-secondary fs-6"></i>
+                    
+                    @if (isDropdownOpen) {
+                    <ul class="dropdown-menu dropdown-menu-end show" style="position: absolute; top: 100%; right: 0; min-width: 200px; z-index: 1000;">
+                        <li><h6 class="dropdown-header">Notifications</h6></li>
+                        <li><a class="dropdown-item" href="#">Notification 1</a></li>
+                        <li><a class="dropdown-item" href="#">Notification 2</a></li>
+                        <li><a class="dropdown-item" href="#">Notification 3</a></li>
+                    </ul>
+                    }
+
+                    @if (notificationCount > 0) {
+                    <span
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light"
+                        style="font-size: 0.6rem; padding: 0.3em 0.45em;">
+                        {{ notificationCount }}
+                    </span>
+                    }
+                </div>
+
+                <div class="border-start mx-3 d-none d-lg-block"
+                    style="height: 30px; width: 1px; background-color: #dee2e6;"></div>
+
+                <div class="text-end me-3">
+                    <h6 class="mb-0 fw-bold text-dark">(Name)</h6>
+                    <small class="text-muted">(Role)</small>
+                </div>
+
+                <div class="position-relative">
+                    <img src="/images/NTG-Logo-Digital-Transformation.jpg" class="rounded-circle border" width="42"
+                        height="42" alt="User Avatar">
+                    <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-light rounded-circle"
+                        style="transform: translate(10%, 10%);"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container-fluid p-2">
+        <div class="p-3 rounded-3" id="d" style="background:rgb(255, 253, 253); border:2px solid #a7a7a782;">
+
+            <app-g-nav></app-g-nav>
+            <main class="page-shell">
+                <section class="page-header">
+                    <div class="page-title">
+                        <h1 style="color: #002567; font-weight: 750;">Request Funds</h1>
+                        <p style="color: #565d6d; font-weight: 700;">Create and track institutional funding requests.
+                        </p>
+                    </div>
+                </section>
+
+                <section class="content-grid">
+                    <app-funds-request-form (submitRequest)="addRequest($event)"></app-funds-request-form>
+                    <br>
+                    <hr>
+                    <br>
+                    <app-request-history [requests]="requests()"></app-request-history>
+                </section>
+            </main>
+            <app-g-footer></app-g-footer>
+        </div>
+    </div>
+</body>
+
+</html>

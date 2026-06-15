@@ -1,0 +1,58 @@
+<div class="request-form-card">
+  <div class="request-card-header">
+    <span class="request-card-badge">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 1V15" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M1 8H15" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </span>
+    <div>
+      <p class="request-card-title">New Fund Request</p>
+      <p class="request-card-text">Please provide detailed information for the review committee.</p>
+    </div>
+  </div>
+
+  <form (ngSubmit)="submitForm()" class="request-form">
+    <div class="form-grid">
+      <label class="form-field">
+        <span>Request Title</span>
+        <input
+          name="title"
+          required
+          [(ngModel)]="requestTitle"
+          placeholder="e.g., School renovations and workers expenses"
+        />
+      </label>
+      <label class="form-field">
+        <span>Requested Amount (EG)</span>
+        <input
+          name="amount"
+          required
+          [(ngModel)]="amount"
+          placeholder="EG 0.00"
+        />
+      </label>
+    </div>
+    
+    <app-urgency-selector
+      [selected]="urgency"
+      (selectedChange)="urgency = $event"
+    ></app-urgency-selector>
+
+    <label class="form-field field-full">
+      <span>Descriptions & Details</span>
+      <textarea
+        name="description"
+        [(ngModel)]="description"
+        rows="5"
+        placeholder="Describe why these funds are needed and how they will be used..."
+      ></textarea>
+    </label>
+
+    <app-file-upload (fileSelected)="updateAttachment($event)"></app-file-upload>
+
+    <div class="form-footer">
+      <button type="submit" class="submit-button">Submit Request</button>
+    </div>
+  </form>
+</div>

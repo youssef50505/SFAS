@@ -1,0 +1,141 @@
+.request-form-card {
+  background: white;
+  border-radius: 30px;
+  padding: 1.75rem;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(229, 231, 235, 0.9);
+}
+
+.request-card-header {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.35rem 1.3rem;
+  border-radius: 24px;
+  background: #fef2f2;
+  border: 1px solid rgba(248, 113, 113, 0.18);
+  margin-bottom: 1.75rem;
+}
+
+.request-card-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(220, 38, 38, 0.24);
+  display: grid;
+  place-items: center;
+  background: white;
+}
+
+.request-card-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.request-card-text {
+  margin: 0.35rem 0 0;
+  color: #52525b;
+  font-size: 0.95rem;
+}
+
+.request-form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-field {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.form-field span,
+.section-label {
+  display: block;
+  color: #111827;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  padding: 1rem 1.1rem;
+  font: inherit;
+  background: #fafafa;
+  color: #111827;
+}
+
+.form-field textarea {
+  min-height: 154px;
+  resize: vertical;
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: #9ca3af;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: #f87171;
+  box-shadow: 0 0 0 4px rgba(254, 226, 226, 0.7);
+}
+
+.field-full {
+  grid-column: 1 / -1;
+}
+
+.section-label {
+  margin-bottom: 0.5rem;
+}
+
+.form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.draft-button {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.submit-button {
+  min-width: 160px;
+  border: none;
+  border-radius: 999px;
+  padding: 1rem 1.6rem;
+  background: #dc2626;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 18px 35px rgba(220, 38, 38, 0.22);
+}
+
+@media (max-width: 900px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .submit-button {
+    width: 100%;
+  }
+}

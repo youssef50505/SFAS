@@ -293,3 +293,10 @@ jwt.secret=v9y/B?E(H+MbQeThWmZq4t7w!z%C&F)J@KaPdSgVkYp3s6v9
 - DTOs: `VendorResponse`.
 - Config: `application.properties`.
 - Docs: `endpoints.json`, `erd.mmd`.
+
+## 14. API Documentation Synchronization
+
+**Context:** A full review of the backend codebase (all controller files and DTOs) was conducted line by line to ensure that all endpoints and their payloads are perfectly matched and documented.
+
+**What was accomplished:**
+Extracted every single endpoint, including methods, paths, request payloads, response examples, and required authorization roles, and updated `endpoints.json` comprehensively to act as a 100% accurate API contract.

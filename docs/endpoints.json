@@ -52,16 +52,50 @@
         }
       },
       "Get_All_Vendors": {
-        "description": "عرض جميع الموردين",
+        "description": "عرض جميع الموردين (يتطلب صلاحية ADMIN أو FINANCE_OFFICER)",
         "method": "GET",
         "endpoint": "/api/v1/vendors",
-        "requestBody": null
+        "requestBody": null,
+        "responseExample": [
+          {
+            "id": "abc12345-e89b-12d3-a456-426614174000",
+            "name": "مكتبة جرير",
+            "contactEmail": "sales@jarir.com",
+            "phoneNumber": "0501234567",
+            "taxId": "TAX-998877",
+            "address": "الرياض، المملكة العربية السعودية",
+            "createdBy": {
+              "id": "...",
+              "name": "مدير المدرسة",
+              "email": "admin@school.com",
+              "role": "ADMIN"
+            },
+            "createdAt": "2026-06-15T12:00:00",
+            "updatedAt": "2026-06-15T12:00:00"
+          }
+        ]
       },
       "Get_Vendor_By_ID": {
-        "description": "عرض تفاصيل مورد معين بالـ ID",
+        "description": "عرض تفاصيل مورد معين بالـ ID (يتطلب صلاحية ADMIN أو FINANCE_OFFICER)",
         "method": "GET",
         "endpoint": "/api/v1/vendors/{id}",
-        "requestBody": null
+        "requestBody": null,
+        "responseExample": {
+          "id": "abc12345-e89b-12d3-a456-426614174000",
+          "name": "مكتبة جرير",
+          "contactEmail": "sales@jarir.com",
+          "phoneNumber": "0501234567",
+          "taxId": "TAX-998877",
+          "address": "الرياض، المملكة العربية السعودية",
+          "createdBy": {
+            "id": "...",
+            "name": "مدير المدرسة",
+            "email": "admin@school.com",
+            "role": "ADMIN"
+          },
+          "createdAt": "2026-06-15T12:00:00",
+          "updatedAt": "2026-06-15T12:00:00"
+        }
       },
       "Update_Vendor": {
         "description": "تعديل بيانات مورد (يتطلب صلاحية ADMIN)",
@@ -73,6 +107,22 @@
           "phoneNumber": "0509876543",
           "taxId": "TAX-998877",
           "address": "جدة، المملكة العربية السعودية"
+        },
+        "responseExample": {
+          "id": "abc12345-e89b-12d3-a456-426614174000",
+          "name": "مكتبة جرير - فرع جدة",
+          "contactEmail": "jeddah@jarir.com",
+          "phoneNumber": "0509876543",
+          "taxId": "TAX-998877",
+          "address": "جدة، المملكة العربية السعودية",
+          "createdBy": {
+            "id": "...",
+            "name": "مدير المدرسة",
+            "email": "admin@school.com",
+            "role": "ADMIN"
+          },
+          "createdAt": "2026-06-15T12:00:00",
+          "updatedAt": "2026-06-15T12:30:00"
         }
       },
       "Delete_Vendor": {
@@ -94,24 +144,48 @@
           "amount": 1500.50,
           "tax": 150.05,
           "date": "2026-07-01T00:00:00",
-          "imagePath": null,
+          "imagePath": "path/to/image.jpg",
           "description": "شراء كتب للمكتبة المدرسية"
         },
         "responseExample": {
           "id": "123e4567-e89b-12d3-a456-426614174000",
           "title": "شراء كتب للمكتبة",
+          "vendor": {
+            "id": "abc12345-e89b-12d3-a456-426614174000",
+            "name": "مكتبة جرير",
+            "contactEmail": "sales@jarir.com",
+            "phoneNumber": "0501234567",
+            "taxId": "TAX-998877",
+            "address": "الرياض، المملكة العربية السعودية",
+            "createdBy": null,
+            "createdAt": "2026-06-15T12:00:00",
+            "updatedAt": "2026-06-15T12:00:00"
+          },
           "amount": 1500.50,
-          "status": "PENDING"
+          "tax": 150.05,
+          "date": "2026-07-01T00:00:00",
+          "imagePath": "path/to/image.jpg",
+          "description": "شراء كتب للمكتبة المدرسية",
+          "status": "PENDING",
+          "createdBy": {
+            "id": "...",
+            "name": "مدير المدرسة",
+            "email": "admin@school.com",
+            "role": "ADMIN"
+          },
+          "reviewedBy": null,
+          "createdAt": "2026-06-15T12:30:00",
+          "updatedAt": "2026-06-15T12:30:00"
         }
       },
       "Get_All_Bills": {
-        "description": "عرض جميع الفواتير",
+        "description": "عرض جميع الفواتير (يتطلب صلاحية ADMIN أو FINANCE_OFFICER)",
         "method": "GET",
         "endpoint": "/api/v1/bills",
         "requestBody": null
       },
       "Get_Bill_By_ID": {
-        "description": "عرض تفاصيل فاتورة معينة بالـ ID",
+        "description": "عرض تفاصيل فاتورة معينة بالـ ID (يتطلب صلاحية ADMIN أو FINANCE_OFFICER)",
         "method": "GET",
         "endpoint": "/api/v1/bills/{id}",
         "requestBody": null
@@ -122,6 +196,41 @@
         "endpoint": "/api/v1/bills/{id}/status",
         "requestBody": {
           "status": "APPROVED"
+        },
+        "responseExample": {
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "title": "شراء كتب للمكتبة",
+          "vendor": {
+             "id": "abc12345-e89b-12d3-a456-426614174000",
+             "name": "مكتبة جرير",
+             "contactEmail": "sales@jarir.com",
+             "phoneNumber": "0501234567",
+             "taxId": "TAX-998877",
+             "address": "الرياض",
+             "createdBy": null,
+             "createdAt": "2026-06-15T12:00:00",
+             "updatedAt": "2026-06-15T12:00:00"
+          },
+          "amount": 1500.50,
+          "tax": 150.05,
+          "date": "2026-07-01T00:00:00",
+          "imagePath": "path/to/image.jpg",
+          "description": "شراء كتب للمكتبة المدرسية",
+          "status": "APPROVED",
+          "createdBy": {
+             "id": "...",
+             "name": "مدير المدرسة",
+             "email": "admin@school.com",
+             "role": "ADMIN"
+          },
+          "reviewedBy": {
+             "id": "...",
+             "name": "المسؤول المالي",
+             "email": "finance@school.com",
+             "role": "FINANCE_OFFICER"
+          },
+          "createdAt": "2026-06-15T12:30:00",
+          "updatedAt": "2026-06-15T13:00:00"
         },
         "note": "الحالات المتاحة: PENDING, APPROVED, REJECTED. يسجّل المراجع (reviewedBy) تلقائياً."
       }
@@ -139,10 +248,29 @@
           "date": "2026-07-01T00:00:00",
           "imagePath": null
         },
+        "responseExample": {
+          "id": "333e4567-e89b-12d3-a456-426614174000",
+          "title": "تجهيز معمل الحاسب الآلي",
+          "description": "شراء أجهزة حاسب وطاولات للمعمل",
+          "amountOfFund": 5000.00,
+          "urgencyLevel": "HIGH",
+          "date": "2026-07-01T00:00:00",
+          "imagePath": null,
+          "status": "PENDING",
+          "createdBy": {
+             "id": "...",
+             "name": "مدير المدرسة",
+             "email": "admin@school.com",
+             "role": "ADMIN"
+          },
+          "reviewedBy": null,
+          "createdAt": "2026-06-15T14:00:00",
+          "updatedAt": "2026-06-15T14:00:00"
+        },
         "note": "مستويات الأهمية المتاحة: LOW, MEDIUM, HIGH, CRITICAL"
       },
       "Get_All_Funds": {
-        "description": "عرض جميع طلبات التمويل",
+        "description": "عرض جميع طلبات التمويل (يتطلب صلاحية ADMIN أو FINANCE_OFFICER)",
         "method": "GET",
         "endpoint": "/api/v1/funds",
         "requestBody": null
@@ -154,11 +282,35 @@
         "requestBody": {
           "status": "APPROVED"
         },
+        "responseExample": {
+          "id": "333e4567-e89b-12d3-a456-426614174000",
+          "title": "تجهيز معمل الحاسب الآلي",
+          "description": "شراء أجهزة حاسب وطاولات للمعمل",
+          "amountOfFund": 5000.00,
+          "urgencyLevel": "HIGH",
+          "date": "2026-07-01T00:00:00",
+          "imagePath": null,
+          "status": "APPROVED",
+          "createdBy": {
+             "id": "...",
+             "name": "مدير المدرسة",
+             "email": "admin@school.com",
+             "role": "ADMIN"
+          },
+          "reviewedBy": {
+             "id": "...",
+             "name": "المسؤول المالي",
+             "email": "finance@school.com",
+             "role": "FINANCE_OFFICER"
+          },
+          "createdAt": "2026-06-15T14:00:00",
+          "updatedAt": "2026-06-15T14:30:00"
+        },
         "note": "الحالات المتاحة: PENDING, APPROVED, REJECTED. يسجّل المراجع (reviewedBy) تلقائياً."
       }
     },
     "5_Collections_التحصيلات": {
-      "Record_Collection": {
+      "Create_Collection": {
         "description": "تسجيل تحصيل مالي جديد (يتطلب صلاحية ADMIN)",
         "method": "POST",
         "endpoint": "/api/v1/collections",
@@ -167,10 +319,24 @@
           "type": "MONTHLY",
           "amount": 12000.00
         },
+        "responseExample": {
+          "id": "444e4567-e89b-12d3-a456-426614174000",
+          "date": "2026-06-15",
+          "type": "MONTHLY",
+          "amount": 12000.00,
+          "createdBy": {
+             "id": "...",
+             "name": "مدير المدرسة",
+             "email": "admin@school.com",
+             "role": "ADMIN"
+          },
+          "createdAt": "2026-06-15T15:00:00",
+          "updatedAt": "2026-06-15T15:00:00"
+        },
         "note": "أنواع التحصيلات المتاحة: DAILY, WEEKLY, MONTHLY, ANNUAL"
       },
       "Get_All_Collections": {
-        "description": "عرض جميع التحصيلات",
+        "description": "عرض جميع التحصيلات (يتطلب صلاحية ADMIN)",
         "method": "GET",
         "endpoint": "/api/v1/collections",
         "requestBody": null
@@ -187,10 +353,25 @@
           "description": "ملخص المصروفات والإيرادات لشهر يونيو 2026",
           "typeOfReport": "EMAIL"
         },
+        "responseExample": {
+          "id": "555e4567-e89b-12d3-a456-426614174000",
+          "date": "2026-06-15T12:00:00",
+          "title": "التقرير المالي لشهر يونيو",
+          "description": "ملخص المصروفات والإيرادات لشهر يونيو 2026",
+          "typeOfReport": "EMAIL",
+          "createdBy": {
+             "id": "...",
+             "name": "مدير المدرسة",
+             "email": "admin@school.com",
+             "role": "ADMIN"
+          },
+          "createdAt": "2026-06-15T16:00:00",
+          "updatedAt": "2026-06-15T16:00:00"
+        },
         "note": "أنواع التقارير المتاحة: EMAIL, IN_APP"
       },
       "Get_All_Reports": {
-        "description": "عرض جميع التقارير",
+        "description": "عرض جميع التقارير (يتطلب صلاحية ADMIN أو FINANCE_OFFICER)",
         "method": "GET",
         "endpoint": "/api/v1/reports",
         "requestBody": null
@@ -198,7 +379,7 @@
     },
     "7_Notifications_الإشعارات": {
       "Get_All_Notifications": {
-        "description": "عرض الإشعارات المتاحة للمستخدم",
+        "description": "عرض الإشعارات المتاحة للمستخدم (يتطلب صلاحية ADMIN أو FINANCE_OFFICER)",
         "method": "GET",
         "endpoint": "/api/v1/notifications",
         "requestBody": null,

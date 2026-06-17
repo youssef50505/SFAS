@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DatePipe, CurrencyPipe, NgClass } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CollectionService } from '../../core/services/collection.service';
 import { Collection } from '../../core/models/collection.model';
@@ -11,7 +12,7 @@ import { ToastService } from '../../shared/components/toast/toast.service';
 @Component({
   selector: 'app-collections',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
+  imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
   templateUrl: './collections.component.html',
   styleUrl: './collections.component.css'
 })
@@ -24,6 +25,8 @@ export class CollectionsComponent implements OnInit {
   collections = signal<Collection[]>([]);
   showAddModal = signal(false);
   isSubmitting = signal(false);
+  isLoading = signal(true);
+  private destroyRef = inject(DestroyRef);
 
   collectionForm = this.fb.group({
     date: [new Date().toISOString().split('T')[0], [Validators.required]],
@@ -36,10 +39,19 @@ export class CollectionsComponent implements OnInit {
   }
 
   loadCollections() {
-    this.collectionService.getAllCollections().subscribe({
-      next: (data) => this.collections.set(data),
-      error: () => this.toast.error('Failed to load collections')
-    });
+    this.isLoading.set(true);
+    this.collectionService.getAllCollections()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.collections.set(data);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.toast.error('Failed to load collections');
+          this.isLoading.set(false);
+        }
+      });
   }
 
   openAddModal() {
@@ -63,18 +75,20 @@ export class CollectionsComponent implements OnInit {
     this.isSubmitting.set(true);
     const collectionData = this.collectionForm.value as Partial<Collection>;
 
-    this.collectionService.createCollection(collectionData).subscribe({
-      next: () => {
-        this.toast.success('Collection recorded successfully');
-        this.loadCollections();
-        this.closeAddModal();
-        this.isSubmitting.set(false);
-      },
-      error: () => {
-        this.toast.error('Failed to record collection');
-        this.isSubmitting.set(false);
-      }
-    });
+    this.collectionService.createCollection(collectionData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.toast.success('Collection recorded successfully');
+          this.loadCollections();
+          this.closeAddModal();
+          this.isSubmitting.set(false);
+        },
+        error: () => {
+          this.toast.error('Failed to record collection');
+          this.isSubmitting.set(false);
+        }
+      });
   }
 
   // Getters for form validation

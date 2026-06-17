@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, timer, switchMap, catchError, of } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Observable, tap, timer, switchMap, catchError, of, EMPTY } from 'rxjs';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { environment } from '../../../environments/environment';
 import { AuthStore } from '../stores/auth.store';
 
@@ -18,15 +18,16 @@ export class NotificationService {
   public readonly unreadCount = computed(() => this.notificationsSignal().length);
 
   constructor() {
-    // Poll every 30 seconds if authenticated
-    timer(0, 30000).pipe(
-      switchMap(() => {
-        if (this.authStore.isAuthenticated()) {
-          return this.fetchNotifications();
-        }
-        return of([]);
-      })
-    ).pipe(takeUntilDestroyed()).subscribe();
+    toObservable(this.authStore.isAuthenticated)
+      .pipe(
+        switchMap(isAuth => 
+          isAuth 
+            ? timer(0, 30000).pipe(switchMap(() => this.fetchNotifications()))
+            : EMPTY
+        ),
+        takeUntilDestroyed()
+      )
+      .subscribe();
   }
 
   fetchNotifications(): Observable<string[]> {

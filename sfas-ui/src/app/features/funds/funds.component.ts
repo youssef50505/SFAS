@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DatePipe, CurrencyPipe, NgClass } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FundService } from '../../core/services/fund.service';
 import { Fund } from '../../core/models/fund.model';
@@ -12,7 +13,7 @@ import { ConfirmationService } from '../../shared/components/confirmation-modal/
 @Component({
   selector: 'app-funds',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
+  imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
   templateUrl: './funds.component.html',
   styleUrl: './funds.component.css'
 })
@@ -26,6 +27,8 @@ export class FundsComponent implements OnInit {
   funds = signal<Fund[]>([]);
   showAddModal = signal(false);
   isSubmitting = signal(false);
+  isLoading = signal(true);
+  private destroyRef = inject(DestroyRef);
 
   fundForm = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(3)]],
@@ -40,10 +43,19 @@ export class FundsComponent implements OnInit {
   }
 
   loadFunds() {
-    this.fundService.getAllFunds().subscribe({
-      next: (data) => this.funds.set(data),
-      error: () => this.toast.error('Failed to load fund requests')
-    });
+    this.isLoading.set(true);
+    this.fundService.getAllFunds()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.funds.set(data);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.toast.error('Failed to load fund requests');
+          this.isLoading.set(false);
+        }
+      });
   }
 
   openAddModal() {
@@ -67,18 +79,20 @@ export class FundsComponent implements OnInit {
     this.isSubmitting.set(true);
     const fundData = this.fundForm.value as Partial<Fund>;
 
-    this.fundService.createFund(fundData).subscribe({
-      next: () => {
-        this.toast.success('Fund request submitted successfully');
-        this.loadFunds();
-        this.closeAddModal();
-        this.isSubmitting.set(false);
-      },
-      error: () => {
-        this.toast.error('Failed to submit fund request');
-        this.isSubmitting.set(false);
-      }
-    });
+    this.fundService.createFund(fundData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.toast.success('Fund request submitted successfully');
+          this.loadFunds();
+          this.closeAddModal();
+          this.isSubmitting.set(false);
+        },
+        error: () => {
+          this.toast.error('Failed to submit fund request');
+          this.isSubmitting.set(false);
+        }
+      });
   }
 
   updateStatus(fund: Fund, status: 'APPROVED' | 'REJECTED') {
@@ -93,13 +107,15 @@ export class FundsComponent implements OnInit {
       isDanger: status === 'REJECTED'
     }).then(confirmed => {
       if (confirmed) {
-        this.fundService.updateFundStatus(fund.id, status).subscribe({
-          next: () => {
-            this.toast.success(`Fund request ${status.toLowerCase()} successfully`);
-            this.loadFunds();
-          },
-          error: () => this.toast.error(`Failed to ${actionText} fund request`)
-        });
+        this.fundService.updateFundStatus(fund.id, status)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              this.toast.success(`Fund request ${status.toLowerCase()} successfully`);
+              this.loadFunds();
+            },
+            error: () => this.toast.error(`Failed to ${actionText} fund request`)
+          });
       }
     });
   }

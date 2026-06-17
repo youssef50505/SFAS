@@ -10,7 +10,13 @@
   </div>
 
   <div class="table-container surface" gsapFade [delay]="0.2">
-    <table class="data-table">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading reports...</p>
+      </div>
+    } @else {
+      <table class="data-table">
       <thead>
         <tr>
           <th>Report Title</th>
@@ -66,7 +72,8 @@
           </tr>
         }
       </tbody>
-    </table>
+      </table>
+    }
   </div>
 </div>
 

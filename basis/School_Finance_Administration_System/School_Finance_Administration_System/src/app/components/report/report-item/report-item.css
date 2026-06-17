@@ -1,6 +1,0 @@
-.report-item{display:flex;justify-content:space-between;align-items:center;padding:18px;background:transparent;border-radius:12px;border:1px solid rgba(15,23,42,0.04)}
-.report-item .left{display:flex;align-items:center;gap:14px}
-.report-item .icon{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;background:rgba(214,40,57,0.04);border-radius:12px;font-size:20px;color:var(--accent)}
-.report-item .meta .title{font-weight:700;color:var(--text)}
-.report-item .meta .subtitle{font-size:13px;color:var(--muted)}
-.report-item .chev{font-size:20px;color:rgba(15,23,42,0.2)}

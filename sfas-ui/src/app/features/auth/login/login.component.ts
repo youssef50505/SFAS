@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../shared/components/toast/toast.service';
@@ -8,7 +8,7 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -24,6 +24,12 @@ export class LoginComponent {
   });
 
   isLoading = signal(false);
+  showPassword = signal(false);
+  private destroyRef = inject(DestroyRef);
+
+  togglePassword() {
+    this.showPassword.update(v => !v);
+  }
 
   onSubmit() {
     if (this.loginForm.invalid) {
@@ -34,8 +40,10 @@ export class LoginComponent {
     this.isLoading.set(true);
     const { email, password } = this.loginForm.value;
 
-    this.authService.login(email!, password!).subscribe({
-      next: (res) => {
+    this.authService.login(email!, password!)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
         this.toast.success('Login successful!');
         if (res.role === 'ADMIN') {
           this.router.navigate(['/admin/dashboard']);

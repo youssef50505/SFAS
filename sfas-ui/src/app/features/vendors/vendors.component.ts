@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { VendorService } from '../../core/services/vendor.service';
 import { Vendor } from '../../core/models/vendor.model';
@@ -12,7 +12,7 @@ import { ConfirmationService } from '../../shared/components/confirmation-modal/
 @Component({
   selector: 'app-vendors',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
+  imports: [ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
   templateUrl: './vendors.component.html',
   styleUrl: './vendors.component.css'
 })
@@ -28,6 +28,8 @@ export class VendorsComponent implements OnInit {
   isSubmitting = signal(false);
   isEditing = signal(false);
   currentVendorId = signal<string | null>(null);
+  isLoading = signal(true);
+  private destroyRef = inject(DestroyRef);
 
   vendorForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -42,10 +44,19 @@ export class VendorsComponent implements OnInit {
   }
 
   loadVendors() {
-    this.vendorService.getAllVendors().subscribe({
-      next: (data) => this.vendors.set(data),
-      error: (err) => this.toast.error('Failed to load vendors')
-    });
+    this.isLoading.set(true);
+    this.vendorService.getAllVendors()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.vendors.set(data);
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          this.toast.error('Failed to load vendors');
+          this.isLoading.set(false);
+        }
+      });
   }
 
   openAddModal() {
@@ -82,31 +93,35 @@ export class VendorsComponent implements OnInit {
     const vendorData = this.vendorForm.value as Partial<Vendor>;
 
     if (this.isEditing() && this.currentVendorId()) {
-      this.vendorService.updateVendor(this.currentVendorId()!, vendorData).subscribe({
-        next: () => {
-          this.toast.success('Vendor updated successfully');
-          this.loadVendors();
-          this.closeAddModal();
-          this.isSubmitting.set(false);
-        },
-        error: (err) => {
-          this.toast.error('Failed to update vendor');
-          this.isSubmitting.set(false);
-        }
-      });
+      this.vendorService.updateVendor(this.currentVendorId()!, vendorData)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.toast.success('Vendor updated successfully');
+            this.loadVendors();
+            this.closeAddModal();
+            this.isSubmitting.set(false);
+          },
+          error: (err) => {
+            this.toast.error('Failed to update vendor');
+            this.isSubmitting.set(false);
+          }
+        });
     } else {
-      this.vendorService.createVendor(vendorData).subscribe({
-        next: () => {
-          this.toast.success('Vendor added successfully');
-          this.loadVendors();
-          this.closeAddModal();
-          this.isSubmitting.set(false);
-        },
-        error: (err) => {
-          this.toast.error('Failed to add vendor');
-          this.isSubmitting.set(false);
-        }
-      });
+      this.vendorService.createVendor(vendorData)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.toast.success('Vendor added successfully');
+            this.loadVendors();
+            this.closeAddModal();
+            this.isSubmitting.set(false);
+          },
+          error: (err) => {
+            this.toast.error('Failed to add vendor');
+            this.isSubmitting.set(false);
+          }
+        });
     }
   }
 
@@ -119,15 +134,17 @@ export class VendorsComponent implements OnInit {
     });
 
     if (confirmed) {
-      this.vendorService.deleteVendor(id).subscribe({
-        next: () => {
-          this.toast.success('Vendor deleted successfully');
-          this.loadVendors();
-        },
-        error: (err) => {
-          this.toast.error('Failed to delete vendor');
-        }
-      });
+      this.vendorService.deleteVendor(id)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.toast.success('Vendor deleted successfully');
+            this.loadVendors();
+          },
+          error: (err) => {
+            this.toast.error('Failed to delete vendor');
+          }
+        });
     }
   }
 

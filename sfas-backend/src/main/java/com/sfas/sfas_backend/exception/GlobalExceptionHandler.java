@@ -36,9 +36,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             errors.put(error.getField(), error.getDefaultMessage());
         }
         problemDetail.setProperty("errors", errors);
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }
+
+    
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgumentException(IllegalArgumentException ex) {

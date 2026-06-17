@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DatePipe, CurrencyPipe, NgClass } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ReportService } from '../../core/services/report.service';
 import { Report } from '../../core/models/report.model';
@@ -11,7 +12,7 @@ import { ToastService } from '../../shared/components/toast/toast.service';
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
+  imports: [DatePipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.css'
 })
@@ -24,6 +25,8 @@ export class ReportsComponent implements OnInit {
   reports = signal<Report[]>([]);
   showAddModal = signal(false);
   isSubmitting = signal(false);
+  isLoading = signal(true);
+  private destroyRef = inject(DestroyRef);
 
   reportForm = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(3)]],
@@ -37,10 +40,19 @@ export class ReportsComponent implements OnInit {
   }
 
   loadReports() {
-    this.reportService.getAllReports().subscribe({
-      next: (data) => this.reports.set(data),
-      error: () => this.toast.error('Failed to load reports')
-    });
+    this.isLoading.set(true);
+    this.reportService.getAllReports()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.reports.set(data);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.toast.error('Failed to load reports');
+          this.isLoading.set(false);
+        }
+      });
   }
 
   openAddModal() {
@@ -64,18 +76,20 @@ export class ReportsComponent implements OnInit {
     this.isSubmitting.set(true);
     const reportData = this.reportForm.value as Partial<Report>;
 
-    this.reportService.createReport(reportData).subscribe({
-      next: () => {
-        this.toast.success('Report generated successfully');
-        this.loadReports();
-        this.closeAddModal();
-        this.isSubmitting.set(false);
-      },
-      error: () => {
-        this.toast.error('Failed to generate report');
-        this.isSubmitting.set(false);
-      }
-    });
+    this.reportService.createReport(reportData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.toast.success('Report generated successfully');
+          this.loadReports();
+          this.closeAddModal();
+          this.isSubmitting.set(false);
+        },
+        error: () => {
+          this.toast.error('Failed to generate report');
+          this.isSubmitting.set(false);
+        }
+      });
   }
 
   // Getters for form validation

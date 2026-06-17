@@ -369,3 +369,15 @@ The entire frontend now acts as a cohesive, modern Angular 21 application. Compi
 5. **Micro-Animations (GSAP):** Implemented staggered element entrance animations and smooth transitions across the app (modals, toasts, sidebars, metric cards) using `GsapFadeDirective` and native CSS.
 6. **Vendors Edit/Delete Capabilities:** Expanded the Vendors Management screen to support inline editing and deletion of vendors, integrated cleanly with the `ConfirmationModalComponent` and backend APIs.
 7. **Production Ready:** Verified the entire application compiles flawlessly via `ng build`, resolving an `@angular/animations/browser` dependency issue smoothly during the process.
+
+## 19. Final Polish & Performance Optimization
+
+**Context:** Following the visual overhaul, several key logic and performance issues remained that needed addressing to meet the rigorous standards requested.
+
+**What was accomplished:**
+1. **Notification Polling Fix:** The `NotificationService` was refactored to use `toObservable(this.authStore.isAuthenticated)`. Polling now dynamically starts when the user logs in and stops completely (`EMPTY`) when the user logs out. This eliminates previous memory leaks and redundant network requests hitting the server while on the login page.
+2. **GSAP Hardware Acceleration:** Upgraded the `GsapFadeDirective` to use modern `input()` signals and transitioned execution to `ngAfterViewInit` to prevent premature DOM manipulation. Applied `will-change: transform, opacity` to force hardware acceleration during the animation tick, ensuring buttery smooth entrance animations that clean up after completion.
+3. **Tree-Shaking CommonModule:** Completely removed the heavy `CommonModule` from feature components. Replaced them with hyper-specific pipe imports (`DatePipe`, `CurrencyPipe`, `NgClass`, `DecimalPipe`) shrinking the lazy-loaded chunk sizes significantly.
+4. **Premium Login Experience:** Rebuilt the login screen into an executive split-screen layout, featuring a dark gradient branding panel alongside a crisp white authentication form, including an integrated password visibility toggle.
+5. **Progressive Loading Skeletons:** Implemented `isLoading` signals tied to a unified `.loading-state` skeleton CSS utility across all major feature tables. This eliminated the jarring experience of empty tables during network latency.
+6. **Universal Subscription Teardown:** Injected `DestroyRef` and applied `takeUntilDestroyed(this.destroyRef)` to all active `.subscribe()` calls, sealing any potential memory leaks across navigation events.

@@ -1,5 +1,0 @@
-.types{display:flex;gap:10px}
-.types button{padding:8px 14px;border-radius:999px;border:none;font-weight:700;cursor:pointer}
-.types button.email{background:#d1f5df;color:#065f46}
-.types button.inapp{background:#fff0cc;color:#92400e}
-.types button:focus{outline:2px solid rgba(214,40,57,0.12)}

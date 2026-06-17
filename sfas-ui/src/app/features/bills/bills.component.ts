@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DatePipe, CurrencyPipe, NgClass } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BillService } from '../../core/services/bill.service';
 import { VendorService } from '../../core/services/vendor.service';
@@ -14,7 +15,7 @@ import { ConfirmationService } from '../../shared/components/confirmation-modal/
 @Component({
   selector: 'app-bills',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
+  imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
   templateUrl: './bills.component.html',
   styleUrl: './bills.component.css'
 })
@@ -31,6 +32,8 @@ export class BillsComponent implements OnInit {
   
   showAddModal = signal(false);
   isSubmitting = signal(false);
+  isLoading = signal(true);
+  private destroyRef = inject(DestroyRef);
   
   billForm = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(3)]],
@@ -50,17 +53,28 @@ export class BillsComponent implements OnInit {
   }
 
   loadBills() {
-    this.billService.getAllBills().subscribe({
-      next: (data) => this.bills.set(data),
-      error: () => this.toast.error('Failed to load bills')
-    });
+    this.isLoading.set(true);
+    this.billService.getAllBills()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.bills.set(data);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.toast.error('Failed to load bills');
+          this.isLoading.set(false);
+        }
+      });
   }
 
   loadVendors() {
-    this.vendorService.getAllVendors().subscribe({
-      next: (data) => this.vendors.set(data),
-      error: () => this.toast.error('Failed to load vendors')
-    });
+    this.vendorService.getAllVendors()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => this.vendors.set(data),
+        error: () => this.toast.error('Failed to load vendors')
+      });
   }
 
   openAddModal() {
@@ -92,18 +106,20 @@ export class BillsComponent implements OnInit {
     this.isSubmitting.set(true);
     const billData = this.billForm.value as Partial<Bill>;
 
-    this.billService.createBill(billData).subscribe({
-      next: () => {
-        this.toast.success('Bill created successfully');
-        this.loadBills();
-        this.closeAddModal();
-        this.isSubmitting.set(false);
-      },
-      error: () => {
-        this.toast.error('Failed to create bill');
-        this.isSubmitting.set(false);
-      }
-    });
+    this.billService.createBill(billData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.toast.success('Bill created successfully');
+          this.loadBills();
+          this.closeAddModal();
+          this.isSubmitting.set(false);
+        },
+        error: () => {
+          this.toast.error('Failed to create bill');
+          this.isSubmitting.set(false);
+        }
+      });
   }
 
   updateStatus(bill: Bill, status: 'APPROVED' | 'REJECTED') {
@@ -118,13 +134,15 @@ export class BillsComponent implements OnInit {
       isDanger: status === 'REJECTED'
     }).then(confirmed => {
       if (confirmed) {
-        this.billService.updateBillStatus(bill.id, status).subscribe({
-          next: () => {
-            this.toast.success(`Bill ${status.toLowerCase()} successfully`);
-            this.loadBills();
-          },
-          error: () => this.toast.error(`Failed to ${actionText} bill`)
-        });
+        this.billService.updateBillStatus(bill.id, status)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              this.toast.success(`Bill ${status.toLowerCase()} successfully`);
+              this.loadBills();
+            },
+            error: () => this.toast.error(`Failed to ${actionText} bill`)
+          });
       }
     });
   }

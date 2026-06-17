@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, ViewChild, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, ViewChild, signal, DestroyRef } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
 import { GsapFadeDirective } from '../../shared/directives/gsap-fade.directive';
@@ -24,7 +25,7 @@ export type ChartOptions = {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, NgApexchartsModule, PageHeaderComponent, MetricCardComponent, GsapFadeDirective],
+  imports: [DecimalPipe, NgApexchartsModule, PageHeaderComponent, MetricCardComponent, GsapFadeDirective],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
@@ -41,6 +42,7 @@ export class AdminDashboardComponent implements OnInit {
   pendingBillsCount = signal(0);
   activeFundsCount = signal(0);
   isLoading = signal(true);
+  private destroyRef = inject(DestroyRef);
 
   ngOnInit() {
     this.initChart();
@@ -69,7 +71,9 @@ export class AdminDashboardComponent implements OnInit {
       bills: this.billService.getAllBills(),
       funds: this.fundService.getAllFunds(),
       collections: this.collectionService.getAllCollections()
-    }).subscribe({
+    })
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
       next: ({ bills, funds, collections }) => {
         // Calculate Metrics
         const totalColl = collections.reduce((sum, coll) => sum + coll.amount, 0);

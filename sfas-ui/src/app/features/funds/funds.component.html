@@ -10,7 +10,13 @@
   </div>
 
   <div class="table-container surface" gsapFade [delay]="0.2">
-    <table class="data-table">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading fund requests...</p>
+      </div>
+    } @else {
+      <table class="data-table">
       <thead>
         <tr>
           <th>Request Details</th>
@@ -75,7 +81,8 @@
           </tr>
         }
       </tbody>
-    </table>
+      </table>
+    }
   </div>
 </div>
 
@@ -141,7 +148,7 @@
 
           <div class="form-group full-width">
             <label class="form-label">Date Required By <span class="required">*</span></label>
-            <input type="date" class="form-control" [class.is-invalid]="f.date.invalid && f.date.touched" formControlName="date">
+            <input type="datetime-local" class="form-control" [class.is-invalid]="f.date.invalid && f.date.touched" formControlName="date">
             @if (f.date.invalid && f.date.touched) {
               <div class="form-error">
                 @if (f.date.errors?.['required']) { <span>Date is required.</span> }

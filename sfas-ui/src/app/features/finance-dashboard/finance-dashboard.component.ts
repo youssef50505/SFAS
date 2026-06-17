@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
 import { GsapFadeDirective } from '../../shared/directives/gsap-fade.directive';
@@ -11,7 +11,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-finance-dashboard',
   standalone: true,
-  imports: [CommonModule, PageHeaderComponent, MetricCardComponent, GsapFadeDirective, RouterModule],
+  imports: [PageHeaderComponent, MetricCardComponent, GsapFadeDirective, RouterModule],
   templateUrl: './finance-dashboard.component.html',
   styleUrl: './finance-dashboard.component.css'
 })
@@ -22,6 +22,7 @@ export class FinanceDashboardComponent implements OnInit {
   pendingBillsCount = signal(0);
   pendingFundsCount = signal(0);
   isLoading = signal(true);
+  private destroyRef = inject(DestroyRef);
 
   ngOnInit() {
     this.loadData();
@@ -31,7 +32,9 @@ export class FinanceDashboardComponent implements OnInit {
     forkJoin({
       bills: this.billService.getAllBills(),
       funds: this.fundService.getAllFunds()
-    }).subscribe({
+    })
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
       next: ({ bills, funds }) => {
         const pendingBills = bills.filter(b => b.status === 'PENDING').length;
         this.pendingBillsCount.set(pendingBills);

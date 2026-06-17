@@ -8,7 +8,13 @@
   </div>
 
   <div class="table-container surface" gsapFade [delay]="0.2">
-    <table class="data-table">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading vendors directory...</p>
+      </div>
+    } @else {
+      <table class="data-table">
       <thead>
         <tr>
           <th>Name</th>
@@ -64,7 +70,8 @@
           </tr>
         }
       </tbody>
-    </table>
+      </table>
+    }
   </div>
 </div>
 
@@ -82,44 +89,54 @@
           <div class="form-group full-width">
             <label class="form-label">Vendor Name <span class="required">*</span></label>
             <input type="text" class="form-control" [class.is-invalid]="f.name.invalid && f.name.touched" formControlName="name" placeholder="e.g. Acme Supplies Ltd">
-            <div *ngIf="f.name.invalid && f.name.touched" class="form-error">
-              <span *ngIf="f.name.errors?.['required']">Vendor name is required.</span>
-              <span *ngIf="f.name.errors?.['minlength']">Minimum 3 characters needed.</span>
-            </div>
+            @if (f.name.invalid && f.name.touched) {
+              <div class="form-error">
+                @if (f.name.errors?.['required']) { <span>Vendor name is required.</span> }
+                @if (f.name.errors?.['minlength']) { <span>Minimum 3 characters needed.</span> }
+              </div>
+            }
           </div>
           
           <div class="form-group">
             <label class="form-label">Contact Email <span class="required">*</span></label>
             <input type="email" class="form-control" [class.is-invalid]="f.contactEmail.invalid && f.contactEmail.touched" formControlName="contactEmail" placeholder="contact@acme.com">
-            <div *ngIf="f.contactEmail.invalid && f.contactEmail.touched" class="form-error">
-              <span *ngIf="f.contactEmail.errors?.['required']">Email is required.</span>
-              <span *ngIf="f.contactEmail.errors?.['email']">Enter a valid email address.</span>
-            </div>
+            @if (f.contactEmail.invalid && f.contactEmail.touched) {
+              <div class="form-error">
+                @if (f.contactEmail.errors?.['required']) { <span>Email is required.</span> }
+                @if (f.contactEmail.errors?.['email']) { <span>Enter a valid email address.</span> }
+              </div>
+            }
           </div>
           
           <div class="form-group">
             <label class="form-label">Phone Number <span class="required">*</span></label>
             <input type="text" class="form-control" [class.is-invalid]="f.phoneNumber.invalid && f.phoneNumber.touched" formControlName="phoneNumber" placeholder="+1 234 567 8900">
-            <div *ngIf="f.phoneNumber.invalid && f.phoneNumber.touched" class="form-error">
-              <span *ngIf="f.phoneNumber.errors?.['required']">Phone is required.</span>
-              <span *ngIf="f.phoneNumber.errors?.['pattern']">Enter a valid phone number.</span>
-            </div>
+            @if (f.phoneNumber.invalid && f.phoneNumber.touched) {
+              <div class="form-error">
+                @if (f.phoneNumber.errors?.['required']) { <span>Phone is required.</span> }
+                @if (f.phoneNumber.errors?.['pattern']) { <span>Enter a valid phone number.</span> }
+              </div>
+            }
           </div>
           
           <div class="form-group full-width">
             <label class="form-label">Tax ID <span class="required">*</span></label>
             <input type="text" class="form-control" [class.is-invalid]="f.taxId.invalid && f.taxId.touched" formControlName="taxId" placeholder="e.g. XX-XXXXXXX">
-            <div *ngIf="f.taxId.invalid && f.taxId.touched" class="form-error">
-              <span *ngIf="f.taxId.errors?.['required']">Tax ID is required.</span>
-            </div>
+            @if (f.taxId.invalid && f.taxId.touched) {
+              <div class="form-error">
+                @if (f.taxId.errors?.['required']) { <span>Tax ID is required.</span> }
+              </div>
+            }
           </div>
           
           <div class="form-group full-width">
             <label class="form-label">Address <span class="required">*</span></label>
             <input type="text" class="form-control" [class.is-invalid]="f.address.invalid && f.address.touched" formControlName="address" placeholder="123 Business Rd, City">
-            <div *ngIf="f.address.invalid && f.address.touched" class="form-error">
-              <span *ngIf="f.address.errors?.['required']">Address is required.</span>
-            </div>
+            @if (f.address.invalid && f.address.touched) {
+              <div class="form-error">
+                @if (f.address.errors?.['required']) { <span>Address is required.</span> }
+              </div>
+            }
           </div>
         </div>
         

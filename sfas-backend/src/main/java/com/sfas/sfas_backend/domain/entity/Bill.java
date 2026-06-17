@@ -39,7 +39,6 @@ public class Bill {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "vendor_id", nullable = false)
-    @NonNull
     private Vendor vendor;
 
     @Column(nullable = false)
@@ -64,12 +63,10 @@ public class Bill {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @NonNull
     private BillStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "created_by_id", nullable = false)
-    @NonNull
     private User createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -86,3 +83,6 @@ public class Bill {
     @Nullable
     private LocalDateTime updatedAt;
 }
+
+
+

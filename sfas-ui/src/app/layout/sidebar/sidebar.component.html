@@ -1,11 +1,14 @@
-<aside class="sidebar">
+<aside class="sidebar" [class.collapsed]="!layoutService.sidebarOpen()">
   <div class="sidebar-header">
     <div class="logo">
-      <div class="logo-mark">
-        <i class="ri-funds-box-line"></i>
-      </div>
-      <span class="logo-text">SFAS</span>
+      @if (layoutService.sidebarOpen()) {
+        <img src="/logo.jpg" alt="NTG Logo" class="logo-image">
+        <span class="logo-text">SFAS</span>
+      }
     </div>
+    <button class="toggle-btn" (click)="layoutService.toggleSidebar()" aria-label="Toggle sidebar">
+      <i class="ri-menu-line"></i>
+    </button>
   </div>
 
   <nav class="sidebar-nav">

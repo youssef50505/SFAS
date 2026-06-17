@@ -1,7 +1,7 @@
 <div class="split-layout">
   <div class="branding-panel">
     <div class="branding-content">
-      <div class="logo-large"><i class="ri-bank-card-line"></i></div>
+      <img src="/logo.jpg" alt="NTG Logo" class="login-logo-image">
       <h1>School Finance Administration System</h1>
       <p class="branding-subtitle">Executive Financial Management & Reporting</p>
       
@@ -25,7 +25,7 @@
   <div class="form-panel">
     <div class="login-box">
       <div class="login-header">
-        <div class="logo-icon-mobile"><i class="ri-bank-card-line"></i></div>
+        <img src="/logo.jpg" alt="NTG Logo" class="login-logo-image-mobile">
         <h2>Welcome Back</h2>
         <p>Please enter your credentials to access the portal</p>
       </div>
@@ -40,6 +40,7 @@
               type="email" 
               class="form-control with-icon" 
               [class.is-invalid]="emailControl?.invalid && emailControl?.touched"
+              [class.is-valid]="emailControl?.valid && (emailControl?.dirty || emailControl?.touched)"
               formControlName="email" 
               placeholder="admin@school.com"
             >
@@ -61,6 +62,7 @@
               [type]="showPassword() ? 'text' : 'password'" 
               class="form-control with-icon with-action" 
               [class.is-invalid]="passwordControl?.invalid && passwordControl?.touched"
+              [class.is-valid]="passwordControl?.valid && (passwordControl?.dirty || passwordControl?.touched)"
               formControlName="password" 
               placeholder="••••••••"
             >

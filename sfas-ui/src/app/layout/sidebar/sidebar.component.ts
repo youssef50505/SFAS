@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { AuthStore } from '../../core/stores/auth.store';
 import { AuthService } from '../../core/services/auth.service';
+import { LayoutService } from '../../core/services/layout.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,6 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class SidebarComponent {
   protected readonly authStore = inject(AuthStore);
+  protected readonly layoutService = inject(LayoutService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 

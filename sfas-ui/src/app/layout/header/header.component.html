@@ -1,12 +1,18 @@
 <div class="header-wrapper">
   <div class="header-left">
-    <button class="header-btn mobile-menu-btn" (click)="layoutService.toggleSidebar()" aria-label="Toggle sidebar">
-      <i class="ri-menu-line"></i>
-    </button>
     <h2 class="page-title">SFAS Workspace</h2>
   </div>
 
   <div class="header-right">
+    <!-- User Profile -->
+    <div class="user-profile">
+      <div class="avatar">{{ authStore.currentUser()?.name?.charAt(0) || 'U' }}</div>
+      <div class="user-info">
+        <span class="user-name">{{ authStore.currentUser()?.name || 'User' }}</span>
+        <span class="user-role">{{ authStore.currentUser()?.role === 'FINANCE_OFFICER' ? 'Finance Officer' : authStore.currentUser()?.role || 'Role' }}</span>
+      </div>
+    </div>
+
     <!-- Theme Toggle -->
     <button
       class="header-btn"
@@ -53,22 +59,5 @@
         </div>
       }
     </div>
-
-    <!-- Separator -->
-    <div class="header-separator"></div>
-
-    <!-- User Profile -->
-    <div class="user-profile">
-      <div class="avatar">{{ authStore.currentUser()?.name?.charAt(0) || 'U' }}</div>
-      <div class="user-info">
-        <span class="user-name">{{ authStore.currentUser()?.name || 'User' }}</span>
-        <span class="user-role">{{ authStore.currentUser()?.role === 'FINANCE_OFFICER' ? 'Finance Officer' : authStore.currentUser()?.role || 'Role' }}</span>
-      </div>
-    </div>
-
-    <!-- Logout -->
-    <button class="header-btn header-btn--logout" (click)="logout()" aria-label="Sign out" title="Sign Out">
-      <i class="ri-logout-box-r-line"></i>
-    </button>
   </div>
 </div>

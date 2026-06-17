@@ -17,7 +17,12 @@ import { CommonModule } from '@angular/common';
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      height: 100%;
+    }
     .metric-card {
+      height: 100%;
       padding: 1.5rem;
       display: flex;
       align-items: center;

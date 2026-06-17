@@ -25,15 +25,7 @@
   letter-spacing: -0.01em;
 }
 
-.mobile-menu-btn {
-  display: none;
-}
 
-@media (max-width: 1024px) {
-  .mobile-menu-btn {
-    display: flex;
-  }
-}
 
 /* ---- Right Section ---- */
 .header-right {
@@ -62,19 +54,6 @@
 .header-btn:hover {
   background-color: var(--accent-primary-light);
   color: var(--accent-primary);
-}
-
-.header-btn--logout:hover {
-  background-color: var(--accent-danger-light);
-  color: var(--accent-danger);
-}
-
-/* ---- Separator ---- */
-.header-separator {
-  width: 1px;
-  height: 28px;
-  background-color: var(--border-subtle);
-  margin: 0 0.35rem;
 }
 
 /* ---- Notification Badge ---- */

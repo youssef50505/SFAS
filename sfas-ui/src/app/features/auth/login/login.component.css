@@ -26,18 +26,17 @@
   max-width: 480px;
 }
 
-.logo-large {
-  width: 72px;
-  height: 72px;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-hover));
-  color: #ffffff;
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
+.login-logo-image {
+  height: 80px; /* adjusted to account for padding */
+  width: auto;
+  object-fit: contain;
   margin-bottom: 2rem;
-  box-shadow: var(--shadow-glow);
+  display: block;
+  background: white;
+  padding: 8px 16px;
+  border: 1px solid rgba(200, 16, 46, 0.2);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(200, 16, 46, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
 }
 
 .branding-content h1 {
@@ -91,22 +90,21 @@
   margin-bottom: 2.5rem;
 }
 
-.logo-icon-mobile {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-hover));
-  color: #fff;
-  border-radius: var(--radius-md);
+.login-logo-image-mobile {
+  height: 64px; /* adjusted to account for padding */
+  width: auto;
+  object-fit: contain;
   margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.75rem;
-  box-shadow: var(--shadow-glow);
+  display: block;
+  background: white;
+  padding: 6px 12px;
+  border: 1px solid rgba(200, 16, 46, 0.2);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(200, 16, 46, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
 }
 
 @media (min-width: 1024px) {
-  .logo-icon-mobile {
+  .login-logo-image-mobile {
     display: none;
   }
 }

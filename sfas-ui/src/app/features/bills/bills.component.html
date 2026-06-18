@@ -114,7 +114,7 @@
           </div>
           
           <div class="form-group">
-            <label class="form-label">Amount ($) <span class="required">*</span></label>
+            <label class="form-label">Amount (EGP) <span class="required">*</span></label>
             <input type="number" class="form-control" [class.is-invalid]="f.amount.invalid && f.amount.touched" formControlName="amount" placeholder="0.00" step="0.01">
             @if (f.amount.invalid && f.amount.touched) {
               <div class="form-error">
@@ -125,7 +125,7 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Tax ($) <span class="required">*</span></label>
+            <label class="form-label">Tax (EGP) <span class="required">*</span></label>
             <input type="number" class="form-control" [class.is-invalid]="f.tax.invalid && f.tax.touched" formControlName="tax" placeholder="0.00" step="0.01">
             @if (f.tax.invalid && f.tax.touched) {
               <div class="form-error">

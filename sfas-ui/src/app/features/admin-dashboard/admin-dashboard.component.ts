@@ -62,7 +62,7 @@ export class AdminDashboardComponent implements OnInit {
       fill: { type: 'solid', opacity: [1, 0.2] },
       xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'] },
       title: { text: 'Monthly Financial Overview', align: 'left', style: { fontSize: '18px', fontWeight: '600', color: 'var(--text-primary)' } },
-      tooltip: { shared: true, intersect: false, y: { formatter: function (y) { if(typeof y !== "undefined") { return "$" + y.toFixed(0); } return y; } } }
+      tooltip: { shared: true, intersect: false, y: { formatter: function (y) { if(typeof y !== "undefined") { return "EGP " + y.toFixed(0); } return y; } } }
     };
   }
 

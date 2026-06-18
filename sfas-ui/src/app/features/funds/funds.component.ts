@@ -138,7 +138,7 @@ export class FundsComponent implements OnInit {
 
     this.confirmationService.confirm({
       title: `${status === 'APPROVED' ? 'Approve' : (status === 'REJECTED' ? 'Reject' : 'Pending')} Fund Request`,
-      message: `Are you sure you want to ${actionText} the fund request "${fund.title}" for $${fund.amountOfFund}?`,
+      message: `Are you sure you want to ${actionText} the fund request "${fund.title}" for EGP ${fund.amountOfFund}?`,
       confirmText: `Yes, ${actionText}`,
       cancelText: 'Cancel',
       isDanger: status === 'REJECTED'

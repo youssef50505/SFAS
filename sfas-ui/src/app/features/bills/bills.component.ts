@@ -138,7 +138,7 @@ export class BillsComponent implements OnInit {
       grossAmount: bill.amount,
       details: [
         { label: 'VENDOR', value: bill.vendor.name },
-        { label: 'TAX', value: '$' + (bill.tax || 0).toFixed(2) }
+        { label: 'TAX', value: 'EGP ' + (bill.tax || 0).toFixed(2) }
       ],
       description: bill.description,
       documentName: bill.imagePath,
@@ -164,7 +164,7 @@ export class BillsComponent implements OnInit {
 
     this.confirmationService.confirm({
       title: `${status === 'APPROVED' ? 'Approve' : (status === 'REJECTED' ? 'Reject' : 'Pending')} Bill`,
-      message: `Are you sure you want to ${actionText} the bill "${bill.title}" for $${bill.amount}?`,
+      message: `Are you sure you want to ${actionText} the bill "${bill.title}" for EGP ${bill.amount}?`,
       confirmText: `Yes, ${actionText}`,
       cancelText: 'Cancel',
       isDanger: status === 'REJECTED'

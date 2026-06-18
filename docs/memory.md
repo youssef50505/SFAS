@@ -417,3 +417,12 @@ The entire frontend now acts as a cohesive, modern Angular 21 application. Compi
 3. **Structured Document Cards:** Replaced the plain "No documents attached" placeholder in `ReviewModalComponent` with a dynamically rendered `.document-card` when a file path exists, showing a PDF icon, the file name, and a download action.
 4. **Status Border Indicators:** Updated `notifications.component.css` to add dynamic left border indicators (e.g. `border-left-color: var(--accent-primary)`) to alert cards based on their read/unread status.
 5. **Lighter Action Links:** Converted the bulky buttons in the Notification Hub into clean, elegant text-based action links with hover transitions for "Review" and "Dismiss", significantly lightning the UI footprint.
+
+## 23. Localization & Currency Standardization
+
+**Context:** The project required a total conversion from the default US Dollar (USD) to the Egyptian Pound (EGP) as the primary system currency for all financial components.
+
+**What was accomplished:**
+1. **Global Default Override:** Injected `DEFAULT_CURRENCY_CODE` from `@angular/core` into `app.config.ts`, globally shifting all Angular `CurrencyPipe` (`| currency`) usages to display `EGP` automatically.
+2. **Template Hardcoding Replacement:** Replaced all hardcoded `$` symbols in form labels (e.g., `Amount (EGP)`) across Bills, Request Funds, and Collections screens.
+3. **TypeScript Logic & Modals:** Converted string interpolations (`$${amount}`) to `EGP ${amount}` inside TypeScript files, ensuring confirmation modals and tooltips properly render the Egyptian currency abbreviation.

@@ -108,7 +108,7 @@
           </div>
           
           <div class="form-group">
-            <label class="form-label">Amount Required ($) <span class="required">*</span></label>
+            <label class="form-label">Amount Required (EGP) <span class="required">*</span></label>
             <input type="number" class="form-control" [class.is-invalid]="f.amountOfFund.invalid && f.amountOfFund.touched" formControlName="amountOfFund" placeholder="0.00" step="0.01">
             @if (f.amountOfFund.invalid && f.amountOfFund.touched) {
               <div class="form-error">

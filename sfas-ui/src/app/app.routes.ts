@@ -49,7 +49,9 @@ export const routes: Routes = [
       },
       { 
         path: 'collections', 
-        loadComponent: () => import('./features/collections/collections.component').then(m => m.CollectionsComponent) 
+        loadComponent: () => import('./features/collections/collections.component').then(m => m.CollectionsComponent),
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN'] }
       },
       { 
         path: 'reports', 

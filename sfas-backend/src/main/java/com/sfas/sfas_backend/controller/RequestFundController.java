@@ -45,6 +45,6 @@ public class RequestFundController {
     public ResponseEntity<RequestFundResponse> updateFundStatus(@PathVariable UUID id,
                                                                 @Valid @RequestBody FundStatusUpdateRequest request,
                                                                 @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(requestFundService.updateFundStatus(id, request.status(), userDetails.getUsername()));
+        return ResponseEntity.ok(requestFundService.updateFundStatus(id, request, userDetails.getUsername()));
     }
 }

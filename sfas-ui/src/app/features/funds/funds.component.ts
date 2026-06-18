@@ -9,11 +9,12 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { GsapFadeDirective } from '../../shared/directives/gsap-fade.directive';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { ConfirmationService } from '../../shared/components/confirmation-modal/confirmation.service';
+import { ReviewModalComponent, ReviewModalConfig } from '../../shared/components/review-modal/review-modal.component';
 
 @Component({
   selector: 'app-funds',
   standalone: true,
-  imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
+  imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective, ReviewModalComponent],
   templateUrl: './funds.component.html',
   styleUrl: './funds.component.css'
 })
@@ -95,24 +96,56 @@ export class FundsComponent implements OnInit {
       });
   }
 
-  updateStatus(fund: Fund, status: 'APPROVED' | 'REJECTED') {
-    const actionText = status === 'APPROVED' ? 'approve' : 'reject';
-    const intent = status === 'APPROVED' ? 'primary' : 'danger';
+  selectedFundForReview = signal<Fund | null>(null);
+
+  getReviewConfig(): ReviewModalConfig | null {
+    const fund = this.selectedFundForReview();
+    if (!fund) return null;
+    
+    return {
+      type: 'fund',
+      id: fund.id.substring(0, 8).toUpperCase(),
+      submittedDate: fund.date,
+      title: fund.title,
+      grossAmount: fund.amountOfFund,
+      details: [
+        { label: 'Requestor', value: fund.createdBy?.name || 'Unknown' },
+        { label: 'Role', value: fund.createdBy?.role === 'FINANCE_OFFICER' ? 'Finance Officer' : (fund.createdBy?.role || 'User') },
+        { label: 'Urgency', value: fund.urgencyLevel }
+      ],
+      description: fund.description
+    };
+  }
+
+  openReviewModal(fund: Fund) {
+    this.selectedFundForReview.set(fund);
+  }
+
+  closeReviewModal() {
+    this.selectedFundForReview.set(null);
+  }
+
+  handleReviewAction(comments: string, status: 'APPROVED' | 'REJECTED' | 'PENDING') {
+    const fund = this.selectedFundForReview();
+    if (!fund) return;
+
+    const actionText = status === 'APPROVED' ? 'approve' : (status === 'REJECTED' ? 'reject' : 'mark pending');
 
     this.confirmationService.confirm({
-      title: `${status === 'APPROVED' ? 'Approve' : 'Reject'} Fund Request`,
+      title: `${status === 'APPROVED' ? 'Approve' : (status === 'REJECTED' ? 'Reject' : 'Pending')} Fund Request`,
       message: `Are you sure you want to ${actionText} the fund request "${fund.title}" for $${fund.amountOfFund}?`,
       confirmText: `Yes, ${actionText}`,
       cancelText: 'Cancel',
       isDanger: status === 'REJECTED'
     }).then(confirmed => {
       if (confirmed) {
-        this.fundService.updateFundStatus(fund.id, status)
+        this.fundService.updateFundStatus(fund.id, status, comments)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
               this.toast.success(`Fund request ${status.toLowerCase()} successfully`);
               this.loadFunds();
+              this.closeReviewModal();
             },
             error: () => this.toast.error(`Failed to ${actionText} fund request`)
           });

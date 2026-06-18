@@ -60,11 +60,8 @@
               <td>
                 @if (bill.status === 'PENDING') {
                   <div class="action-buttons">
-                    <button class="btn-approve" (click)="updateStatus(bill, 'APPROVED')" title="Approve">
-                      <i class="ri-check-line"></i> Approve
-                    </button>
-                    <button class="btn-reject" (click)="updateStatus(bill, 'REJECTED')" title="Reject">
-                      <i class="ri-close-line"></i> Reject
+                    <button class="btn-secondary" (click)="openReviewModal(bill)" title="Review">
+                      <i class="ri-eye-line"></i> Review
                     </button>
                   </div>
                 }
@@ -190,4 +187,14 @@
       </form>
     </div>
   </div>
+}
+
+@if (selectedBillForReview()) {
+  <app-review-modal
+    [config]="getReviewConfig()!"
+    (close)="closeReviewModal()"
+    (approve)="handleReviewAction($event, 'APPROVED')"
+    (pending)="handleReviewAction($event, 'PENDING')"
+    (reject)="handleReviewAction($event, 'REJECTED')">
+  </app-review-modal>
 }

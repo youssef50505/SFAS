@@ -73,6 +73,10 @@ public class RequestFund {
     @Nullable
     private User reviewedBy;
 
+    @Column(columnDefinition = "TEXT")
+    @Nullable
+    private String reviewComments;
+
     @CreatedDate
     @Column(updatable = false)
     @Nullable

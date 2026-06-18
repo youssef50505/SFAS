@@ -5,5 +5,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record BillStatusUpdateRequest(
         @NotNull(message = "Status is required")
-        BillStatus status
+        BillStatus status,
+        
+        @org.jspecify.annotations.Nullable
+        String comments
 ) {}

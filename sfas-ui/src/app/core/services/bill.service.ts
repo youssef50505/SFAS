@@ -23,7 +23,7 @@ export class BillService {
     return this.http.post<Bill>(this.baseUrl, bill);
   }
 
-  updateBillStatus(id: string, status: 'APPROVED' | 'REJECTED'): Observable<Bill> {
-    return this.http.patch<Bill>(`${this.baseUrl}/${id}/status`, { status });
+  updateBillStatus(id: string, status: 'APPROVED' | 'REJECTED' | 'PENDING', comments?: string): Observable<Bill> {
+    return this.http.patch<Bill>(`${this.baseUrl}/${id}/status`, { status, comments });
   }
 }

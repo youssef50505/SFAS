@@ -79,6 +79,7 @@ public class BillServiceImpl implements BillService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + reviewerEmail));
 
         bill.setStatus(request.status());
+        bill.setReviewComments(request.comments());
         bill.setReviewedBy(reviewer);
         Bill updatedBill = billRepository.save(bill);
 

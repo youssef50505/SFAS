@@ -58,11 +58,8 @@
               <td>
                 @if (fund.status === 'PENDING') {
                   <div class="action-buttons">
-                    <button class="btn-approve" (click)="updateStatus(fund, 'APPROVED')" title="Approve">
-                      <i class="ri-check-line"></i> Approve
-                    </button>
-                    <button class="btn-reject" (click)="updateStatus(fund, 'REJECTED')" title="Reject">
-                      <i class="ri-close-line"></i> Reject
+                    <button class="btn-secondary" (click)="openReviewModal(fund)" title="Review">
+                      <i class="ri-eye-line"></i> Review
                     </button>
                   </div>
                 }
@@ -171,4 +168,14 @@
       </form>
     </div>
   </div>
+}
+
+@if (selectedFundForReview()) {
+  <app-review-modal
+    [config]="getReviewConfig()!"
+    (close)="closeReviewModal()"
+    (approve)="handleReviewAction($event, 'APPROVED')"
+    (pending)="handleReviewAction($event, 'PENDING')"
+    (reject)="handleReviewAction($event, 'REJECTED')">
+  </app-review-modal>
 }

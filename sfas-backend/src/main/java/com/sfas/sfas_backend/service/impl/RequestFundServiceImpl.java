@@ -2,7 +2,7 @@ package com.sfas.sfas_backend.service.impl;
 
 import com.sfas.sfas_backend.domain.entity.RequestFund;
 import com.sfas.sfas_backend.domain.entity.User;
-import com.sfas.sfas_backend.domain.enums.FundStatus;
+import com.sfas.sfas_backend.dto.request.FundStatusUpdateRequest;
 import com.sfas.sfas_backend.dto.request.RequestFundRequest;
 import com.sfas.sfas_backend.dto.response.RequestFundResponse;
 import com.sfas.sfas_backend.event.NotificationEvent;
@@ -54,19 +54,20 @@ public class RequestFundServiceImpl implements RequestFundService {
 
     @Override
     @Transactional
-    public RequestFundResponse updateFundStatus(UUID id, FundStatus status, String reviewerEmail) {
+    public RequestFundResponse updateFundStatus(UUID id, FundStatusUpdateRequest request, String reviewerEmail) {
         RequestFund fundRequest = requestFundRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Fund request not found with id: " + id));
 
         User reviewer = userRepository.findByEmail(reviewerEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + reviewerEmail));
 
-        fundRequest.setStatus(status);
+        fundRequest.setStatus(request.status());
+        fundRequest.setReviewComments(request.comments());
         fundRequest.setReviewedBy(reviewer);
         RequestFund updatedFund = requestFundRepository.save(fundRequest);
 
         eventPublisher.publishEvent(new NotificationEvent(
-                "Fund Request Status Updated to " + status + " for: " + fundRequest.getTitle(),
+                "Fund Request Status Updated to " + request.status() + " for: " + fundRequest.getTitle(),
                 fundRequest.getCreatedBy().getEmail()));
 
         return requestFundMapper.toResponse(updatedFund);

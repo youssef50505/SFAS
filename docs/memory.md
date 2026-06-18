@@ -395,3 +395,14 @@ The entire frontend now acts as a cohesive, modern Angular 21 application. Compi
    - Rearranged the header flex-box so the User Profile is the primary element on the left of the actions group, followed by the Theme Toggle and Notifications.
 4. **Input Validation Styling:** Added a new `.is-valid` CSS class logic to all Angular `ReactiveForms` controls to show a green border / glow dynamically when inputs are correctly filled.
 5. **Premium Logo Presentation:** Added a soft white background, padding, internal/external box-shadows, and a border radius to the login logo to distinctly separate it from the gradient background and elevate the visual aesthetics.
+
+## 21. Review Modals & Notifications Hub Implementation
+
+**Context:** The system required a detailed review process for the Finance Officers to inspect Bills and Request Funds. The simple table buttons were insufficient for this. Additionally, a Notifications Hub was required to capture system alerts for the users in a dedicated view.
+
+**What was accomplished:**
+1. **Database & API Readiness:** Added `reviewComments` (String) to both `Bill` and `RequestFund` entities. Updated the corresponding DTOs (`BillStatusUpdateRequest`, `FundStatusUpdateRequest`, `BillResponse`, `RequestFundResponse`) to seamlessly handle these comments. The `BillServiceImpl` and `RequestFundServiceImpl` were updated to persist these comments whenever a Finance Officer approves, rejects, or marks an item as pending.
+2. **Review Modal (`app-review-modal`):** Developed a highly robust `ReviewModalComponent` modeled closely after the provided Figma design. The modal features a clean split layout: structured key details on the left (dynamically handling both Bills and Funds via a unified `ReviewModalConfig` interface), and primary action buttons (Approve, Pending, Reject) alongside a comment entry text-area on the right.
+3. **Feature Integration:** Successfully refactored the `BillsComponent` and `FundsComponent`. Replaced the raw table action buttons with a centralized "Review" action (eye icon) that triggers the new modal. Updated the Angular services (`bill.service.ts` and `fund.service.ts`) to inject the review comments directly into the API payload upon submission.
+4. **Notifications Hub:** Built the `NotificationsComponent` as a dedicated UI route (`/notifications`). Streamlined the `HeaderComponent` by replacing the legacy dropdown popover with a clean direct navigation link triggered by the bell icon.
+5. **Code Quality & Maintenance:** Performed a thorough code review to clean up unresolved warnings flagged by the IDE, such as stripping unused imports (e.g., `FundStatus` from `RequestFundServiceImpl` and `RequestFundService`), ensuring completely clean frontend and backend compilations.

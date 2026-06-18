@@ -1,0 +1,39 @@
+<div class="page-container">
+  <div class="page-header-wrapper" gsapFade [delay]="0" [yOffset]="20">
+    <app-page-header title="Notification Hub" subtitle="Stay updated with your latest alerts and tasks">
+      <button class="btn-secondary" (click)="clearAll()">
+        <i class="ri-delete-bin-line"></i> Clear All
+      </button>
+    </app-page-header>
+  </div>
+
+  <div class="notifications-layout">
+    <div class="alerts-section surface" gsapFade [delay]="0.2">
+      <div class="section-header">
+        <h3><i class="ri-history-line"></i> Recent Alerts</h3>
+      </div>
+      
+      <div class="alerts-list">
+        @for (alert of getRecentAlerts(); track $index) {
+          <div class="alert-item">
+            <div class="alert-icon">
+              <i class="ri-notification-3-line"></i>
+            </div>
+            <div class="alert-content">
+              <span class="alert-message">{{ alert }}</span>
+              <span class="alert-time">Just now</span>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="ri-check-double-line"></i>
+            </div>
+            <p>You're all caught up!</p>
+            <span>No new notifications at this time.</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

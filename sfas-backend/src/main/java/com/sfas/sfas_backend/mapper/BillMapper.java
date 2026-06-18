@@ -13,6 +13,7 @@ public interface BillMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "reviewedBy", ignore = true)
+    @Mapping(target = "reviewComments", ignore = true)
     @Mapping(target = "vendor", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

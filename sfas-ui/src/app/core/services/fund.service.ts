@@ -19,7 +19,7 @@ export class FundService {
     return this.http.post<Fund>(this.baseUrl, fund);
   }
 
-  updateFundStatus(id: string, status: 'APPROVED' | 'REJECTED'): Observable<Fund> {
-    return this.http.patch<Fund>(`${this.baseUrl}/${id}/status`, { status });
+  updateFundStatus(id: string, status: 'APPROVED' | 'REJECTED' | 'PENDING', comments?: string): Observable<Fund> {
+    return this.http.patch<Fund>(`${this.baseUrl}/${id}/status`, { status, comments });
   }
 }

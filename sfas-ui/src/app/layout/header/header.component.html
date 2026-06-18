@@ -28,36 +28,12 @@
 
     <!-- Notifications -->
     <div class="notification-wrapper">
-      <button class="header-btn" (click)="toggleNotifications()" aria-label="View notifications" title="Notifications">
+      <button class="header-btn" (click)="navigateToNotifications()" aria-label="View notifications" title="Notifications">
         <i class="ri-notification-3-line"></i>
         @if (notificationService.unreadCount() > 0) {
           <span class="notification-badge">{{ notificationService.unreadCount() }}</span>
         }
       </button>
-
-      @if (showNotifications) {
-        <div class="notification-dropdown surface-elevated">
-          <div class="dropdown-header">
-            <h4>Notifications</h4>
-            <button class="btn-clear" (click)="notificationService.clearNotifications()">Clear All</button>
-          </div>
-          <div class="dropdown-body">
-            @if (notificationService.unreadCount() === 0) {
-              <div class="dropdown-empty">
-                <i class="ri-notification-off-line"></i>
-                <p>No new notifications</p>
-              </div>
-            } @else {
-              @for (notif of notificationService.notifications(); track $index) {
-                <div class="notif-item">
-                  <div class="notif-indicator"></div>
-                  <p>{{ notif }}</p>
-                </div>
-              }
-            }
-          </div>
-        </div>
-      }
     </div>
   </div>
 </div>

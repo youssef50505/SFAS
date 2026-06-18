@@ -1,6 +1,5 @@
 package com.sfas.sfas_backend.service;
 
-import com.sfas.sfas_backend.domain.enums.FundStatus;
 import com.sfas.sfas_backend.dto.request.RequestFundRequest;
 import com.sfas.sfas_backend.dto.response.RequestFundResponse;
 
@@ -10,6 +9,6 @@ import java.util.UUID;
 public interface RequestFundService {
     RequestFundResponse createFundRequest(RequestFundRequest request, String userEmail);
     List<RequestFundResponse> getAllFundRequests();
-    RequestFundResponse updateFundStatus(UUID id, FundStatus status, String reviewerEmail);
+    RequestFundResponse updateFundStatus(UUID id, com.sfas.sfas_backend.dto.request.FundStatusUpdateRequest request, String reviewerEmail);
 }
 

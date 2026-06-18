@@ -11,11 +11,12 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { GsapFadeDirective } from '../../shared/directives/gsap-fade.directive';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { ConfirmationService } from '../../shared/components/confirmation-modal/confirmation.service';
+import { ReviewModalComponent, ReviewModalConfig } from '../../shared/components/review-modal/review-modal.component';
 
 @Component({
   selector: 'app-bills',
   standalone: true,
-  imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
+  imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective, ReviewModalComponent],
   templateUrl: './bills.component.html',
   styleUrl: './bills.component.css'
 })
@@ -122,24 +123,56 @@ export class BillsComponent implements OnInit {
       });
   }
 
-  updateStatus(bill: Bill, status: 'APPROVED' | 'REJECTED') {
-    const actionText = status === 'APPROVED' ? 'approve' : 'reject';
-    const intent = status === 'APPROVED' ? 'primary' : 'danger';
+  selectedBillForReview = signal<Bill | null>(null);
+
+  getReviewConfig(): ReviewModalConfig | null {
+    const bill = this.selectedBillForReview();
+    if (!bill) return null;
+    
+    return {
+      type: 'bill',
+      id: bill.id.substring(0, 8).toUpperCase(),
+      submittedDate: bill.date,
+      title: bill.title,
+      grossAmount: bill.amount + (bill.tax || 0),
+      details: [
+        { label: 'Vendor', value: bill.vendor.name },
+        { label: 'Category', value: 'Office Expense' }, // Hardcoded for now
+        { label: 'Tax', value: '$' + (bill.tax || 0).toFixed(2) }
+      ],
+      description: bill.description
+    };
+  }
+
+  openReviewModal(bill: Bill) {
+    this.selectedBillForReview.set(bill);
+  }
+
+  closeReviewModal() {
+    this.selectedBillForReview.set(null);
+  }
+
+  handleReviewAction(comments: string, status: 'APPROVED' | 'REJECTED' | 'PENDING') {
+    const bill = this.selectedBillForReview();
+    if (!bill) return;
+
+    const actionText = status === 'APPROVED' ? 'approve' : (status === 'REJECTED' ? 'reject' : 'mark pending');
 
     this.confirmationService.confirm({
-      title: `${status === 'APPROVED' ? 'Approve' : 'Reject'} Bill`,
+      title: `${status === 'APPROVED' ? 'Approve' : (status === 'REJECTED' ? 'Reject' : 'Pending')} Bill`,
       message: `Are you sure you want to ${actionText} the bill "${bill.title}" for $${bill.amount}?`,
       confirmText: `Yes, ${actionText}`,
       cancelText: 'Cancel',
       isDanger: status === 'REJECTED'
     }).then(confirmed => {
       if (confirmed) {
-        this.billService.updateBillStatus(bill.id, status)
+        this.billService.updateBillStatus(bill.id, status, comments)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
               this.toast.success(`Bill ${status.toLowerCase()} successfully`);
               this.loadBills();
+              this.closeReviewModal();
             },
             error: () => this.toast.error(`Failed to ${actionText} bill`)
           });

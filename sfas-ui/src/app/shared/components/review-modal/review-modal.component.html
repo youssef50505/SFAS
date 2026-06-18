@@ -1,0 +1,106 @@
+<div class="modal-backdrop" gsapFade [duration]="0.3" [yOffset]="0">
+  <div class="review-modal-content surface" gsapFade [delay]="0.1" [yOffset]="-30">
+    <!-- Header -->
+    <div class="review-modal-header">
+      <div class="header-info">
+        <div class="icon-circle" [ngClass]="config().type">
+          @if (config().type === 'fund') {
+            <i class="ri-attachment-line"></i>
+          } @else {
+            <i class="ri-receipt-line"></i>
+          }
+        </div>
+        <div class="header-text">
+          <h2>{{ config().type === 'fund' ? 'Review Fund Request' : 'Review Bills' }}</h2>
+          <span class="subtitle">ID: {{ config().id }} • Submitted on {{ config().submittedDate | date:'mediumDate' }}</span>
+        </div>
+      </div>
+      <button class="btn-icon close-btn" (click)="onClose()">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="review-modal-body">
+      <!-- Left Column: Details -->
+      <div class="details-column">
+        <section class="detail-section">
+          <h3>{{ config().type === 'fund' ? 'REQUEST DETAILS' : 'BILL DETAILS' }}</h3>
+          <div class="details-card">
+            <h4 class="item-title">{{ config().title }}</h4>
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="detail-label">GROSS AMOUNT</span>
+                <span class="detail-value amount">{{ config().grossAmount | currency }}</span>
+              </div>
+              @for (detail of config().details; track detail.label) {
+                <div class="detail-item">
+                  <span class="detail-label">{{ detail.label | uppercase }}</span>
+                  <span class="detail-value">{{ detail.value }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="detail-section">
+          <h3>DESCRIPTION & DETAILS</h3>
+          <div class="details-card description-card">
+            <p>{{ config().description || 'No description provided.' }}</p>
+          </div>
+        </section>
+
+        <section class="detail-section">
+          <h3>SUPPORTING DOCUMENTS</h3>
+          <div class="documents-area">
+            <span class="empty-docs">No documents attached</span>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Action -->
+      <div class="action-column">
+        <section class="detail-section">
+          <h3>OFFICER ACTION</h3>
+          <div class="action-card">
+            <form [formGroup]="reviewForm">
+              <div class="form-group comments-group">
+                <label class="form-label"><i class="ri-chat-1-line"></i> Decision Comments</label>
+                <textarea 
+                  class="form-control comments-textarea" 
+                  formControlName="comments" 
+                  placeholder="Add specific notes for the requestor or the next approval stage..."
+                  rows="4"
+                ></textarea>
+              </div>
+              
+              <div class="action-buttons-vertical">
+                @if (config().type === 'fund') {
+                  <button type="button" class="btn-review-approve" (click)="onApprove()">
+                    <i class="ri-thumb-up-line"></i> Approving the Request
+                  </button>
+                  <button type="button" class="btn-review-pending" (click)="onPending()">
+                    <i class="ri-more-line"></i> Pending the Request
+                  </button>
+                  <button type="button" class="btn-review-reject" (click)="onReject()">
+                    <i class="ri-thumb-down-line"></i> Reject & Send Back
+                  </button>
+                } @else {
+                  <!-- Bill Modal design just showed Review & notify -->
+                  <button type="button" class="btn-review-notify" (click)="onApprove()">
+                    <i class="ri-message-3-line"></i> Review & notify
+                  </button>
+                }
+              </div>
+
+              <div class="action-disclaimer">
+                <i class="ri-information-line"></i>
+                <p>By approving, this transaction will be recorded in the general ledger under school liability.</p>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

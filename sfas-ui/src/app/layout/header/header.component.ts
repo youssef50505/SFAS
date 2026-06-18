@@ -1,4 +1,4 @@
-import { Component, inject, HostListener } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthStore } from '../../core/stores/auth.store';
 import { NotificationService } from '../../core/services/notification.service';
@@ -21,22 +21,12 @@ export class HeaderComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  showNotifications = false;
-
   toggleTheme(): void {
     this.themeService.toggle();
   }
 
-  toggleNotifications(): void {
-    this.showNotifications = !this.showNotifications;
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    if (this.showNotifications && !target.closest('.notification-wrapper')) {
-      this.showNotifications = false;
-    }
+  navigateToNotifications(): void {
+    this.router.navigate(['/notifications']);
   }
 
   logout(): void {

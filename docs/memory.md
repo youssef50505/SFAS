@@ -406,3 +406,14 @@ The entire frontend now acts as a cohesive, modern Angular 21 application. Compi
 3. **Feature Integration:** Successfully refactored the `BillsComponent` and `FundsComponent`. Replaced the raw table action buttons with a centralized "Review" action (eye icon) that triggers the new modal. Updated the Angular services (`bill.service.ts` and `fund.service.ts`) to inject the review comments directly into the API payload upon submission.
 4. **Notifications Hub:** Built the `NotificationsComponent` as a dedicated UI route (`/notifications`). Streamlined the `HeaderComponent` by replacing the legacy dropdown popover with a clean direct navigation link triggered by the bell icon.
 5. **Code Quality & Maintenance:** Performed a thorough code review to clean up unresolved warnings flagged by the IDE, such as stripping unused imports (e.g., `FundStatus` from `RequestFundServiceImpl` and `RequestFundService`), ensuring completely clean frontend and backend compilations.
+
+## 22. Subtle UI Polish & Feature Extraction
+
+**Context:** The user requested to extract "nice" UI features from a reference design without making any radical layout changes to our existing dark-mode, animated architecture.
+
+**What was accomplished:**
+1. **Refined Toast Notifications:** Upgraded the `ToastService` and CSS so that success toasts have a solid green background and crisp white text, matching the elegant reference design.
+2. **Elegant Empty States:** Created a shared `EmptyStateComponent`. Added it to the `Notifications`, `Bills`, and `Funds` screens, displaying a clean "Inbox Completely Processed" style message when the data array is empty.
+3. **Structured Document Cards:** Replaced the plain "No documents attached" placeholder in `ReviewModalComponent` with a dynamically rendered `.document-card` when a file path exists, showing a PDF icon, the file name, and a download action.
+4. **Status Border Indicators:** Updated `notifications.component.css` to add dynamic left border indicators (e.g. `border-left-color: var(--accent-primary)`) to alert cards based on their read/unread status.
+5. **Lighter Action Links:** Converted the bulky buttons in the Notification Hub into clean, elegant text-based action links with hover transitions for "Review" and "Dismiss", significantly lightning the UI footprint.

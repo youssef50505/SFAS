@@ -15,7 +15,7 @@
       
       <div class="alerts-list">
         @for (alert of getRecentAlerts(); track $index) {
-          <div class="alert-item">
+          <div class="alert-item unread">
             <div class="alert-icon">
               <i class="ri-notification-3-line"></i>
             </div>
@@ -23,15 +23,13 @@
               <span class="alert-message">{{ alert }}</span>
               <span class="alert-time">Just now</span>
             </div>
+            <div class="alert-actions">
+              <button class="action-link review"><i class="ri-eye-line"></i> Review</button>
+              <button class="action-link dismiss" (click)="clearAll()"><i class="ri-close-line"></i> Dismiss</button>
+            </div>
           </div>
         } @empty {
-          <div class="empty-state">
-            <div class="empty-icon">
-              <i class="ri-check-double-line"></i>
-            </div>
-            <p>You're all caught up!</p>
-            <span>No new notifications at this time.</span>
-          </div>
+          <app-empty-state title="Inbox Completely Processed" description="No pending items match criteria state parameters." icon="ri-check-double-line"></app-empty-state>
         }
       </div>
     </div>

@@ -11,6 +11,7 @@ export interface ReviewModalConfig {
   grossAmount: number;
   details: { label: string, value: string }[];
   description: string;
+  documentName?: string | null;
   status: string;
   comments?: string;
   isReadOnly: boolean;

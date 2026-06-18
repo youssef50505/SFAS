@@ -12,11 +12,12 @@ import { GsapFadeDirective } from '../../shared/directives/gsap-fade.directive';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { ConfirmationService } from '../../shared/components/confirmation-modal/confirmation.service';
 import { ReviewModalComponent, ReviewModalConfig } from '../../shared/components/review-modal/review-modal.component';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-bills',
   standalone: true,
-  imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective, ReviewModalComponent],
+  imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective, ReviewModalComponent, EmptyStateComponent],
   templateUrl: './bills.component.html',
   styleUrl: './bills.component.css'
 })
@@ -140,6 +141,7 @@ export class BillsComponent implements OnInit {
         { label: 'TAX', value: '$' + (bill.tax || 0).toFixed(2) }
       ],
       description: bill.description,
+      documentName: bill.imagePath,
       status: bill.status,
       comments: bill.reviewComments,
       isReadOnly: bill.status !== 'PENDING' || !this.authStore.isFinanceOfficer()

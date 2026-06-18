@@ -10,11 +10,12 @@ import { GsapFadeDirective } from '../../shared/directives/gsap-fade.directive';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { ConfirmationService } from '../../shared/components/confirmation-modal/confirmation.service';
 import { ReviewModalComponent, ReviewModalConfig } from '../../shared/components/review-modal/review-modal.component';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-funds',
   standalone: true,
-  imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective, ReviewModalComponent],
+  imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective, ReviewModalComponent, EmptyStateComponent],
   templateUrl: './funds.component.html',
   styleUrl: './funds.component.css'
 })
@@ -114,6 +115,7 @@ export class FundsComponent implements OnInit {
         { label: 'Urgency', value: fund.urgencyLevel }
       ],
       description: fund.description,
+      documentName: fund.imagePath,
       status: fund.status,
       comments: fund.reviewComments,
       isReadOnly: fund.status !== 'PENDING' || !this.authStore.isFinanceOfficer()

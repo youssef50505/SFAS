@@ -52,9 +52,26 @@
 
         <section class="detail-section">
           <h3>SUPPORTING DOCUMENTS</h3>
-          <div class="documents-area">
-            <span class="empty-docs">No documents attached</span>
-          </div>
+          @if (config().documentName) {
+            <div class="document-card">
+              <div class="doc-info">
+                <div class="doc-icon">
+                  <i class="ri-file-pdf-2-line"></i>
+                </div>
+                <div class="doc-details">
+                  <span class="doc-name">{{ config().documentName }}</span>
+                  <span class="doc-size">1.2 MB • Verification Complete</span>
+                </div>
+              </div>
+              <button class="doc-action">
+                <i class="ri-download-cloud-2-line"></i>
+              </button>
+            </div>
+          } @else {
+            <div class="documents-area">
+              <span class="empty-docs">No documents attached</span>
+            </div>
+          }
         </section>
       </div>
 

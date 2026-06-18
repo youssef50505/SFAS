@@ -180,6 +180,65 @@
   font-size: 0.9375rem;
 }
 
+.document-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  width: 100%;
+}
+
+.doc-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.doc-icon {
+  font-size: 1.5rem;
+  color: var(--accent-danger);
+  background: rgba(200, 16, 46, 0.1);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.doc-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.doc-size {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.doc-action {
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.doc-action:hover {
+  color: var(--accent-primary);
+}
+
 /* Right side action content */
 .comments-group {
   margin-bottom: 1.5rem;

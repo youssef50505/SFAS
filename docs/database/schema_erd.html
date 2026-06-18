@@ -120,6 +120,7 @@
         <div class="erd-row"><span class="col-name">image_path</span><span class="col-type">string</span></div>
         <div class="erd-row"><span class="col-name">status</span><span class="col-type">enum</span></div>
         <div class="erd-row"><span class="col-name">reviewed_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
+        <div class="erd-row"><span class="col-name">review_comments</span><span class="col-type">string</span></div>
         <div class="erd-row"><span class="col-name">created_date</span><span class="col-type">timestamp</span></div>
         <div class="erd-row"><span class="col-name">last_modified_date</span><span class="col-type">timestamp</span></div>
     </div>
@@ -138,6 +139,7 @@
         <div class="erd-row"><span class="col-name">description</span><span class="col-type">string</span></div>
         <div class="erd-row"><span class="col-name">status</span><span class="col-type">enum</span></div>
         <div class="erd-row"><span class="col-name">reviewed_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
+        <div class="erd-row"><span class="col-name">review_comments</span><span class="col-type">string</span></div>
         <div class="erd-row"><span class="col-name">created_date</span><span class="col-type">timestamp</span></div>
         <div class="erd-row"><span class="col-name">last_modified_date</span><span class="col-type">timestamp</span></div>
     </div>
@@ -214,6 +216,7 @@
   <tr><td>status</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: PENDING, APPROVED, REJECTED.</td></tr>
   <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
   <tr><td>reviewed_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
+  <tr><td>review_comments</td><td>VARCHAR</td><td>-</td><td>Comments provided by reviewer.</td></tr>
 </table>
 
 <h3><code>request_funds</code></h3>
@@ -227,6 +230,7 @@
   <tr><td>status</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: PENDING, APPROVED, REJECTED.</td></tr>
   <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
   <tr><td>reviewed_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
+  <tr><td>review_comments</td><td>VARCHAR</td><td>-</td><td>Comments provided by reviewer.</td></tr>
 </table>
 
 <h3><code>collections</code></h3>

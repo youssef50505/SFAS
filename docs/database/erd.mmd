@@ -44,6 +44,7 @@ erDiagram
         string description
         enum status "PENDING, APPROVED, REJECTED"
         uuid reviewed_by_id FK "Refers to User.id"
+        string review_comments
         timestamp created_at
         timestamp updated_at
     }
@@ -59,6 +60,7 @@ erDiagram
         string image_path
         enum status "PENDING, APPROVED, REJECTED"
         uuid reviewed_by_id FK "Refers to User.id"
+        string review_comments
         timestamp created_at
         timestamp updated_at
     }

@@ -63,41 +63,57 @@
         <section class="detail-section">
           <h3>OFFICER ACTION</h3>
           <div class="action-card">
-            <form [formGroup]="reviewForm">
-              <div class="form-group comments-group">
-                <label class="form-label"><i class="ri-chat-1-line"></i> Decision Comments</label>
-                <textarea 
-                  class="form-control comments-textarea" 
-                  formControlName="comments" 
-                  placeholder="Add specific notes for the requestor or the next approval stage..."
-                  rows="4"
-                ></textarea>
-              </div>
-              
-              <div class="action-buttons-vertical">
-                @if (config().type === 'fund') {
-                  <button type="button" class="btn-review-approve" (click)="onApprove()">
-                    <i class="ri-thumb-up-line"></i> Approving the Request
-                  </button>
-                  <button type="button" class="btn-review-pending" (click)="onPending()">
-                    <i class="ri-more-line"></i> Pending the Request
-                  </button>
-                  <button type="button" class="btn-review-reject" (click)="onReject()">
-                    <i class="ri-thumb-down-line"></i> Reject & Send Back
-                  </button>
-                } @else {
-                  <!-- Bill Modal design just showed Review & notify -->
-                  <button type="button" class="btn-review-notify" (click)="onApprove()">
-                    <i class="ri-message-3-line"></i> Review & notify
-                  </button>
-                }
-              </div>
+            @if (!config().isReadOnly) {
+              <form [formGroup]="reviewForm">
+                <div class="form-group comments-group">
+                  <label class="form-label"><i class="ri-chat-1-line"></i> Decision Comments</label>
+                  <textarea 
+                    class="form-control comments-textarea" 
+                    formControlName="comments" 
+                    placeholder="Add specific notes for the requestor or the next approval stage..."
+                    rows="4"
+                  ></textarea>
+                </div>
+                
+                <div class="action-buttons-vertical">
+                  @if (config().type === 'fund') {
+                    <button type="button" class="btn-review-approve" (click)="onApprove()">
+                      <i class="ri-thumb-up-line"></i> Approving the Request
+                    </button>
+                    <button type="button" class="btn-review-pending" (click)="onPending()">
+                      <i class="ri-more-line"></i> Pending the Request
+                    </button>
+                    <button type="button" class="btn-review-reject" (click)="onReject()">
+                      <i class="ri-thumb-down-line"></i> Reject & Send Back
+                    </button>
+                  } @else {
+                    <!-- Bill Modal design just showed Review & notify -->
+                    <button type="button" class="btn-review-notify" (click)="onApprove()">
+                      <i class="ri-message-3-line"></i> Review & notify
+                    </button>
+                  }
+                </div>
 
-              <div class="action-disclaimer">
-                <i class="ri-information-line"></i>
-                <p>By approving, this transaction will be recorded in the general ledger under school liability.</p>
+                <div class="action-disclaimer">
+                  <i class="ri-information-line"></i>
+                  <p>By approving, this transaction will be recorded in the general ledger under school liability.</p>
+                </div>
+              </form>
+            } @else {
+              <div class="readonly-action">
+                <div class="readonly-status">
+                  <span class="status-badge" [ngClass]="config().status.toLowerCase()">
+                    {{ config().status }}
+                  </span>
+                </div>
+                <div class="readonly-comments">
+                  <label class="form-label"><i class="ri-chat-1-line"></i> Decision Comments</label>
+                  <div class="comments-display">
+                    {{ config().comments || 'No comments provided during review.' }}
+                  </div>
+                </div>
               </div>
-            </form>
+            }
           </div>
         </section>
       </div>

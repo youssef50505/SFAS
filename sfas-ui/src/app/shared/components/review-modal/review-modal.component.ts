@@ -11,6 +11,9 @@ export interface ReviewModalConfig {
   grossAmount: number;
   details: { label: string, value: string }[];
   description: string;
+  status: string;
+  comments?: string;
+  isReadOnly: boolean;
 }
 
 @Component({

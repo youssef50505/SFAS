@@ -11,6 +11,7 @@ export interface Fund {
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   createdBy?: User;
   reviewedBy?: User | null;
+  reviewComments?: string;
   createdAt?: string;
   updatedAt?: string;
 }

@@ -113,7 +113,10 @@ export class FundsComponent implements OnInit {
         { label: 'Role', value: fund.createdBy?.role === 'FINANCE_OFFICER' ? 'Finance Officer' : (fund.createdBy?.role || 'User') },
         { label: 'Urgency', value: fund.urgencyLevel }
       ],
-      description: fund.description
+      description: fund.description,
+      status: fund.status,
+      comments: fund.reviewComments,
+      isReadOnly: fund.status !== 'PENDING' || !this.authStore.isFinanceOfficer()
     };
   }
 

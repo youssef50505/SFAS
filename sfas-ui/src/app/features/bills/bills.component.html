@@ -24,9 +24,7 @@
           <th>Date</th>
           <th>Amount / Tax</th>
           <th>Status</th>
-          @if (authStore.isFinanceOfficer()) {
-            <th>Actions</th>
-          }
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -56,17 +54,13 @@
                 {{ bill.status }}
               </span>
             </td>
-            @if (authStore.isFinanceOfficer()) {
-              <td>
-                @if (bill.status === 'PENDING') {
-                  <div class="action-buttons">
-                    <button class="btn-secondary" (click)="openReviewModal(bill)" title="Review">
-                      <i class="ri-eye-line"></i> Review
-                    </button>
-                  </div>
-                }
-              </td>
-            }
+            <td>
+              <div class="action-buttons">
+                <button class="btn-secondary" (click)="openReviewModal(bill)" title="Review">
+                  <i class="ri-eye-line"></i> {{ bill.status === 'PENDING' && authStore.isFinanceOfficer() ? 'Review' : 'View' }}
+                </button>
+              </div>
+            </td>
           </tr>
         } @empty {
           <tr>

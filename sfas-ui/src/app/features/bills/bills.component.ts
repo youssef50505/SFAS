@@ -134,13 +134,15 @@ export class BillsComponent implements OnInit {
       id: bill.id.substring(0, 8).toUpperCase(),
       submittedDate: bill.date,
       title: bill.title,
-      grossAmount: bill.amount + (bill.tax || 0),
+      grossAmount: bill.amount,
       details: [
-        { label: 'Vendor', value: bill.vendor.name },
-        { label: 'Category', value: 'Office Expense' }, // Hardcoded for now
-        { label: 'Tax', value: '$' + (bill.tax || 0).toFixed(2) }
+        { label: 'VENDOR', value: bill.vendor.name },
+        { label: 'TAX', value: '$' + (bill.tax || 0).toFixed(2) }
       ],
-      description: bill.description
+      description: bill.description,
+      status: bill.status,
+      comments: bill.reviewComments,
+      isReadOnly: bill.status !== 'PENDING' || !this.authStore.isFinanceOfficer()
     };
   }
 

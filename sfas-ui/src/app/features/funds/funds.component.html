@@ -24,9 +24,7 @@
           <th>Amount</th>
           <th>Urgency</th>
           <th>Status</th>
-          @if (authStore.isFinanceOfficer()) {
-            <th>Actions</th>
-          }
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -54,17 +52,13 @@
                 {{ fund.status }}
               </span>
             </td>
-            @if (authStore.isFinanceOfficer()) {
-              <td>
-                @if (fund.status === 'PENDING') {
-                  <div class="action-buttons">
-                    <button class="btn-secondary" (click)="openReviewModal(fund)" title="Review">
-                      <i class="ri-eye-line"></i> Review
-                    </button>
-                  </div>
-                }
-              </td>
-            }
+            <td>
+              <div class="action-buttons">
+                <button class="btn-secondary" (click)="openReviewModal(fund)" title="Review">
+                  <i class="ri-eye-line"></i> {{ fund.status === 'PENDING' && authStore.isFinanceOfficer() ? 'Review' : 'View' }}
+                </button>
+              </div>
+            </td>
           </tr>
         } @empty {
           <tr>

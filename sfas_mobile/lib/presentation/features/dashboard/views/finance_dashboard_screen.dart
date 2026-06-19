@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../notifications/views/notifications_sheet.dart';
 import '../bloc/dashboard_bloc.dart';
@@ -79,13 +80,15 @@ class FinanceDashboardScreen extends StatelessWidget {
                     const SizedBox(height: 40),
                     Text('Quick Actions', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)).animate().fadeIn(delay: 200.ms),
                     const SizedBox(height: 20),
-                    Wrap(
-                      spacing: 20,
-                      runSpacing: 20,
+                    Column(
                       children: [
-                        _buildActionCard(context, 'Review Bills', '$pendingBillsCount pending', Remix.receipt_line, [Colors.blue.shade400, Colors.blue.shade700]),
-                        _buildActionCard(context, 'Approve Funds', '$pendingFundsCount requests', Remix.money_dollar_circle_line, [Colors.green.shade400, Colors.green.shade700]),
-                        _buildActionCard(context, 'New Vendor', 'Onboard', Remix.user_add_line, [Colors.purple.shade400, Colors.deepPurple.shade700]),
+                        _buildActionCard(context, 'Review Bills', '$pendingBillsCount pending', Remix.receipt_line, [Colors.blue.shade400, Colors.blue.shade700], () => context.go('/bills')),
+                        const SizedBox(height: 16),
+                        _buildActionCard(context, 'Approve Funds', '$pendingFundsCount requests', Remix.money_dollar_circle_line, [Colors.green.shade400, Colors.green.shade700], () => context.go('/funds')),
+                        const SizedBox(height: 16),
+                        _buildActionCard(context, 'New Vendor', 'Onboard', Remix.user_add_line, [Colors.purple.shade400, Colors.deepPurple.shade700], () {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vendor onboarding is coming soon!')));
+                        }),
                       ],
                     ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
                     const SizedBox(height: 40),
@@ -189,17 +192,17 @@ class FinanceDashboardScreen extends StatelessWidget {
     ).animate().fadeIn(duration: 600.ms).scale(begin: const Offset(0.95, 0.95));
   }
 
-  Widget _buildActionCard(BuildContext context, String title, String subtitle, IconData icon, List<Color> gradientColors) {
+  Widget _buildActionCard(BuildContext context, String title, String subtitle, IconData icon, List<Color> gradientColors, VoidCallback onTap) {
     final theme = Theme.of(context);
     return InkWell(
-      onTap: () {},
-      borderRadius: BorderRadius.circular(24),
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
       child: Container(
-        width: 200,
-        padding: const EdgeInsets.all(24),
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -208,8 +211,7 @@ class FinanceDashboardScreen extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(16),
@@ -228,12 +230,20 @@ class FinanceDashboardScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(icon, color: Colors.white, size: 28),
+              child: Icon(icon, color: Colors.white, size: 24),
             ),
-            const SizedBox(height: 24),
-            Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text(subtitle, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Text(subtitle, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+                ],
+              ),
+            ),
+            Icon(Remix.arrow_right_s_line, color: Colors.grey.shade400),
           ],
         ),
       ),

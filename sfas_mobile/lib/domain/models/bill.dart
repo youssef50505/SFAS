@@ -8,15 +8,15 @@ part 'bill.g.dart';
 @freezed
 abstract class Bill with _$Bill {
   const factory Bill({
-    required String id,
-    required String title,
+    String? id,
+    String? title,
     Vendor? vendor,
-    required double amount,
-    required double tax,
-    required String date,
+    double? amount,
+    double? tax,
+    String? date,
     String? imagePath,
-    required String description,
-    required String status,
+    String? description,
+    String? status,
     User? createdBy,
     User? reviewedBy,
     String? reviewComments,

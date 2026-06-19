@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:remixicon/remixicon.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../domain/models/collection.dart';
+import '../bloc/collections_bloc.dart';
+import '../bloc/collections_event.dart';
+import '../bloc/collections_state.dart';
 
 class CollectionsScreen extends StatefulWidget {
   const CollectionsScreen({super.key});
@@ -11,11 +15,7 @@ class CollectionsScreen extends StatefulWidget {
 }
 
 class _CollectionsScreenState extends State<CollectionsScreen> {
-  final List<Collection> _mockCollections = [
-    Collection(id: '1', date: '2026-06-18', type: 'Tuition Fee', amount: 5000.00),
-    Collection(id: '2', date: '2026-06-18', type: 'Library Fine', amount: 25.00),
-    Collection(id: '3', date: '2026-06-17', type: 'Cafeteria Deposit', amount: 1500.00),
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +25,26 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
       appBar: AppBar(
         title: const Text('Collections Log'),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(24.0),
-        itemCount: _mockCollections.length,
-        itemBuilder: (context, index) {
-          final collection = _mockCollections[index];
-          return _buildCollectionCard(context, collection).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+      body: BlocBuilder<CollectionsBloc, CollectionsState>(
+        builder: (context, state) {
+          return state.when(
+            initial: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (message) => Center(child: Text(message, style: const TextStyle(color: Colors.red))),
+            loaded: (collections) {
+              if (collections.isEmpty) {
+                return const Center(child: Text('No collections found'));
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.all(24.0),
+                itemCount: collections.length,
+                itemBuilder: (context, index) {
+                  final collection = collections[index];
+                  return _buildCollectionCard(context, collection).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+                },
+              );
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -106,7 +120,13 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
               TextFormField(decoration: const InputDecoration(labelText: 'Amount', border: OutlineInputBorder()), keyboardType: TextInputType.number),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  context.read<CollectionsBloc>().add(CollectionsEvent.createCollection({
+                    'type': 'New Collection',
+                    'amount': 100.0,
+                  }));
+                  Navigator.pop(context);
+                },
                 child: const Text('Save Collection'),
               ),
               const SizedBox(height: 24),

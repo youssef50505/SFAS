@@ -71,21 +71,38 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Remix.bank_fill, size: 80, color: Colors.white)
-                              .animate()
-                              .fadeIn(duration: 800.ms)
-                              .scale(delay: 200.ms),
-                          const SizedBox(height: 24),
-                          Text(
-                            'SFAS',
-                            style: Theme.of(context)
-                                .textTheme
-                                .displayLarge
-                                ?.copyWith(color: Colors.white, fontSize: 48),
-                          )
-                              .animate()
-                              .fadeIn(delay: 400.ms, duration: 600.ms)
-                              .slideY(begin: 0.5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.1),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset('assets/images/logo.jpg', height: 60, width: 60, fit: BoxFit.contain),
+                                ),
+                              ).animate().fadeIn(duration: 800.ms).scale(delay: 200.ms),
+                              const SizedBox(width: 16),
+                              Text(
+                                'SFAS',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayLarge
+                                    ?.copyWith(color: Colors.white, fontSize: 48),
+                              ).animate().fadeIn(delay: 400.ms, duration: 600.ms).slideY(begin: 0.5),
+                            ],
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             'School Finance Administration System',
@@ -112,18 +129,36 @@ class _LoginScreenState extends State<LoginScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (!isDesktop) ...[
-                              Icon(Remix.bank_fill,
-                                      size: 64,
-                                      color: Theme.of(context).colorScheme.primary)
-                                  .animate()
-                                  .fadeIn(duration: 800.ms)
-                                  .scale(delay: 200.ms),
-                              const SizedBox(height: 24),
-                              Text(
-                                'SFAS Login',
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.displayMedium,
-                              ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.5),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.1),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.asset('assets/images/logo.jpg', height: 50, width: 50, fit: BoxFit.contain),
+                                    ),
+                                  ).animate().fadeIn(duration: 800.ms).scale(delay: 200.ms),
+                                  const SizedBox(width: 16),
+                                  Text(
+                                    'SFAS',
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context).textTheme.displayMedium,
+                                  ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.5),
+                                ],
+                              ),
                               const SizedBox(height: 48),
                             ] else ...[
                               Text(

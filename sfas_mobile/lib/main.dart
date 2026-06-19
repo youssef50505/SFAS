@@ -9,9 +9,21 @@ import 'data/repositories/bill_repository.dart';
 import 'data/repositories/fund_repository.dart';
 import 'data/repositories/collection_repository.dart';
 import 'data/repositories/vendor_repository.dart';
+import 'data/repositories/report_repository.dart';
+import 'data/repositories/notification_repository.dart';
 import 'presentation/features/auth/bloc/auth_bloc.dart';
 import 'presentation/features/dashboard/bloc/dashboard_bloc.dart';
 import 'presentation/features/dashboard/bloc/dashboard_event.dart';
+import 'presentation/features/bills/bloc/bills_bloc.dart';
+import 'presentation/features/bills/bloc/bills_event.dart';
+import 'presentation/features/funds/bloc/funds_bloc.dart';
+import 'presentation/features/funds/bloc/funds_event.dart';
+import 'presentation/features/collections/bloc/collections_bloc.dart';
+import 'presentation/features/collections/bloc/collections_event.dart';
+import 'presentation/features/reports/bloc/reports_bloc.dart';
+import 'presentation/features/reports/bloc/reports_event.dart';
+import 'presentation/features/notifications/bloc/notifications_bloc.dart';
+import 'presentation/features/notifications/bloc/notifications_event.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,6 +60,12 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<VendorRepository>(
           create: (context) => VendorRepository(context.read<DioClient>()),
         ),
+        RepositoryProvider<ReportRepository>(
+          create: (context) => ReportRepository(context.read<DioClient>()),
+        ),
+        RepositoryProvider<NotificationRepository>(
+          create: (context) => NotificationRepository(context.read<DioClient>()),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -61,6 +79,21 @@ class MyApp extends StatelessWidget {
               collectionRepository: context.read<CollectionRepository>(),
               vendorRepository: context.read<VendorRepository>(),
             )..add(const DashboardEvent.loadDashboardData()),
+          ),
+          BlocProvider<BillsBloc>(
+            create: (context) => BillsBloc(billRepository: context.read<BillRepository>())..add(const BillsEvent.loadBills()),
+          ),
+          BlocProvider<FundsBloc>(
+            create: (context) => FundsBloc(fundRepository: context.read<FundRepository>())..add(const FundsEvent.loadFunds()),
+          ),
+          BlocProvider<CollectionsBloc>(
+            create: (context) => CollectionsBloc(collectionRepository: context.read<CollectionRepository>())..add(const CollectionsEvent.loadCollections()),
+          ),
+          BlocProvider<ReportsBloc>(
+            create: (context) => ReportsBloc(reportRepository: context.read<ReportRepository>())..add(const ReportsEvent.loadReports()),
+          ),
+          BlocProvider<NotificationsBloc>(
+            create: (context) => NotificationsBloc(notificationRepository: context.read<NotificationRepository>())..add(const NotificationsEvent.loadNotifications()),
           ),
         ],
         child: MaterialApp.router(

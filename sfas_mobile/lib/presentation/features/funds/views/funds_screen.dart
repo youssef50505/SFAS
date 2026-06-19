@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:remixicon/remixicon.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../domain/models/fund.dart';
+import '../bloc/funds_bloc.dart';
+import '../bloc/funds_event.dart';
+import '../bloc/funds_state.dart';
 
 class FundsScreen extends StatefulWidget {
   const FundsScreen({super.key});
@@ -11,10 +15,7 @@ class FundsScreen extends StatefulWidget {
 }
 
 class _FundsScreenState extends State<FundsScreen> {
-  final List<Fund> _mockFunds = [
-    Fund(id: '1', title: 'Library Renovation', description: 'Upgrading the reading areas', amountOfFund: 15000.00, urgencyLevel: 'HIGH', date: '2026-06-12', status: 'PENDING'),
-    Fund(id: '2', title: 'New Computers', description: 'Lab 2 computers replacement', amountOfFund: 35000.00, urgencyLevel: 'MEDIUM', date: '2026-06-08', status: 'APPROVED'),
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +25,26 @@ class _FundsScreenState extends State<FundsScreen> {
       appBar: AppBar(
         title: const Text('Funds Allocation'),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(24.0),
-        itemCount: _mockFunds.length,
-        itemBuilder: (context, index) {
-          final fund = _mockFunds[index];
-          return _buildFundCard(context, fund).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+      body: BlocBuilder<FundsBloc, FundsState>(
+        builder: (context, state) {
+          return state.when(
+            initial: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (message) => Center(child: Text(message, style: const TextStyle(color: Colors.red))),
+            loaded: (funds) {
+              if (funds.isEmpty) {
+                return const Center(child: Text('No funds found'));
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.all(24.0),
+                itemCount: funds.length,
+                itemBuilder: (context, index) {
+                  final fund = funds[index];
+                  return _buildFundCard(context, fund).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+                },
+              );
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -118,7 +133,15 @@ class _FundsScreenState extends State<FundsScreen> {
               TextFormField(decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()), maxLines: 3),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  context.read<FundsBloc>().add(FundsEvent.createFund({
+                    'title': 'New Fund',
+                    'description': 'Description',
+                    'amountOfFund': 500.0,
+                    'urgencyLevel': 'MEDIUM',
+                  }));
+                  Navigator.pop(context);
+                },
                 child: const Text('Submit Request'),
               ),
               const SizedBox(height: 24),
@@ -162,7 +185,10 @@ class _FundsScreenState extends State<FundsScreen> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        context.read<FundsBloc>().add(FundsEvent.updateFundStatus(fund.id, 'REJECTED'));
+                        Navigator.pop(context);
+                      },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red,
                         side: const BorderSide(color: Colors.red),
@@ -174,7 +200,10 @@ class _FundsScreenState extends State<FundsScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        context.read<FundsBloc>().add(FundsEvent.updateFundStatus(fund.id, 'APPROVED'));
+                        Navigator.pop(context);
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,

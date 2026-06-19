@@ -38,11 +38,16 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   Future<void> _onLoadDashboardData(Emitter<DashboardState> emit) async {
     emit(const DashboardState.loading());
     try {
+      final fundFuture = _fundRepository.getFunds().catchError((_) => <Fund>[]);
+      final billFuture = _billRepository.getBills().catchError((_) => <Bill>[]);
+      final collectionFuture = _collectionRepository.getCollections().catchError((_) => <Collection>[]);
+      final vendorFuture = _vendorRepository.getVendors().catchError((_) => <Vendor>[]);
+
       final results = await Future.wait([
-        _fundRepository.getFunds(),
-        _billRepository.getBills(),
-        _collectionRepository.getCollections(),
-        _vendorRepository.getVendors(),
+        fundFuture,
+        billFuture,
+        collectionFuture,
+        vendorFuture,
       ]);
 
       final funds = results[0] as List<Fund>;

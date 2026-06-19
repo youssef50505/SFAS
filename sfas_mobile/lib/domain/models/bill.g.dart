@@ -7,17 +7,17 @@ part of 'bill.dart';
 // **************************************************************************
 
 _Bill _$BillFromJson(Map<String, dynamic> json) => _Bill(
-  id: json['id'] as String,
-  title: json['title'] as String,
+  id: json['id'] as String?,
+  title: json['title'] as String?,
   vendor: json['vendor'] == null
       ? null
       : Vendor.fromJson(json['vendor'] as Map<String, dynamic>),
-  amount: (json['amount'] as num).toDouble(),
-  tax: (json['tax'] as num).toDouble(),
-  date: json['date'] as String,
+  amount: (json['amount'] as num?)?.toDouble(),
+  tax: (json['tax'] as num?)?.toDouble(),
+  date: json['date'] as String?,
   imagePath: json['imagePath'] as String?,
-  description: json['description'] as String,
-  status: json['status'] as String,
+  description: json['description'] as String?,
+  status: json['status'] as String?,
   createdBy: json['createdBy'] == null
       ? null
       : User.fromJson(json['createdBy'] as Map<String, dynamic>),

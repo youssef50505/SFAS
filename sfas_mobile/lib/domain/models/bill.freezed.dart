@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Bill {
 
- String get id; String get title; Vendor? get vendor; double get amount; double get tax; String get date; String? get imagePath; String get description; String get status; User? get createdBy; User? get reviewedBy; String? get reviewComments; String? get createdAt; String? get updatedAt;
+ String? get id; String? get title; Vendor? get vendor; double? get amount; double? get tax; String? get date; String? get imagePath; String? get description; String? get status; User? get createdBy; User? get reviewedBy; String? get reviewComments; String? get createdAt; String? get updatedAt;
 /// Create a copy of Bill
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $BillCopyWith<$Res>  {
   factory $BillCopyWith(Bill value, $Res Function(Bill) _then) = _$BillCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, Vendor? vendor, double amount, double tax, String date, String? imagePath, String description, String status, User? createdBy, User? reviewedBy, String? reviewComments, String? createdAt, String? updatedAt
+ String? id, String? title, Vendor? vendor, double? amount, double? tax, String? date, String? imagePath, String? description, String? status, User? createdBy, User? reviewedBy, String? reviewComments, String? createdAt, String? updatedAt
 });
 
 
@@ -65,18 +65,18 @@ class _$BillCopyWithImpl<$Res>
 
 /// Create a copy of Bill
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? vendor = freezed,Object? amount = null,Object? tax = null,Object? date = null,Object? imagePath = freezed,Object? description = null,Object? status = null,Object? createdBy = freezed,Object? reviewedBy = freezed,Object? reviewComments = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? title = freezed,Object? vendor = freezed,Object? amount = freezed,Object? tax = freezed,Object? date = freezed,Object? imagePath = freezed,Object? description = freezed,Object? status = freezed,Object? createdBy = freezed,Object? reviewedBy = freezed,Object? reviewComments = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,vendor: freezed == vendor ? _self.vendor : vendor // ignore: cast_nullable_to_non_nullable
-as Vendor?,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
-as double,tax: null == tax ? _self.tax : tax // ignore: cast_nullable_to_non_nullable
-as double,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
-as String,imagePath: freezed == imagePath ? _self.imagePath : imagePath // ignore: cast_nullable_to_non_nullable
-as String?,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
-as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String?,vendor: freezed == vendor ? _self.vendor : vendor // ignore: cast_nullable_to_non_nullable
+as Vendor?,amount: freezed == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as double?,tax: freezed == tax ? _self.tax : tax // ignore: cast_nullable_to_non_nullable
+as double?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as String?,imagePath: freezed == imagePath ? _self.imagePath : imagePath // ignore: cast_nullable_to_non_nullable
+as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
 as User?,reviewedBy: freezed == reviewedBy ? _self.reviewedBy : reviewedBy // ignore: cast_nullable_to_non_nullable
 as User?,reviewComments: freezed == reviewComments ? _self.reviewComments : reviewComments // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
@@ -202,7 +202,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  Vendor? vendor,  double amount,  double tax,  String date,  String? imagePath,  String description,  String status,  User? createdBy,  User? reviewedBy,  String? reviewComments,  String? createdAt,  String? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? title,  Vendor? vendor,  double? amount,  double? tax,  String? date,  String? imagePath,  String? description,  String? status,  User? createdBy,  User? reviewedBy,  String? reviewComments,  String? createdAt,  String? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Bill() when $default != null:
 return $default(_that.id,_that.title,_that.vendor,_that.amount,_that.tax,_that.date,_that.imagePath,_that.description,_that.status,_that.createdBy,_that.reviewedBy,_that.reviewComments,_that.createdAt,_that.updatedAt);case _:
@@ -223,7 +223,7 @@ return $default(_that.id,_that.title,_that.vendor,_that.amount,_that.tax,_that.d
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  Vendor? vendor,  double amount,  double tax,  String date,  String? imagePath,  String description,  String status,  User? createdBy,  User? reviewedBy,  String? reviewComments,  String? createdAt,  String? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? title,  Vendor? vendor,  double? amount,  double? tax,  String? date,  String? imagePath,  String? description,  String? status,  User? createdBy,  User? reviewedBy,  String? reviewComments,  String? createdAt,  String? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _Bill():
 return $default(_that.id,_that.title,_that.vendor,_that.amount,_that.tax,_that.date,_that.imagePath,_that.description,_that.status,_that.createdBy,_that.reviewedBy,_that.reviewComments,_that.createdAt,_that.updatedAt);case _:
@@ -243,7 +243,7 @@ return $default(_that.id,_that.title,_that.vendor,_that.amount,_that.tax,_that.d
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  Vendor? vendor,  double amount,  double tax,  String date,  String? imagePath,  String description,  String status,  User? createdBy,  User? reviewedBy,  String? reviewComments,  String? createdAt,  String? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? title,  Vendor? vendor,  double? amount,  double? tax,  String? date,  String? imagePath,  String? description,  String? status,  User? createdBy,  User? reviewedBy,  String? reviewComments,  String? createdAt,  String? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Bill() when $default != null:
 return $default(_that.id,_that.title,_that.vendor,_that.amount,_that.tax,_that.date,_that.imagePath,_that.description,_that.status,_that.createdBy,_that.reviewedBy,_that.reviewComments,_that.createdAt,_that.updatedAt);case _:
@@ -258,18 +258,18 @@ return $default(_that.id,_that.title,_that.vendor,_that.amount,_that.tax,_that.d
 @JsonSerializable()
 
 class _Bill implements Bill {
-  const _Bill({required this.id, required this.title, this.vendor, required this.amount, required this.tax, required this.date, this.imagePath, required this.description, required this.status, this.createdBy, this.reviewedBy, this.reviewComments, this.createdAt, this.updatedAt});
+  const _Bill({this.id, this.title, this.vendor, this.amount, this.tax, this.date, this.imagePath, this.description, this.status, this.createdBy, this.reviewedBy, this.reviewComments, this.createdAt, this.updatedAt});
   factory _Bill.fromJson(Map<String, dynamic> json) => _$BillFromJson(json);
 
-@override final  String id;
-@override final  String title;
+@override final  String? id;
+@override final  String? title;
 @override final  Vendor? vendor;
-@override final  double amount;
-@override final  double tax;
-@override final  String date;
+@override final  double? amount;
+@override final  double? tax;
+@override final  String? date;
 @override final  String? imagePath;
-@override final  String description;
-@override final  String status;
+@override final  String? description;
+@override final  String? status;
 @override final  User? createdBy;
 @override final  User? reviewedBy;
 @override final  String? reviewComments;
@@ -309,7 +309,7 @@ abstract mixin class _$BillCopyWith<$Res> implements $BillCopyWith<$Res> {
   factory _$BillCopyWith(_Bill value, $Res Function(_Bill) _then) = __$BillCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, Vendor? vendor, double amount, double tax, String date, String? imagePath, String description, String status, User? createdBy, User? reviewedBy, String? reviewComments, String? createdAt, String? updatedAt
+ String? id, String? title, Vendor? vendor, double? amount, double? tax, String? date, String? imagePath, String? description, String? status, User? createdBy, User? reviewedBy, String? reviewComments, String? createdAt, String? updatedAt
 });
 
 
@@ -326,18 +326,18 @@ class __$BillCopyWithImpl<$Res>
 
 /// Create a copy of Bill
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? vendor = freezed,Object? amount = null,Object? tax = null,Object? date = null,Object? imagePath = freezed,Object? description = null,Object? status = null,Object? createdBy = freezed,Object? reviewedBy = freezed,Object? reviewComments = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? title = freezed,Object? vendor = freezed,Object? amount = freezed,Object? tax = freezed,Object? date = freezed,Object? imagePath = freezed,Object? description = freezed,Object? status = freezed,Object? createdBy = freezed,Object? reviewedBy = freezed,Object? reviewComments = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_Bill(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,vendor: freezed == vendor ? _self.vendor : vendor // ignore: cast_nullable_to_non_nullable
-as Vendor?,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
-as double,tax: null == tax ? _self.tax : tax // ignore: cast_nullable_to_non_nullable
-as double,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
-as String,imagePath: freezed == imagePath ? _self.imagePath : imagePath // ignore: cast_nullable_to_non_nullable
-as String?,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
-as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String?,vendor: freezed == vendor ? _self.vendor : vendor // ignore: cast_nullable_to_non_nullable
+as Vendor?,amount: freezed == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as double?,tax: freezed == tax ? _self.tax : tax // ignore: cast_nullable_to_non_nullable
+as double?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as String?,imagePath: freezed == imagePath ? _self.imagePath : imagePath // ignore: cast_nullable_to_non_nullable
+as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
 as User?,reviewedBy: freezed == reviewedBy ? _self.reviewedBy : reviewedBy // ignore: cast_nullable_to_non_nullable
 as User?,reviewComments: freezed == reviewComments ? _self.reviewComments : reviewComments // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable

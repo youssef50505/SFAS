@@ -160,7 +160,7 @@ class _FundsScreenState extends State<FundsScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: urgencyLevel,
+                      initialValue: urgencyLevel,
                       decoration: const InputDecoration(labelText: 'Urgency Level', border: OutlineInputBorder()),
                       items: ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].map((level) => DropdownMenuItem(value: level, child: Text(level))).toList(),
                       onChanged: (value) => setState(() => urgencyLevel = value!),

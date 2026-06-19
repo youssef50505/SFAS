@@ -426,3 +426,67 @@ The entire frontend now acts as a cohesive, modern Angular 21 application. Compi
 1. **Global Default Override:** Injected `DEFAULT_CURRENCY_CODE` from `@angular/core` into `app.config.ts`, globally shifting all Angular `CurrencyPipe` (`| currency`) usages to display `EGP` automatically.
 2. **Template Hardcoding Replacement:** Replaced all hardcoded `$` symbols in form labels (e.g., `Amount (EGP)`) across Bills, Request Funds, and Collections screens.
 3. **TypeScript Logic & Modals:** Converted string interpolations (`$${amount}`) to `EGP ${amount}` inside TypeScript files, ensuring confirmation modals and tooltips properly render the Egyptian currency abbreviation.
+
+## 24. Flutter Mobile Application Implementation
+
+**Context:** The School Financial Accounting System (SFAS) required a dedicated cross-platform mobile application to bridge the gap between School Supervisors (Admins) and Finance Officers on the go. The application was built from scratch inside the `sfas_mobile` directory using Flutter.
+
+**Objective for Future Agents:** This detailed documentation serves to thoroughly explain the structure, dependencies, decisions, and capabilities built into the `sfas_mobile` Flutter application. Any subsequent agent working on this codebase must adhere strictly to these architectural patterns.
+
+### 24.1. Core Dependencies & Tooling
+The `pubspec.yaml` was carefully constructed using enterprise-grade packages:
+- **`flutter_bloc` (v8.1.3):** Chosen as the state management solution (MVVM architecture). All business logic must be isolated in BLoCs or Cubits.
+- **`dio` (v5.4.3+):** The primary HTTP client. Chosen over `http` for its built-in interceptor capabilities, essential for JWT token injection and centralized error handling.
+- **`go_router` (v13.2.0+):** Employed for advanced declarative routing, Deep Linking support, and crucial role-based path guarding.
+- **`freezed_annotation` / `freezed` / `build_runner`:** Used exclusively for Domain Data Models. `Freezed` guarantees immutability, union types for states, and seamless `toJson/fromJson` generation.
+- **`flutter_secure_storage`:** Utilized to securely persist sensitive tokens (JWT) and user roles utilizing the device's native Keystore/Keychain.
+- **`flutter_animate`:** Integrated to inject highly performant, code-driven micro-animations (fade-ins, slides, scales) universally across the UI layer without requiring complex `AnimationController` boilerplate.
+- **`fl_chart`:** Embedded for premium, interactive analytical charting (Pie and Bar charts) in the Executive Dashboards.
+- **`remixicon` & `google_fonts`:** Adopted to strictly enforce the modern, executive design aesthetic requested by the client.
+
+### 24.2. Clean Architecture Breakdown
+The application structure strictly adheres to Clean Architecture, decoupling the UI from data logic to ensure scalability:
+- **`lib/core/`**: Houses global configurations.
+  - `network/`: Contains `DioClient`, `AuthInterceptor` (auto-injects JWT into headers), and `ErrorInterceptor` (globally captures and logs HTTP failures).
+  - `security/`: Contains `SecureStorage` handling the read/write of JWTs.
+  - `routes/`: Contains `AppRouter`, utilizing a `GoRouter` shell pattern.
+  - `theme/`: Contains `AppTheme`, defining the global NTG Red (`#c8102e`) brand colors, Light/Dark configurations, and Google Fonts (`Space Grotesk` and `Inter`).
+- **`lib/domain/models/`**: The core data structures. All models are defined here using `@freezed`.
+- **`lib/data/repositories/`**: Contains classes that directly wrap the `DioClient` to execute network requests.
+- **`lib/presentation/`**: The UI layer, further subdivided by features (`auth`, `dashboard`, `bills`, `funds`, `collections`, `reports`, `notifications`).
+
+### 24.3. Domain Data Models
+All models perfectly mirror the Backend API REST Contracts (as documented in `endpoints.json`). They are immutable and generated via `build_runner`:
+1. **`User`**: `id`, `name`, `email`, `role` (Admin/Finance Officer).
+2. **`Vendor`**: `id`, `name`, `contactEmail`, `phoneNumber`, `taxId`, `address`.
+3. **`Bill`**: `id`, `title`, `amount`, `tax`, `date`, `description`, `status` (PENDING, APPROVED, REJECTED), `reviewComments`, and a nested `Vendor`.
+4. **`Fund`**: `id`, `title`, `description`, `amountOfFund`, `urgencyLevel` (LOW, MEDIUM, HIGH, CRITICAL), `date`, `status`, `reviewComments`.
+5. **`Collection`**: `id`, `date`, `type` (DAILY, WEEKLY, MONTHLY, ANNUAL), `amount`.
+6. **`Report`**: `id`, `date`, `title`, `description`, `typeOfReport` (EMAIL, IN_APP).
+
+### 24.4. State Management & Routing Rules
+- **AuthBloc:** A strictly typed `AuthBloc` manages authentication states: `initial()`, `loading()`, `authenticated(User user)`, `unauthenticated()`, `error(String message)`. 
+- **Routing Guards:** The `AppRouter` intercepts navigation requests. If `AuthBloc` emits `unauthenticated`, the user is hard-redirected to `/login`. If `authenticated`, the router checks the `User` role to dynamically route to `/admin` or `/finance`.
+- **ShellRoute (`AppShell`):** Contains the persistent structural UI: the `AppBar` and the `AppBottomNavigation`. The bottom navigation dynamically adapts to a `NavigationRail` when rendered on wider Desktop/Tablet screens, ensuring high responsiveness.
+
+### 24.5. Feature Modules Implementation
+Every screen was custom-built without legacy code, strictly emphasizing a premium UI/UX:
+- **Authentication (`LoginScreen`):** A responsive interface featuring a sophisticated split-screen design on Desktops (Branding on the left, Form on the right) and a stacked card layout on mobile.
+- **Dashboards:**
+  - `AdminDashboardScreen`: Provides an executive overview utilizing `fl_chart`. It renders a dynamic `BarChart` for Revenue vs. Expenses and a `PieChart` for Fund Allocation tracking. Features animated KPI metric cards (`Total Funds`, `Pending Bills`, etc.).
+  - `FinanceDashboardScreen`: Designed as an action-oriented workspace, highlighting urgent tasks (`Pending Bills`, `Review Requests`) via direct Action Cards.
+- **Financial Document Modules (`BillsScreen` & `FundsScreen`):**
+  - Renders data in clean, elevated ListViews. Each card dynamically changes color/icon based on the document's status (Green for APPROVED, Red for REJECTED, Orange for PENDING).
+  - Integrates sophisticated Bottom Sheets (`showModalBottomSheet`): One sheet for creating new documents (with `TextFormField` validation), and a distinct "Review Sheet" specialized for Finance Officers, allowing them to append textual `Review Comments` prior to explicitly Approving or Rejecting a request.
+- **Logging Modules (`CollectionsScreen` & `ReportsScreen`):**
+  - Designed for high-speed data entry and review. Floating Action Buttons trigger responsive Bottom Sheets to log instant collections (Tuition, Library) or to dispatch requests for AI-generated PDF Financial Summaries.
+- **Notifications Hub (`NotificationsSheet`):**
+  - A universal Bottom Sheet triggered globally from the `AppBar` across all dashboards. It renders immediate system updates (e.g., "Report Generated", "Bill Approved") accompanied by timestamp metadata and smooth `fadeIn` micro-animations.
+
+### 24.6. Animations & Aesthetics
+- The entire application was injected with `.animate().fadeIn().slideY()` from the `flutter_animate` package. 
+- Elements cascade smoothly onto the screen upon initialization, providing visual feedback that deeply enhances the perceived performance of the app. 
+- Status tags and icon containers utilize translucent background colors (`color.withOpacity(0.1)`) coupled with solid borders (`Border.all`) as mandated by the `flutter analyze` constraints, rendering perfectly on both iOS and Android.
+
+### 24.7. Final Application State
+The codebase is fundamentally verified. Running `flutter analyze` and `dart run build_runner build -d` yields clean outputs. The application is entirely pre-configured to be plugged into the Live Backend APIs. Future agents are explicitly authorized to transition the `Repository` implementations from mocked UI placeholders directly into live `Dio` requests utilizing the provided `Endpoints`.

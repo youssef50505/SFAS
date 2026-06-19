@@ -1,157 +1,97 @@
-# Frontend Deep Sync and Visual Overhaul -- SFAS
+# Flutter Mobile App Implementation Plan -- SFAS (Finalized 2026 Enterprise Standards)
 
 ## Goal
 
-Execute a comprehensive architectural and visual overhaul of the SFAS Angular 21 frontend, transforming it into an executive-grade, uncompromisingly professional financial administration interface per the directives in `frontend-refactor-prompt.md` and `memory.md`.
+Develop an uncompromisingly professional, international-grade Flutter mobile application for the School Finance Administration System (SFAS). The app will integrate with the existing Spring Boot REST API and strictly replicate the premium UI/UX standards established in the Angular frontend. Crucially, the architecture will be built upon **2026 Flutter enterprise best practices**, utilizing MVVM, scalability, offline resilience, and financial-grade security.
 
-## Current State Summary
+## Architectural Decisions (Locked In)
 
-After thorough file-by-file analysis of every component in `sfas-ui/src/app`:
+> [!NOTE]
+> Based on the requirement for an international-grade enterprise financial application, the following architectural choices have been finalized:
+> 
+> 1.  **State Management: BLoC (9.x)**. BLoC is the absolute gold standard for financial/enterprise applications because it forces strict, event-driven state transitions. This provides a clear audit trail for every action (e.g., approving a bill), which is crucial for a finance administration system.
+> 2.  **Routing: GoRouter**. The 2026 standard for declarative, URL-based navigation, enabling robust role-based route guards and deep linking.
+> 3.  **UI Pattern: MVVM (Model-View-ViewModel)**. The presentation layer will decouple UI logic from the Views. The ViewModels will be powered by BLoC, feeding reactive states to the UI.
 
-### What is Already Solid
-- **Design tokens**: `styles.css` has a comprehensive Light/Dark token system (Indigo/Emerald/Rose) -- tokens are well-defined
-- **ThemeService**: Already exists with signals, localStorage persistence, and system preference detection
-- **Layout shell**: `LayoutComponent`, `SidebarComponent`, `HeaderComponent` all use Remix Icons (no emojis), modern `@if`/`@for` control flow, and proper `ThemeService` injection
-- **App infrastructure**: `app.config.ts` has `provideAnimationsAsync()`, lazy-loaded routes, `PreloadAllModules`, and role-based redirect via `inject(AuthStore)`
-- **Shared components**: `PageHeaderComponent` and `MetricCardComponent` use modern `input()` signals
-- **Toast + Confirmation**: Use Remix Icons, modern control flow
-- **NotificationService**: Already uses `takeUntilDestroyed()` for polling cleanup
+## 1. Core Enterprise Architecture (Clean Architecture + DDD + MVVM)
 
-### Issues That Remain
-1. **`*ngIf` remnants in Vendors form**: Lines 85-88, 94-97, 103-106, 112-114, 120-122 in `vendors.component.html` use legacy `*ngIf` while the rest of the template uses `@if`
-2. **`CommonModule` imports**: Most feature components still import `CommonModule` (unnecessary with modern control flow + standalone). Should be replaced with specific pipe imports where `| date`, `| currency`, `| number` are needed
-3. **No loading skeletons**: Feature screens (Bills, Vendors, Funds, Collections, Reports) show no loading state during initial data fetch -- they just render empty tables
-4. **Missing `takeUntilDestroyed`**: Feature components (`BillsComponent`, `VendorsComponent`, `FundsComponent`, `CollectionsComponent`, `ReportsComponent`, `AdminDashboardComponent`, `FinanceDashboardComponent`) use `.subscribe()` without cleanup via `takeUntilDestroyed` or `DestroyRef`
-5. **Login screen is basic**: Single-centered card, no split-screen branding panel, no password visibility toggle
-6. **Light mode could be cleaner**: The token system is good but the login screen and tables could benefit from more refined shadows and more pristine whites
-7. **Tailwind in devDependencies**: User decided to keep -- will not remove
+We will adopt a **Modular Clean Architecture** combined with **Domain-Driven Design (DDD)** and **MVVM** for the presentation layer. This is the 2026 standard for ensuring code isolation, testability, and scalability across multiple teams.
 
-## Decisions Made
-- **Vendors for Finance Officer**: Keep hidden from sidebar (Admin-only in the UI)
-- **Tailwind devDependencies**: Keep as-is per user decision
+### Directory Structure (Feature-First Modular Approach)
+```text
+/lib
+  /core                 # Enterprise foundations (DI, Security, Networking, Theming)
+    /network            # dio client, interceptors
+    /security           # flutter_secure_storage (Encrypted JWT)
+    /theme              # Premium Design System tokens
+  /domain               # Pure business logic & interfaces (No Flutter dependencies)
+    /models             # freezed data classes (The 'Model' in MVVM)
+    /repositories       # Abstract repository interfaces
+  /data                 # Data implementation layer
+    /datasources        # Remote (REST) & Local (Offline-first caching via Isar/Hive)
+    /repositories       # Concrete repository implementations
+  /presentation         # UI Layer (MVVM Implementation)
+    /features           # Auth, Dashboards, Bills, Funds, Collections
+      /viewmodels       # BLoC/Cubits acting as ViewModels
+      /views            # Screens and UI widgets (The 'View' in MVVM)
+```
 
----
+## 2. International-Grade UI & Theming
 
-## Proposed Changes
+The UI must feel like a premium, high-end financial tool (comparable to international banking apps), perfectly aligned with the `memory.md` aesthetics.
 
-### Phase 1: Fix Legacy Syntax Issues
+*   **Color System:** Strict use of **NTG Red** (`#c8102e`) as the primary accent.
+*   **Typography:** Google Fonts: **Inter** (body readability) and **Outfit** (executive headers).
+*   **Iconography:** **Remix Icons** package (clean, emoji-free).
+*   **Performance Engineering:** Leveraging the **Impeller rendering engine** (standard in 2026) for buttery smooth 120fps animations.
+*   **Micro-Animations:** Heavy use of `flutter_animate` for staggered list entries, sleek modal transitions, and interactive feedback, mimicking the web's `GsapFadeDirective`.
+*   **Skeletons & Shimmer:** Intelligent loading states (no blank screens) using `shimmer` during network requests.
 
-#### [MODIFY] [vendors.component.html](file:///d:/school_project_6_mg/sfas-ui/src/app/features/vendors/vendors.component.html)
-- Replace all remaining `*ngIf` directives (lines 85-122) with `@if` control flow to eliminate the mixed syntax
-- Remove `CommonModule` import from the component TS (not needed since no pipes are used in the vendor template)
+## 3. Financial-Grade Security & Networking
 
----
+*   **HTTP Client:** `dio` configured with automatic retry mechanisms and interceptors.
+*   **Interceptors:**
+    *   `AuthInterceptor`: Injects Bearer JWT.
+    *   `SecurityInterceptor`: Certificate pinning and payload validation.
+    *   `ErrorInterceptor`: Catches `401 Unauthorized` (triggers instant local wipe and redirect to login) and maps the backend's RFC 7807 `ProblemDetail` errors to elegant UI toasts.
+*   **Storage:** `flutter_secure_storage` for Encrypted Shared Preferences/Keychain to store the JWT.
+*   **Offline-First Capability:** Implementing a local caching layer (e.g., Isar Database) to allow users to view previously loaded Bills/Reports even on spotty connections (syncing actions when reconnected).
 
-### Phase 2: Add Loading States to All Feature Screens
+## 4. Feature Modules Implementation
 
-All 5 feature screens currently show an empty table during initial load. Add `isLoading` signals and loading states.
+### [Auth]
+*   **UI (View):** Executive split-screen on tablets, elegant stacked card on mobile with the NTG logo. Integrated password visibility toggle.
+*   **ViewModel (BLoC):** Authenticate, parse JWT for roles (`ADMIN` vs `FINANCE_OFFICER`), and hydrate the user session.
 
-#### [MODIFY] [vendors.component.ts](file:///d:/school_project_6_mg/sfas-ui/src/app/features/vendors/vendors.component.ts)
-- Add `isLoading = signal(true)` and set to `false` after data loads
-- Add `DestroyRef` + `takeUntilDestroyed` to all subscriptions
+### [Dashboards & Navigation]
+*   **Navigation:** Custom animated Bottom Navigation Bar using `GoRouter`. Features are dynamically hidden based on the user's role (e.g., Vendors hidden for Finance Officer).
+*   **Dashboards:** Role-specific overviews. Use `fl_chart` for dynamic, animated financial metric grids.
 
-#### [MODIFY] [vendors.component.html](file:///d:/school_project_6_mg/sfas-ui/src/app/features/vendors/vendors.component.html)
-- Wrap table in `@if (!isLoading())` with a loading skeleton state
+### [Bills Management & Review Workflow]
+*   **Listings:** Slivers for smooth scrolling, filter chips, and elegant empty states.
+*   **Creation:** Multi-step wizard form for Admins.
+*   **Finance Review (Crucial):** A premium bottom sheet modal mimicking the web's `ReviewModalComponent` for Finance Officers to Approve/Reject bills with mandatory comment fields.
 
-#### [MODIFY] [bills.component.ts](file:///d:/school_project_6_mg/sfas-ui/src/app/features/bills/bills.component.ts)
-- Add `isLoading` signal, `takeUntilDestroyed` cleanup
+### [Request Funds]
+*   **Workflow:** Similar to Bills. Admins create requests with urgency levels (LOW, MEDIUM, HIGH, CRITICAL) using native-feeling dropdowns/selectors. Finance Officers review via bottom sheet.
 
-#### [MODIFY] [bills.component.html](file:///d:/school_project_6_mg/sfas-ui/src/app/features/bills/bills.component.html)
-- Add loading skeleton state
+### [Collections & Reports]
+*   **Forms:** Native form validations for logging Daily, Weekly, Monthly, and Annual revenues.
 
-#### [MODIFY] [funds.component.ts](file:///d:/school_project_6_mg/sfas-ui/src/app/features/funds/funds.component.ts)
-- Add `isLoading` signal, `takeUntilDestroyed` cleanup
-
-#### [MODIFY] [funds.component.html](file:///d:/school_project_6_mg/sfas-ui/src/app/features/funds/funds.component.html)
-- Add loading skeleton state
-
-#### [MODIFY] [collections.component.ts](file:///d:/school_project_6_mg/sfas-ui/src/app/features/collections/collections.component.ts)
-- Add `isLoading` signal, `takeUntilDestroyed` cleanup
-
-#### [MODIFY] [collections.component.html](file:///d:/school_project_6_mg/sfas-ui/src/app/features/collections/collections.component.html)
-- Add loading skeleton state
-
-#### [MODIFY] [reports.component.ts](file:///d:/school_project_6_mg/sfas-ui/src/app/features/reports/reports.component.ts)
-- Add `isLoading` signal, `takeUntilDestroyed` cleanup
-
-#### [MODIFY] [reports.component.html](file:///d:/school_project_6_mg/sfas-ui/src/app/features/reports/reports.component.html)
-- Add loading skeleton state
-
----
-
-### Phase 3: Add `takeUntilDestroyed` to Dashboard Components
-
-#### [MODIFY] [admin-dashboard.component.ts](file:///d:/school_project_6_mg/sfas-ui/src/app/features/admin-dashboard/admin-dashboard.component.ts)
-- Add `DestroyRef` injection and `takeUntilDestroyed` to `forkJoin` subscription
-
-#### [MODIFY] [finance-dashboard.component.ts](file:///d:/school_project_6_mg/sfas-ui/src/app/features/finance-dashboard/finance-dashboard.component.ts)
-- Add `DestroyRef` injection and `takeUntilDestroyed` to `forkJoin` subscription
-
----
-
-### Phase 4: Remove Unnecessary `CommonModule` Imports
-
-All standalone components that only use `@if`/`@for` control flow but also use Angular pipes (`| date`, `| currency`, `| number`) need to replace `CommonModule` with specific pipe imports for tree-shaking.
-
-#### Components to update:
-- `bills.component.ts`: Replace `CommonModule` with `DatePipe, CurrencyPipe, NgClass`
-- `funds.component.ts`: Replace `CommonModule` with `DatePipe, CurrencyPipe, NgClass`
-- `collections.component.ts`: Replace `CommonModule` with `DatePipe, CurrencyPipe, NgClass`
-- `reports.component.ts`: Replace `CommonModule` with `DatePipe, NgClass`
-- `admin-dashboard.component.ts`: Replace `CommonModule` with `DecimalPipe`
-- `finance-dashboard.component.ts`: Remove `CommonModule` (no pipes used)
-- `vendors.component.ts`: Remove `CommonModule` (no pipes used)
-- `login.component.ts`: Remove `CommonModule` (no pipes used)
-
----
-
-### Phase 5: Premium Login Screen Upgrade
-
-#### [MODIFY] [login.component.ts](file:///d:/school_project_6_mg/sfas-ui/src/app/features/auth/login/login.component.ts)
-- Remove `CommonModule` import
-- Add `showPassword = signal(false)` for password visibility toggle
-- Add `togglePassword()` method
-
-#### [MODIFY] [login.component.html](file:///d:/school_project_6_mg/sfas-ui/src/app/features/auth/login/login.component.html)
-- Rebuild as a premium split-screen layout: left branding panel with gradient + right form panel
-- Add password visibility toggle icon button
-- Add "School Finance Administration System" branding text on left panel
-
-#### [MODIFY] [login.component.css](file:///d:/school_project_6_mg/sfas-ui/src/app/features/auth/login/login.component.css)
-- Complete rebuild for executive split-screen login with:
-  - Left: Full-height gradient branding panel with logo, system name, and subtle decorative elements
-  - Right: Clean white form panel with refined shadows
-  - Responsive: Stacks vertically on mobile
-
----
-
-### Phase 6: GSAP Directive Enhancement
-
-#### [MODIFY] [gsap-fade.directive.ts](file:///d:/school_project_6_mg/sfas-ui/src/app/shared/directives/gsap-fade.directive.ts)
-- Switch from `OnInit` to `AfterViewInit` for DOM safety
-- Add `will-change: transform, opacity` for GPU acceleration
-- Use modern `input()` signals instead of `@Input()`
-
----
+### [Notifications Hub]
+*   **Integration:** Polling or WebSockets to fetch alerts.
+*   **UI:** Accessed via an AppBar bell icon. Unread items styled with an NTG Red border indicator. Swipe-to-dismiss functionality.
 
 ## Verification Plan
 
 ### Automated Tests
-```bash
-cd d:\school_project_6_mg\sfas-ui
-npx ng build --configuration=production
-```
-A successful production build with zero errors confirms all TypeScript types, imports, and template bindings are correct.
+*   **Unit Tests:** 100% coverage on ViewModels (BLoC) and API parsing.
+*   **Widget Tests:** Golden tests for critical UI components (e.g., `ReviewModal` and `MetricCard`) to prevent visual regressions across screen sizes.
 
 ### Manual Verification
-1. Launch the dev server (`ng serve`) and verify:
-   - Login screen renders with the new split-screen design
-   - Light mode is pristine, Dark mode is comfortable
-   - Loading states appear during initial data fetch on all feature screens
-   - All CRUD operations (Vendors, Bills, Funds, Collections, Reports) function correctly
-   - Confirmation modals appear before destructive actions
-   - Toast notifications display on success/error
-   - Password visibility toggle works on login
-2. Test role-based access:
-   - Admin sees Dashboard, Vendors, Bills, Collections, Request Funds, Reports
-   - Finance Officer sees Dashboard, Review Bills, Review Funds, Reports (no Vendors)
+1.  **Security:** Ensure the JWT is inaccessible to standard file managers and wiped on logout.
+2.  **Role Guarding:**
+    *   Admin: Full CRUD access.
+    *   Finance Officer: Strictly limited to reviewing Bills/Funds and Dashboards.
+3.  **Performance:** Run Flutter DevTools in `profile` mode to ensure no dropped frames during staggered list animations on physical devices.
+4.  **UX Flow:** Complete a full Bill Creation -> Finance Review -> Notification pipeline natively.

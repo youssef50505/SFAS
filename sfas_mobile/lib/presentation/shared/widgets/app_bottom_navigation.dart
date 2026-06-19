@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:remixicon/remixicon.dart';
-import 'package:go_router/go_router.dart';
+
 
 class AppBottomNavigation extends StatelessWidget {
   final int currentIndex;
@@ -30,7 +30,7 @@ class AppBottomNavigation extends StatelessWidget {
         color: theme.colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -56,7 +56,7 @@ class AppBottomNavigation extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? theme.colorScheme.primary.withOpacity(0.1)
+                        ? theme.colorScheme.primary.withValues(alpha: 0.1)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(16),
                   ),

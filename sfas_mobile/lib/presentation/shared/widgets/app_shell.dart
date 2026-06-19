@@ -30,7 +30,8 @@ class _AppShellState extends State<AppShell> {
       authenticated: (user) => user.role,
       orElse: () => '',
     );
-    final baseDash = role == 'ROLE_ADMIN' ? '/dashboard/admin' : '/dashboard/finance';
+    final isAdmin = role.toUpperCase().contains('ADMIN');
+    final baseDash = isAdmin ? '/dashboard/admin' : '/dashboard/finance';
 
     switch (index) {
       case 0:

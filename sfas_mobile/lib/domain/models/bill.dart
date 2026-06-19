@@ -6,7 +6,7 @@ part 'bill.freezed.dart';
 part 'bill.g.dart';
 
 @freezed
-class Bill with _$Bill {
+abstract class Bill with _$Bill {
   const factory Bill({
     required String id,
     required String title,

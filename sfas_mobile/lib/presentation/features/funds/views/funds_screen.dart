@@ -56,7 +56,7 @@ class _FundsScreenState extends State<FundsScreen> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.withOpacity(0.2)),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
       ),
       child: InkWell(
         onTap: () => _showReviewSheet(context, fund),

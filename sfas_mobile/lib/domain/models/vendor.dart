@@ -5,7 +5,7 @@ part 'vendor.freezed.dart';
 part 'vendor.g.dart';
 
 @freezed
-class Vendor with _$Vendor {
+abstract class Vendor with _$Vendor {
   const factory Vendor({
     required String id,
     required String name,

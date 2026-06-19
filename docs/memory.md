@@ -490,3 +490,31 @@ Every screen was custom-built without legacy code, strictly emphasizing a premiu
 
 ### 24.7. Final Application State
 The codebase is fundamentally verified. Running `flutter analyze` and `dart run build_runner build -d` yields clean outputs. The application is entirely pre-configured to be plugged into the Live Backend APIs. Future agents are explicitly authorized to transition the `Repository` implementations from mocked UI placeholders directly into live `Dio` requests utilizing the provided `Endpoints`.
+
+## 25. Flutter Dashboard UI Redesign & Real Data Integration
+
+**Context:** The mobile application initially utilized placeholder static data in its dashboard screens and lacked a cohesive, premium aesthetic. The goal was to elevate the visual design of the `AdminDashboardScreen` and `FinanceDashboardScreen` while strictly integrating them with the Live Backend APIs to reflect real-time financial metrics.
+
+**What was accomplished:**
+
+### 25.1. UI & Visual Overhaul
+- **Hero Sections:** Introduced dynamic, gradient-rich Hero Sections at the top of both dashboards (`Admin` and `Finance`), greeting the user with personalized details and visually distinguishing the workspaces.
+- **Modern KPI Cards:** Redesigned analytical cards using soft rounded corners (`BorderRadius.circular(24)`), subtle drop shadows, and glassmorphism elements to provide a premium, modern feel.
+- **Currency Localization:** Systematically eradicated all placeholder USD (`$`) signs across the dashboards, replacing them with the project-standard Egyptian Pound (`EGP`), aligning the mobile app with the web application's localization.
+- **Responsive Fluidity:** Addressed multiple UI `Overflow` errors in the `FinanceDashboardScreen` by expertly leveraging `Flexible` and `Expanded` widgets, ensuring long text elements (e.g., pending tasks notifications) wrap gracefully across all mobile screen sizes.
+
+### 25.2. DashboardBloc Implementation (Real Data Aggregation)
+- **Centralized State Management:** Engineered a unified `DashboardBloc` utilizing `flutter_bloc` and `freezed` to manage the complex data fetching state (`loading`, `loaded`, `error`).
+- **Concurrent API Fetching:** To guarantee optimal performance, the Bloc was configured to invoke multiple Live Backend APIs simultaneously via `Future.wait()`. This aggregates data from:
+  1. `FundRepository` (for `Total Funds` and `Pending Funds`)
+  2. `BillRepository` (for `Pending Bills`)
+  3. `CollectionRepository` (for `Monthly Revenue`)
+  4. `VendorRepository` (for `Active Vendors` count)
+- **Data Computation & Sorting:** The Bloc natively computes core metrics (summing approved funds, counting pending bills). Furthermore, it merges the latest `Bill` and `Fund` objects into a unified `recentActivities` list, sorting them chronologically descending to provide the user with an accurate, real-time audit log of the 5 most recent activities.
+
+### 25.3. Dependency Injection & UI Binding
+- **Global Provider:** The application root (`main.dart`) was comprehensively updated. `MultiRepositoryProvider` was established to globally inject the required Repositories. `DashboardBloc` was injected at the root level and configured to immediately fire the `LoadDashboardData` event upon app initialization.
+- **BlocBuilder Integration:** The previously static UI was wrapped dynamically within `BlocBuilder<DashboardBloc, DashboardState>`. The UI now natively reacts to the Bloc, displaying `CircularProgressIndicator` during network latency, and perfectly rendering the computed financial metrics once the Live API data successfully resolves.
+
+### 25.4. Troubleshooting & Architecture Alignment
+- **Method Signature Fixes:** Addressed critical compilation errors thrown during the integration where the BLoC called non-existent methods (`getAllFunds()`). The BLoC logic was rapidly aligned to strictly match the underlying API methods (`getFunds()`, `getBills()`, `getCollections()`, `getVendors()`) explicitly defined within the Repositories, ensuring full end-to-end type safety and mapping integrity.

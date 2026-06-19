@@ -5,7 +5,7 @@ part 'fund.freezed.dart';
 part 'fund.g.dart';
 
 @freezed
-class Fund with _$Fund {
+abstract class Fund with _$Fund {
   const factory Fund({
     required String id,
     required String title,

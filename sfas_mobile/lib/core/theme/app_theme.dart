@@ -15,8 +15,7 @@ class AppTheme {
       brightness: Brightness.light,
       colorScheme: ColorScheme.light(
         primary: ntgRed,
-        secondary: ntgRed.withOpacity(0.8),
-        background: backgroundLight,
+        secondary: ntgRed.withValues(alpha: 0.8),
         surface: surfaceLight,
         onPrimary: Colors.white,
       ),
@@ -53,8 +52,7 @@ class AppTheme {
       brightness: Brightness.dark,
       colorScheme: ColorScheme.dark(
         primary: ntgRed,
-        secondary: ntgRed.withOpacity(0.8),
-        background: backgroundDark,
+        secondary: ntgRed.withValues(alpha: 0.8),
         surface: surfaceDark,
         onPrimary: Colors.white,
       ),

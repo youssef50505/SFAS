@@ -36,7 +36,7 @@ class NotificationsSheet extends StatelessWidget {
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(
-                    backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                    backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
                     child: Icon(Remix.notification_3_line, color: theme.colorScheme.primary),
                   ),
                   title: Text('System Update', style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),

@@ -60,16 +60,20 @@ class AppRouter {
       final authState = context.read<AuthBloc>().state;
       final isLoggingIn = state.uri.path == '/login';
 
+      final isRoot = state.uri.path == '/';
+
       return authState.maybeWhen(
         authenticated: (user) {
-          if (isLoggingIn) {
-            return user.role == 'ROLE_ADMIN' ? '/dashboard/admin' : '/dashboard/finance';
+          final isAdmin = user.role.toUpperCase().contains('ADMIN');
+
+          if (isLoggingIn || isRoot) {
+            return isAdmin ? '/dashboard/admin' : '/dashboard/finance';
           }
           // Simple role check
-          if (state.uri.path == '/dashboard/admin' && user.role != 'ROLE_ADMIN') {
+          if (state.uri.path == '/dashboard/admin' && !isAdmin) {
              return '/dashboard/finance';
           }
-          if (state.uri.path == '/dashboard/finance' && user.role != 'ROLE_FINANCE_OFFICER') {
+          if (state.uri.path == '/dashboard/finance' && isAdmin) {
              return '/dashboard/admin';
           }
           return null; 

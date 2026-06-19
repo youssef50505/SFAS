@@ -45,10 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
         listener: (context, state) {
           state.maybeWhen(
             authenticated: (user) {
-              if (user.role == 'ROLE_ADMIN') {
-                context.go('/admin-dashboard');
+              final isAdmin = user.role.toUpperCase().contains('ADMIN');
+              if (isAdmin) {
+                context.go('/dashboard/admin');
               } else {
-                context.go('/finance-officer-dashboard');
+                context.go('/dashboard/finance');
               }
             },
             error: (message) {

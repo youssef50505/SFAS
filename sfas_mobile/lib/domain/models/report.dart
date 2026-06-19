@@ -5,7 +5,7 @@ part 'report.freezed.dart';
 part 'report.g.dart';
 
 @freezed
-class Report with _$Report {
+abstract class Report with _$Report {
   const factory Report({
     required String id,
     required String date,

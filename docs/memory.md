@@ -518,3 +518,11 @@ The codebase is fundamentally verified. Running `flutter analyze` and `dart run 
 
 ### 25.4. Troubleshooting & Architecture Alignment
 - **Method Signature Fixes:** Addressed critical compilation errors thrown during the integration where the BLoC called non-existent methods (`getAllFunds()`). The BLoC logic was rapidly aligned to strictly match the underlying API methods (`getFunds()`, `getBills()`, `getCollections()`, `getVendors()`) explicitly defined within the Repositories, ensuring full end-to-end type safety and mapping integrity.
+
+### 24.7. UI/UX Refinements & Bug Fixes
+- **Null Safety Handing:** Addressed 	ype 'Null' is not a subtype of type 'String' exceptions across all feature screens (Bills, Funds, Reports, Collections) by implementing strict null-coalescing (??) fallbacks for nested models and optional backend fields.
+- **Finance Dashboard Quick Actions:** Redesigned the Quick Actions from stacked fixed-width boxes into responsive, full-width horizontal cards featuring dynamic routing via go_router to the respective modules.
+- **Login Branding Polish:** Replaced the generic bank icon with the corporate logo (logo.jpg). Adjusted the aspect ratio to BoxFit.contain, encased it within an elevated white container (with border-radius and drop-shadows), and positioned it gracefully inline with the SFAS title for a highly premium authentication experience.
+
+- **Asset Management:** Configured pubspec.yaml to successfully load local assets (assets/images/logo.jpg).
+- **Role-Based Error Handling:** Improved CollectionsBloc to catch Access is denied / 403 HTTP exceptions gracefully, emitting a user-friendly 'Access Denied' message rather than a raw exception string.

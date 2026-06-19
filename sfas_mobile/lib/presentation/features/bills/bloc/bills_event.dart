@@ -6,5 +6,5 @@ part 'bills_event.freezed.dart';
 class BillsEvent with _$BillsEvent {
   const factory BillsEvent.loadBills() = LoadBills;
   const factory BillsEvent.createBill(Map<String, dynamic> billData) = CreateBill;
-  const factory BillsEvent.updateBillStatus(String billId, String status) = UpdateBillStatus;
+  const factory BillsEvent.updateBillStatus(String billId, String status, {String? reviewComments}) = UpdateBillStatus;
 }

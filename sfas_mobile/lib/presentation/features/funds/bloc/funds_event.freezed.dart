@@ -125,12 +125,12 @@ return updateFundStatus(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loadFunds,TResult Function( Map<String, dynamic> fundData)?  createFund,TResult Function( String fundId,  String status)?  updateFundStatus,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loadFunds,TResult Function( Map<String, dynamic> fundData)?  createFund,TResult Function( String fundId,  String status,  String? reviewComments)?  updateFundStatus,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case LoadFunds() when loadFunds != null:
 return loadFunds();case CreateFund() when createFund != null:
 return createFund(_that.fundData);case UpdateFundStatus() when updateFundStatus != null:
-return updateFundStatus(_that.fundId,_that.status);case _:
+return updateFundStatus(_that.fundId,_that.status,_that.reviewComments);case _:
   return orElse();
 
 }
@@ -148,12 +148,12 @@ return updateFundStatus(_that.fundId,_that.status);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loadFunds,required TResult Function( Map<String, dynamic> fundData)  createFund,required TResult Function( String fundId,  String status)  updateFundStatus,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loadFunds,required TResult Function( Map<String, dynamic> fundData)  createFund,required TResult Function( String fundId,  String status,  String? reviewComments)  updateFundStatus,}) {final _that = this;
 switch (_that) {
 case LoadFunds():
 return loadFunds();case CreateFund():
 return createFund(_that.fundData);case UpdateFundStatus():
-return updateFundStatus(_that.fundId,_that.status);case _:
+return updateFundStatus(_that.fundId,_that.status,_that.reviewComments);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -170,12 +170,12 @@ return updateFundStatus(_that.fundId,_that.status);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loadFunds,TResult? Function( Map<String, dynamic> fundData)?  createFund,TResult? Function( String fundId,  String status)?  updateFundStatus,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loadFunds,TResult? Function( Map<String, dynamic> fundData)?  createFund,TResult? Function( String fundId,  String status,  String? reviewComments)?  updateFundStatus,}) {final _that = this;
 switch (_that) {
 case LoadFunds() when loadFunds != null:
 return loadFunds();case CreateFund() when createFund != null:
 return createFund(_that.fundData);case UpdateFundStatus() when updateFundStatus != null:
-return updateFundStatus(_that.fundId,_that.status);case _:
+return updateFundStatus(_that.fundId,_that.status,_that.reviewComments);case _:
   return null;
 
 }
@@ -291,11 +291,12 @@ as Map<String, dynamic>,
 
 
 class UpdateFundStatus implements FundsEvent {
-  const UpdateFundStatus(this.fundId, this.status);
+  const UpdateFundStatus(this.fundId, this.status, {this.reviewComments});
   
 
  final  String fundId;
  final  String status;
+ final  String? reviewComments;
 
 /// Create a copy of FundsEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -307,16 +308,16 @@ $UpdateFundStatusCopyWith<UpdateFundStatus> get copyWith => _$UpdateFundStatusCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UpdateFundStatus&&(identical(other.fundId, fundId) || other.fundId == fundId)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UpdateFundStatus&&(identical(other.fundId, fundId) || other.fundId == fundId)&&(identical(other.status, status) || other.status == status)&&(identical(other.reviewComments, reviewComments) || other.reviewComments == reviewComments));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,fundId,status);
+int get hashCode => Object.hash(runtimeType,fundId,status,reviewComments);
 
 @override
 String toString() {
-  return 'FundsEvent.updateFundStatus(fundId: $fundId, status: $status)';
+  return 'FundsEvent.updateFundStatus(fundId: $fundId, status: $status, reviewComments: $reviewComments)';
 }
 
 
@@ -327,7 +328,7 @@ abstract mixin class $UpdateFundStatusCopyWith<$Res> implements $FundsEventCopyW
   factory $UpdateFundStatusCopyWith(UpdateFundStatus value, $Res Function(UpdateFundStatus) _then) = _$UpdateFundStatusCopyWithImpl;
 @useResult
 $Res call({
- String fundId, String status
+ String fundId, String status, String? reviewComments
 });
 
 
@@ -344,11 +345,12 @@ class _$UpdateFundStatusCopyWithImpl<$Res>
 
 /// Create a copy of FundsEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? fundId = null,Object? status = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? fundId = null,Object? status = null,Object? reviewComments = freezed,}) {
   return _then(UpdateFundStatus(
 null == fundId ? _self.fundId : fundId // ignore: cast_nullable_to_non_nullable
 as String,null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,
+as String,reviewComments: freezed == reviewComments ? _self.reviewComments : reviewComments // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

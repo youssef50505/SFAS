@@ -526,3 +526,13 @@ The codebase is fundamentally verified. Running `flutter analyze` and `dart run 
 
 - **Asset Management:** Configured pubspec.yaml to successfully load local assets (assets/images/logo.jpg).
 - **Role-Based Error Handling:** Improved CollectionsBloc to catch Access is denied / 403 HTTP exceptions gracefully, emitting a user-friendly 'Access Denied' message rather than a raw exception string.
+
+## 26. UI Refactoring & Data Binding
+### 26.1. Dynamic Forms and Validation
+- **Controllers & FormKey Integration:** Entirely removed hardcoded payloads for creating items across the app. `TextEditingController`s and `GlobalKey<FormState>` were implemented in all bottom sheet forms (`_showCreateBillSheet`, `_showCreateFundSheet`, `_showLogCollectionSheet`, `_showGenerateReportSheet`) ensuring real user input is captured, validated, and safely passed to the respective BLoC events.
+- **Review Comments Payload:** Refactored the `_showReviewSheet` across `bills_screen.dart` and `funds_screen.dart` to include a `TextFormField` for review comments, appending it properly to the backend request payloads (`updateBillStatus`, `updateFundStatus`).
+- **Warning Rectification:** Cleaned up Flutter warnings regarding dead code (redundant null operators on non-nullable fields like `fund.id` and `fund.title`) and replaced the deprecated `value` property with `initialValue` inside `DropdownButtonFormField`.
+
+### 26.2. Reactive UX Enhancements
+- **Automated Lifecycle Fetching:** Upgraded all major screens (`BillsScreen`, `FundsScreen`, `CollectionsScreen`, `ReportsScreen`) to `StatefulWidget`, leveraging the `initState` method to proactively trigger data loading events (`loadBills`, `loadFunds`, etc.) the moment the screen mounts.
+- **Pull-to-Refresh Mechanism:** Wrapped the main `ListView.builder` of every screen inside a `RefreshIndicator`, granting users the ability to perform manual, real-time syncs with the API server by simply swiping down.

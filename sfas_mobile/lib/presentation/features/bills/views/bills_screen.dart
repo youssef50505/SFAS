@@ -16,6 +16,11 @@ class BillsScreen extends StatefulWidget {
 
 class _BillsScreenState extends State<BillsScreen> {
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<BillsBloc>().add(const BillsEvent.loadBills());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +46,18 @@ class _BillsScreenState extends State<BillsScreen> {
               if (bills.isEmpty) {
                 return const Center(child: Text('No bills found'));
               }
-              return ListView.builder(
-                padding: const EdgeInsets.all(24.0),
-                itemCount: bills.length,
-                itemBuilder: (context, index) {
-                  final bill = bills[index];
-                  return _buildBillCard(context, bill).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<BillsBloc>().add(const BillsEvent.loadBills());
                 },
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(24.0),
+                  itemCount: bills.length,
+                  itemBuilder: (context, index) {
+                    final bill = bills[index];
+                    return _buildBillCard(context, bill).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+                  },
+                ),
               );
             },
           );
@@ -153,6 +163,12 @@ class _BillsScreenState extends State<BillsScreen> {
   }
 
   void _showCreateBillSheet(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final titleController = TextEditingController();
+    final amountController = TextEditingController();
+    final vendorIdController = TextEditingController();
+    final descriptionController = TextEditingController();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -165,31 +181,58 @@ class _BillsScreenState extends State<BillsScreen> {
             right: 24,
             top: 24,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Create New Bill', style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(height: 24),
-              TextFormField(decoration: const InputDecoration(labelText: 'Title', border: OutlineInputBorder())),
-              const SizedBox(height: 16),
-              TextFormField(decoration: const InputDecoration(labelText: 'Amount', border: OutlineInputBorder()), keyboardType: TextInputType.number),
-              const SizedBox(height: 16),
-              TextFormField(decoration: const InputDecoration(labelText: 'Vendor ID', border: OutlineInputBorder())),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  context.read<BillsBloc>().add(BillsEvent.createBill({
-                    'title': 'New Bill',
-                    'amount': 100.0,
-                    'vendor_id': 'v1',
-                  })); // Simplified for demo
-                  Navigator.pop(context);
-                },
-                child: const Text('Submit Bill'),
-              ),
-              const SizedBox(height: 24),
-            ],
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('Create New Bill', style: Theme.of(context).textTheme.headlineMedium),
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: titleController,
+                  decoration: const InputDecoration(labelText: 'Title', border: OutlineInputBorder()),
+                  validator: (value) => value == null || value.isEmpty ? 'Required field' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: amountController,
+                  decoration: const InputDecoration(labelText: 'Amount', border: OutlineInputBorder()),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  validator: (value) => value == null || double.tryParse(value) == null ? 'Enter valid amount' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: vendorIdController,
+                  decoration: const InputDecoration(labelText: 'Vendor ID', border: OutlineInputBorder()),
+                  validator: (value) => value == null || value.isEmpty ? 'Required field' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      context.read<BillsBloc>().add(BillsEvent.createBill({
+                        'title': titleController.text,
+                        'amount': double.parse(amountController.text),
+                        'tax': double.parse(amountController.text) * 0.15, // standard tax 15%
+                        'vendorId': vendorIdController.text,
+                        'description': descriptionController.text,
+                        'date': DateTime.now().toIso8601String(),
+                      }));
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Submit Bill'),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         );
       },
@@ -197,6 +240,8 @@ class _BillsScreenState extends State<BillsScreen> {
   }
 
   void _showReviewSheet(BuildContext context, Bill bill) {
+    final commentController = TextEditingController();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -218,6 +263,7 @@ class _BillsScreenState extends State<BillsScreen> {
               Text(bill.title ?? 'No Title', style: Theme.of(context).textTheme.bodyLarge),
               const SizedBox(height: 24),
               TextFormField(
+                controller: commentController,
                 decoration: const InputDecoration(
                   labelText: 'Review Comments',
                   border: OutlineInputBorder(),
@@ -230,7 +276,11 @@ class _BillsScreenState extends State<BillsScreen> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        context.read<BillsBloc>().add(BillsEvent.updateBillStatus(bill.id ?? '', 'REJECTED'));
+                        context.read<BillsBloc>().add(BillsEvent.updateBillStatus(
+                          bill.id ?? '', 
+                          'REJECTED', 
+                          reviewComments: commentController.text,
+                        ));
                         Navigator.pop(context);
                       },
                       style: OutlinedButton.styleFrom(
@@ -245,7 +295,11 @@ class _BillsScreenState extends State<BillsScreen> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        context.read<BillsBloc>().add(BillsEvent.updateBillStatus(bill.id ?? '', 'APPROVED'));
+                        context.read<BillsBloc>().add(BillsEvent.updateBillStatus(
+                          bill.id ?? '', 
+                          'APPROVED', 
+                          reviewComments: commentController.text,
+                        ));
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(

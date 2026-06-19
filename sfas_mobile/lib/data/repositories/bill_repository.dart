@@ -25,11 +25,15 @@ class BillRepository {
     }
   }
 
-  Future<Bill> updateBillStatus(String id, String status) async {
+  Future<Bill> updateBillStatus(String id, String status, {String? reviewComments}) async {
     try {
+      final Map<String, dynamic> data = {'status': status};
+      if (reviewComments != null && reviewComments.isNotEmpty) {
+        data['reviewComments'] = reviewComments;
+      }
       final response = await _dioClient.dio.patch(
         '/bills/$id/status',
-        data: {'status': status},
+        data: data,
       );
       return Bill.fromJson(response.data);
     } on DioException catch (e) {

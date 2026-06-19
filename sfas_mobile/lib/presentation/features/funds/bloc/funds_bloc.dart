@@ -13,7 +13,7 @@ class FundsBloc extends Bloc<FundsEvent, FundsState> {
       await event.map(
         loadFunds: (_) => _onLoadFunds(emit),
         createFund: (e) => _onCreateFund(e.fundData, emit),
-        updateFundStatus: (e) => _onUpdateFundStatus(e.fundId, e.status, emit),
+        updateFundStatus: (e) => _onUpdateFundStatus(e.fundId, e.status, e.reviewComments, emit),
       );
     });
   }
@@ -37,9 +37,9 @@ class FundsBloc extends Bloc<FundsEvent, FundsState> {
     }
   }
 
-  Future<void> _onUpdateFundStatus(String fundId, String status, Emitter<FundsState> emit) async {
+  Future<void> _onUpdateFundStatus(String fundId, String status, String? reviewComments, Emitter<FundsState> emit) async {
     try {
-      await _fundRepository.updateFundStatus(fundId, status);
+      await _fundRepository.updateFundStatus(fundId, status, reviewComments: reviewComments);
       add(const FundsEvent.loadFunds());
     } catch (e) {
       emit(FundsState.error(e.toString()));

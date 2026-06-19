@@ -125,12 +125,12 @@ return updateBillStatus(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loadBills,TResult Function( Map<String, dynamic> billData)?  createBill,TResult Function( String billId,  String status)?  updateBillStatus,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loadBills,TResult Function( Map<String, dynamic> billData)?  createBill,TResult Function( String billId,  String status,  String? reviewComments)?  updateBillStatus,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case LoadBills() when loadBills != null:
 return loadBills();case CreateBill() when createBill != null:
 return createBill(_that.billData);case UpdateBillStatus() when updateBillStatus != null:
-return updateBillStatus(_that.billId,_that.status);case _:
+return updateBillStatus(_that.billId,_that.status,_that.reviewComments);case _:
   return orElse();
 
 }
@@ -148,12 +148,12 @@ return updateBillStatus(_that.billId,_that.status);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loadBills,required TResult Function( Map<String, dynamic> billData)  createBill,required TResult Function( String billId,  String status)  updateBillStatus,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loadBills,required TResult Function( Map<String, dynamic> billData)  createBill,required TResult Function( String billId,  String status,  String? reviewComments)  updateBillStatus,}) {final _that = this;
 switch (_that) {
 case LoadBills():
 return loadBills();case CreateBill():
 return createBill(_that.billData);case UpdateBillStatus():
-return updateBillStatus(_that.billId,_that.status);case _:
+return updateBillStatus(_that.billId,_that.status,_that.reviewComments);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -170,12 +170,12 @@ return updateBillStatus(_that.billId,_that.status);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loadBills,TResult? Function( Map<String, dynamic> billData)?  createBill,TResult? Function( String billId,  String status)?  updateBillStatus,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loadBills,TResult? Function( Map<String, dynamic> billData)?  createBill,TResult? Function( String billId,  String status,  String? reviewComments)?  updateBillStatus,}) {final _that = this;
 switch (_that) {
 case LoadBills() when loadBills != null:
 return loadBills();case CreateBill() when createBill != null:
 return createBill(_that.billData);case UpdateBillStatus() when updateBillStatus != null:
-return updateBillStatus(_that.billId,_that.status);case _:
+return updateBillStatus(_that.billId,_that.status,_that.reviewComments);case _:
   return null;
 
 }
@@ -291,11 +291,12 @@ as Map<String, dynamic>,
 
 
 class UpdateBillStatus implements BillsEvent {
-  const UpdateBillStatus(this.billId, this.status);
+  const UpdateBillStatus(this.billId, this.status, {this.reviewComments});
   
 
  final  String billId;
  final  String status;
+ final  String? reviewComments;
 
 /// Create a copy of BillsEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -307,16 +308,16 @@ $UpdateBillStatusCopyWith<UpdateBillStatus> get copyWith => _$UpdateBillStatusCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UpdateBillStatus&&(identical(other.billId, billId) || other.billId == billId)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UpdateBillStatus&&(identical(other.billId, billId) || other.billId == billId)&&(identical(other.status, status) || other.status == status)&&(identical(other.reviewComments, reviewComments) || other.reviewComments == reviewComments));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,billId,status);
+int get hashCode => Object.hash(runtimeType,billId,status,reviewComments);
 
 @override
 String toString() {
-  return 'BillsEvent.updateBillStatus(billId: $billId, status: $status)';
+  return 'BillsEvent.updateBillStatus(billId: $billId, status: $status, reviewComments: $reviewComments)';
 }
 
 
@@ -327,7 +328,7 @@ abstract mixin class $UpdateBillStatusCopyWith<$Res> implements $BillsEventCopyW
   factory $UpdateBillStatusCopyWith(UpdateBillStatus value, $Res Function(UpdateBillStatus) _then) = _$UpdateBillStatusCopyWithImpl;
 @useResult
 $Res call({
- String billId, String status
+ String billId, String status, String? reviewComments
 });
 
 
@@ -344,11 +345,12 @@ class _$UpdateBillStatusCopyWithImpl<$Res>
 
 /// Create a copy of BillsEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? billId = null,Object? status = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? billId = null,Object? status = null,Object? reviewComments = freezed,}) {
   return _then(UpdateBillStatus(
 null == billId ? _self.billId : billId // ignore: cast_nullable_to_non_nullable
 as String,null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,
+as String,reviewComments: freezed == reviewComments ? _self.reviewComments : reviewComments // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

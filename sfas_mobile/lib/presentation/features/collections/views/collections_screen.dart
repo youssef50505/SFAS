@@ -16,6 +16,11 @@ class CollectionsScreen extends StatefulWidget {
 
 class _CollectionsScreenState extends State<CollectionsScreen> {
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<CollectionsBloc>().add(const CollectionsEvent.loadCollections());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +40,18 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
               if (collections.isEmpty) {
                 return const Center(child: Text('No collections found'));
               }
-              return ListView.builder(
-                padding: const EdgeInsets.all(24.0),
-                itemCount: collections.length,
-                itemBuilder: (context, index) {
-                  final collection = collections[index];
-                  return _buildCollectionCard(context, collection).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<CollectionsBloc>().add(const CollectionsEvent.loadCollections());
                 },
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(24.0),
+                  itemCount: collections.length,
+                  itemBuilder: (context, index) {
+                    final collection = collections[index];
+                    return _buildCollectionCard(context, collection).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+                  },
+                ),
               );
             },
           );
@@ -97,6 +107,10 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
   }
 
   void _showLogCollectionSheet(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final typeController = TextEditingController();
+    final amountController = TextEditingController();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -109,28 +123,43 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
             right: 24,
             top: 24,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Log New Collection', style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(height: 24),
-              TextFormField(decoration: const InputDecoration(labelText: 'Type (e.g. Tuition)', border: OutlineInputBorder())),
-              const SizedBox(height: 16),
-              TextFormField(decoration: const InputDecoration(labelText: 'Amount', border: OutlineInputBorder()), keyboardType: TextInputType.number),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  context.read<CollectionsBloc>().add(CollectionsEvent.createCollection({
-                    'type': 'New Collection',
-                    'amount': 100.0,
-                  }));
-                  Navigator.pop(context);
-                },
-                child: const Text('Save Collection'),
-              ),
-              const SizedBox(height: 24),
-            ],
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('Log New Collection', style: Theme.of(context).textTheme.headlineMedium),
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: typeController,
+                  decoration: const InputDecoration(labelText: 'Type (e.g. Tuition)', border: OutlineInputBorder()),
+                  validator: (value) => value == null || value.isEmpty ? 'Required field' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: amountController,
+                  decoration: const InputDecoration(labelText: 'Amount', border: OutlineInputBorder()),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  validator: (value) => value == null || double.tryParse(value) == null ? 'Enter valid amount' : null,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      context.read<CollectionsBloc>().add(CollectionsEvent.createCollection({
+                        'type': typeController.text,
+                        'amount': double.parse(amountController.text),
+                        'date': DateTime.now().toIso8601String(),
+                      }));
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Save Collection'),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         );
       },

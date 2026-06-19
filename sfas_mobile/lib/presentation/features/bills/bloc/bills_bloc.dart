@@ -13,7 +13,7 @@ class BillsBloc extends Bloc<BillsEvent, BillsState> {
       await event.map(
         loadBills: (_) => _onLoadBills(emit),
         createBill: (e) => _onCreateBill(e.billData, emit),
-        updateBillStatus: (e) => _onUpdateBillStatus(e.billId, e.status, emit),
+        updateBillStatus: (e) => _onUpdateBillStatus(e.billId, e.status, e.reviewComments, emit),
       );
     });
   }
@@ -37,9 +37,9 @@ class BillsBloc extends Bloc<BillsEvent, BillsState> {
     }
   }
 
-  Future<void> _onUpdateBillStatus(String billId, String status, Emitter<BillsState> emit) async {
+  Future<void> _onUpdateBillStatus(String billId, String status, String? reviewComments, Emitter<BillsState> emit) async {
     try {
-      await _billRepository.updateBillStatus(billId, status);
+      await _billRepository.updateBillStatus(billId, status, reviewComments: reviewComments);
       add(const BillsEvent.loadBills());
     } catch (e) {
       emit(BillsState.error(e.toString()));

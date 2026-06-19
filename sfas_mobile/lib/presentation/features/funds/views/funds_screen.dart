@@ -16,6 +16,11 @@ class FundsScreen extends StatefulWidget {
 
 class _FundsScreenState extends State<FundsScreen> {
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<FundsBloc>().add(const FundsEvent.loadFunds());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +40,18 @@ class _FundsScreenState extends State<FundsScreen> {
               if (funds.isEmpty) {
                 return const Center(child: Text('No funds found'));
               }
-              return ListView.builder(
-                padding: const EdgeInsets.all(24.0),
-                itemCount: funds.length,
-                itemBuilder: (context, index) {
-                  final fund = funds[index];
-                  return _buildFundCard(context, fund).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<FundsBloc>().add(const FundsEvent.loadFunds());
                 },
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(24.0),
+                  itemCount: funds.length,
+                  itemBuilder: (context, index) {
+                    final fund = funds[index];
+                    return _buildFundCard(context, fund).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+                  },
+                ),
               );
             },
           );
@@ -108,51 +118,89 @@ class _FundsScreenState extends State<FundsScreen> {
   }
 
   void _showCreateFundSheet(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final titleController = TextEditingController();
+    final amountController = TextEditingController();
+    final descriptionController = TextEditingController();
+    String urgencyLevel = 'MEDIUM';
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            left: 24,
-            right: 24,
-            top: 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Request Fund', style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(height: 24),
-              TextFormField(decoration: const InputDecoration(labelText: 'Title', border: OutlineInputBorder())),
-              const SizedBox(height: 16),
-              TextFormField(decoration: const InputDecoration(labelText: 'Amount', border: OutlineInputBorder()), keyboardType: TextInputType.number),
-              const SizedBox(height: 16),
-              TextFormField(decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()), maxLines: 3),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  context.read<FundsBloc>().add(FundsEvent.createFund({
-                    'title': 'New Fund',
-                    'description': 'Description',
-                    'amountOfFund': 500.0,
-                    'urgencyLevel': 'MEDIUM',
-                  }));
-                  Navigator.pop(context);
-                },
-                child: const Text('Submit Request'),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 24,
+                right: 24,
+                top: 24,
               ),
-              const SizedBox(height: 24),
-            ],
-          ),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('Request Fund', style: Theme.of(context).textTheme.headlineMedium),
+                    const SizedBox(height: 24),
+                    TextFormField(
+                      controller: titleController,
+                      decoration: const InputDecoration(labelText: 'Title', border: OutlineInputBorder()),
+                      validator: (value) => value == null || value.isEmpty ? 'Required field' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: amountController,
+                      decoration: const InputDecoration(labelText: 'Amount', border: OutlineInputBorder()),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      validator: (value) => value == null || double.tryParse(value) == null ? 'Enter valid amount' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: urgencyLevel,
+                      decoration: const InputDecoration(labelText: 'Urgency Level', border: OutlineInputBorder()),
+                      items: ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].map((level) => DropdownMenuItem(value: level, child: Text(level))).toList(),
+                      onChanged: (value) => setState(() => urgencyLevel = value!),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          context.read<FundsBloc>().add(FundsEvent.createFund({
+                            'title': titleController.text,
+                            'description': descriptionController.text,
+                            'amountOfFund': double.parse(amountController.text),
+                            'urgencyLevel': urgencyLevel,
+                            'date': DateTime.now().toIso8601String(),
+                          }));
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: const Text('Submit Request'),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            );
+          }
         );
       },
     );
   }
 
   void _showReviewSheet(BuildContext context, Fund fund) {
+    final commentController = TextEditingController();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -174,6 +222,7 @@ class _FundsScreenState extends State<FundsScreen> {
               Text(fund.title, style: Theme.of(context).textTheme.bodyLarge),
               const SizedBox(height: 24),
               TextFormField(
+                controller: commentController,
                 decoration: const InputDecoration(
                   labelText: 'Review Comments',
                   border: OutlineInputBorder(),
@@ -186,7 +235,11 @@ class _FundsScreenState extends State<FundsScreen> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        context.read<FundsBloc>().add(FundsEvent.updateFundStatus(fund.id, 'REJECTED'));
+                        context.read<FundsBloc>().add(FundsEvent.updateFundStatus(
+                          fund.id, 
+                          'REJECTED', 
+                          reviewComments: commentController.text,
+                        ));
                         Navigator.pop(context);
                       },
                       style: OutlinedButton.styleFrom(
@@ -201,7 +254,11 @@ class _FundsScreenState extends State<FundsScreen> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        context.read<FundsBloc>().add(FundsEvent.updateFundStatus(fund.id, 'APPROVED'));
+                        context.read<FundsBloc>().add(FundsEvent.updateFundStatus(
+                          fund.id, 
+                          'APPROVED', 
+                          reviewComments: commentController.text,
+                        ));
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(

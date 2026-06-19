@@ -6,5 +6,5 @@ part 'funds_event.freezed.dart';
 class FundsEvent with _$FundsEvent {
   const factory FundsEvent.loadFunds() = LoadFunds;
   const factory FundsEvent.createFund(Map<String, dynamic> fundData) = CreateFund;
-  const factory FundsEvent.updateFundStatus(String fundId, String status) = UpdateFundStatus;
+  const factory FundsEvent.updateFundStatus(String fundId, String status, {String? reviewComments}) = UpdateFundStatus;
 }

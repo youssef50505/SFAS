@@ -16,6 +16,11 @@ class ReportsScreen extends StatefulWidget {
 
 class _ReportsScreenState extends State<ReportsScreen> {
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<ReportsBloc>().add(const ReportsEvent.loadReports());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +40,18 @@ class _ReportsScreenState extends State<ReportsScreen> {
               if (reports.isEmpty) {
                 return const Center(child: Text('No reports found'));
               }
-              return ListView.builder(
-                padding: const EdgeInsets.all(24.0),
-                itemCount: reports.length,
-                itemBuilder: (context, index) {
-                  final report = reports[index];
-                  return _buildReportCard(context, report).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<ReportsBloc>().add(const ReportsEvent.loadReports());
                 },
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(24.0),
+                  itemCount: reports.length,
+                  itemBuilder: (context, index) {
+                    final report = reports[index];
+                    return _buildReportCard(context, report).animate().fadeIn(delay: (100 * index).ms).slideY(begin: 0.1);
+                  },
+                ),
               );
             },
           );
@@ -103,52 +113,71 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   void _showGenerateReportSheet(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final focusController = TextEditingController();
+    String reportType = 'MONTHLY';
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            left: 24,
-            right: 24,
-            top: 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Icon(Remix.sparkling_fill, color: Theme.of(context).colorScheme.primary),
-                  const SizedBox(width: 8),
-                  Text('AI Report Generation', style: Theme.of(context).textTheme.headlineMedium),
-                ],
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 24,
+                right: 24,
+                top: 24,
               ),
-              const SizedBox(height: 24),
-              TextFormField(decoration: const InputDecoration(labelText: 'Report Focus (e.g. Q2 Spending)', border: OutlineInputBorder())),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Report Type', border: OutlineInputBorder()),
-                items: ['MONTHLY', 'QUARTERLY', 'ANNUAL', 'CUSTOM'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-                onChanged: (_) {},
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Remix.sparkling_fill, color: Theme.of(context).colorScheme.primary),
+                        const SizedBox(width: 8),
+                        Text('AI Report Generation', style: Theme.of(context).textTheme.headlineMedium),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    TextFormField(
+                      controller: focusController,
+                      decoration: const InputDecoration(labelText: 'Report Focus (e.g. Q2 Spending)', border: OutlineInputBorder()),
+                      validator: (value) => value == null || value.isEmpty ? 'Required field' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      initialValue: reportType,
+                      decoration: const InputDecoration(labelText: 'Report Type', border: OutlineInputBorder()),
+                      items: ['MONTHLY', 'QUARTERLY', 'ANNUAL', 'CUSTOM'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                      onChanged: (value) => setState(() => reportType = value!),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          context.read<ReportsBloc>().add(ReportsEvent.createReport({
+                            'title': focusController.text,
+                            'description': 'Generated by AI',
+                            'typeOfReport': reportType,
+                            'date': DateTime.now().toIso8601String(),
+                          }));
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: const Text('Generate Document'),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  context.read<ReportsBloc>().add(ReportsEvent.createReport({
-                    'title': 'New AI Report',
-                    'description': 'Generated by user',
-                    'typeOfReport': 'CUSTOM',
-                  }));
-                  Navigator.pop(context);
-                },
-                child: const Text('Generate Document'),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
+            );
+          }
         );
       },
     );

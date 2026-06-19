@@ -25,11 +25,15 @@ class FundRepository {
     }
   }
 
-  Future<Fund> updateFundStatus(String id, String status) async {
+  Future<Fund> updateFundStatus(String id, String status, {String? reviewComments}) async {
     try {
+      final Map<String, dynamic> data = {'status': status};
+      if (reviewComments != null && reviewComments.isNotEmpty) {
+        data['reviewComments'] = reviewComments;
+      }
       final response = await _dioClient.dio.patch(
         '/funds/$id/status',
-        data: {'status': status},
+        data: data,
       );
       return Fund.fromJson(response.data);
     } on DioException catch (e) {

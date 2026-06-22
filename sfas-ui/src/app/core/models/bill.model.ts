@@ -1,5 +1,6 @@
 import { User } from './user.model';
 import { Vendor } from './vendor.model';
+import { DocumentStatus } from './status.enum';
 
 export interface Bill {
   id: string;
@@ -10,7 +11,7 @@ export interface Bill {
   date: string;
   imagePath: string | null;
   description: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  status: DocumentStatus;
   createdBy?: User;
   reviewedBy?: User | null;
   reviewComments?: string;

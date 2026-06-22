@@ -1,0 +1,28 @@
+<div class="form-group">
+  @if (label) {
+    <label [for]="id">{{ label }}</label>
+  }
+  
+  <div class="file-upload-wrapper">
+    <input
+      type="file"
+      [id]="id"
+      [accept]="accept"
+      #fileInput
+      (change)="onFileSelected($event)"
+      class="d-none"
+    >
+    <button type="button" class="btn btn-outline" (click)="fileInput.click()">
+      <i class="ri-upload-2-line"></i> Choose File
+    </button>
+    <span class="file-name">{{ fileName || 'No file chosen' }}</span>
+  </div>
+
+  @if (control.invalid && (control.dirty || control.touched)) {
+    <div class="invalid-feedback d-block">
+      @if (control.errors?.['required']) {
+        <span>This file is required.</span>
+      }
+    </div>
+  }
+</div>

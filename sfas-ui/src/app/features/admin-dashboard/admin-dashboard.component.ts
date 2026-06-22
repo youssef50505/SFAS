@@ -1,14 +1,11 @@
 import { Component, inject, OnInit, ViewChild, signal, DestroyRef } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
 import { GsapFadeDirective } from '../../shared/directives/gsap-fade.directive';
-import { BillService } from '../../core/services/bill.service';
-import { FundService } from '../../core/services/fund.service';
-import { CollectionService } from '../../core/services/collection.service';
+import { AdminDashboardStore } from './admin-dashboard.store';
 import { NgApexchartsModule, ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis, ApexTitleSubtitle, ApexStroke, ApexDataLabels, ApexFill, ApexTooltip } from 'ng-apexcharts';
-import { forkJoin } from 'rxjs';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -25,28 +22,26 @@ export type ChartOptions = {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [DecimalPipe, NgApexchartsModule, PageHeaderComponent, MetricCardComponent, GsapFadeDirective],
+  imports: [CurrencyPipe, NgApexchartsModule, PageHeaderComponent, MetricCardComponent, GsapFadeDirective],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
 export class AdminDashboardComponent implements OnInit {
-  billService = inject(BillService);
-  fundService = inject(FundService);
-  collectionService = inject(CollectionService);
+  store = inject(AdminDashboardStore);
 
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions!: ChartOptions;
 
-  // Signals for dynamic metrics
-  totalCollections = signal(0);
-  pendingBillsCount = signal(0);
-  activeFundsCount = signal(0);
-  isLoading = signal(true);
   private destroyRef = inject(DestroyRef);
 
   ngOnInit() {
     this.initChart();
-    this.loadDashboardData();
+    this.store.loadDashboardData().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.chartOptions.xaxis = { categories: this.store.chartCategories() };
+        this.chartOptions.series = this.store.chartSeries();
+      }
+    });
   }
 
   private initChart() {
@@ -64,70 +59,5 @@ export class AdminDashboardComponent implements OnInit {
       title: { text: 'Monthly Financial Overview', align: 'left', style: { fontSize: '18px', fontWeight: '600', color: 'var(--text-primary)' } },
       tooltip: { shared: true, intersect: false, y: { formatter: function (y) { if(typeof y !== "undefined") { return "EGP " + y.toFixed(0); } return y; } } }
     };
-  }
-
-  private loadDashboardData() {
-    forkJoin({
-      bills: this.billService.getAllBills(),
-      funds: this.fundService.getAllFunds(),
-      collections: this.collectionService.getAllCollections()
-    })
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe({
-      next: ({ bills, funds, collections }) => {
-        // Calculate Metrics
-        const totalColl = collections.reduce((sum, coll) => sum + coll.amount, 0);
-        this.totalCollections.set(totalColl);
-
-        const pendingBills = bills.filter(b => b.status === 'PENDING').length;
-        this.pendingBillsCount.set(pendingBills);
-
-        const activeFunds = funds.filter(f => f.status === 'PENDING').length;
-        this.activeFundsCount.set(activeFunds);
-
-        // Calculate chart data (Dummy calculation for past 6 months to showcase interaction)
-        // In a real app, we would group the dates properly.
-        const currentMonth = new Date().getMonth();
-        const collectionData = [0, 0, 0, 0, 0, 0];
-        const billData = [0, 0, 0, 0, 0, 0];
-        
-        // Simplified grouping for demo
-        collections.forEach(c => {
-           const m = new Date(c.date).getMonth();
-           if (m <= currentMonth && currentMonth - m < 6) {
-             const idx = 5 - (currentMonth - m);
-             if(idx >= 0) collectionData[idx] += c.amount;
-           }
-        });
-
-        bills.forEach(b => {
-           const m = new Date(b.date).getMonth();
-           if (m <= currentMonth && currentMonth - m < 6) {
-             const idx = 5 - (currentMonth - m);
-             if(idx >= 0) billData[idx] += b.amount;
-           }
-        });
-
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const categories = [];
-        for (let i = 5; i >= 0; i--) {
-          let m = currentMonth - i;
-          if (m < 0) m += 12;
-          categories.push(months[m]);
-        }
-
-        this.chartOptions.xaxis = { categories };
-        this.chartOptions.series = [
-          { name: "Collections", type: "column", data: collectionData },
-          { name: "Bills", type: "area", data: billData }
-        ];
-
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading dashboard data', err);
-        this.isLoading.set(false);
-      }
-    });
   }
 }

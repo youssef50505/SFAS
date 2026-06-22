@@ -31,52 +31,25 @@
       </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-        <div class="form-group">
-          <label for="email" class="form-label">Email address</label>
-          <div class="input-wrapper">
-            <i class="ri-mail-line input-icon"></i>
-            <input 
-              id="email" 
-              type="email" 
-              class="form-control with-icon" 
-              [class.is-invalid]="emailControl?.invalid && emailControl?.touched"
-              [class.is-valid]="emailControl?.valid && (emailControl?.dirty || emailControl?.touched)"
-              formControlName="email" 
-              placeholder="admin@school.com"
-            >
-          </div>
-          @if (emailControl?.invalid && emailControl?.touched) {
-            <div class="form-error">
-              @if (emailControl?.errors?.['required']) { <span>Email is required.</span> }
-              @if (emailControl?.errors?.['email']) { <span>Please enter a valid email address.</span> }
-            </div>
-          }
-        </div>
+        <app-text-input
+          label="Email address"
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="admin@school.com"
+          icon="ri-mail-line">
+        </app-text-input>
 
-        <div class="form-group">
-          <label for="password" class="form-label">Password</label>
-          <div class="input-wrapper">
-            <i class="ri-lock-line input-icon"></i>
-            <input 
-              id="password" 
-              [type]="showPassword() ? 'text' : 'password'" 
-              class="form-control with-icon with-action" 
-              [class.is-invalid]="passwordControl?.invalid && passwordControl?.touched"
-              [class.is-valid]="passwordControl?.valid && (passwordControl?.dirty || passwordControl?.touched)"
-              formControlName="password" 
-              placeholder="••••••••"
-            >
-            <button type="button" class="password-toggle" (click)="togglePassword()">
-              <i [class]="showPassword() ? 'ri-eye-off-line' : 'ri-eye-line'"></i>
-            </button>
-          </div>
-          @if (passwordControl?.invalid && passwordControl?.touched) {
-            <div class="form-error">
-              @if (passwordControl?.errors?.['required']) { <span>Password is required.</span> }
-              @if (passwordControl?.errors?.['minlength']) { <span>Password must be at least 6 characters.</span> }
-            </div>
-          }
-        </div>
+        <app-text-input
+          label="Password"
+          id="password"
+          [type]="showPassword() ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="••••••••"
+          icon="ri-lock-line"
+          [actionIcon]="showPassword() ? 'ri-eye-off-line' : 'ri-eye-line'"
+          (action)="togglePassword()">
+        </app-text-input>
 
         <button type="submit" class="btn-primary w-full mt-4" [disabled]="isLoading() || loginForm.invalid">
           @if (isLoading()) {

@@ -10,7 +10,7 @@
   </div>
 
   <div class="table-container surface" gsapFade [delay]="0.2">
-    @if (isLoading()) {
+    @if (store.isLoading()) {
       <div class="loading-state">
         <div class="spinner"></div>
         <p>Loading fund requests...</p>
@@ -28,7 +28,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (fund of funds(); track fund.id) {
+        @for (fund of store.funds(); track fund.id) {
           <tr>
             <td>
               <div class="fund-info">
@@ -146,9 +146,9 @@
         </div>
         
         <div class="modal-actions">
-          <button type="button" class="btn-secondary" (click)="closeAddModal()" [disabled]="isSubmitting()">Cancel</button>
-          <button type="submit" class="btn-primary" [disabled]="fundForm.invalid || isSubmitting()">
-            @if (isSubmitting()) {
+          <button type="button" class="btn-secondary" (click)="closeAddModal()" [disabled]="store.isSubmitting()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="fundForm.invalid || store.isSubmitting()">
+            @if (store.isSubmitting()) {
               Submitting...
             } @else {
               Submit Request
@@ -164,8 +164,8 @@
   <app-review-modal
     [config]="getReviewConfig()!"
     (close)="closeReviewModal()"
-    (approve)="handleReviewAction($event, 'APPROVED')"
-    (pending)="handleReviewAction($event, 'PENDING')"
-    (reject)="handleReviewAction($event, 'REJECTED')">
+    (approve)="handleReviewAction($event, DocumentStatus.APPROVED)"
+    (pending)="handleReviewAction($event, DocumentStatus.PENDING)"
+    (reject)="handleReviewAction($event, DocumentStatus.REJECTED)">
   </app-review-modal>
 }

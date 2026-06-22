@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Bill } from '../models/bill.model';
+import { DocumentStatus } from '../models/status.enum';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -23,7 +24,7 @@ export class BillService {
     return this.http.post<Bill>(this.baseUrl, bill);
   }
 
-  updateBillStatus(id: string, status: 'APPROVED' | 'REJECTED' | 'PENDING', comments?: string): Observable<Bill> {
+  updateBillStatus(id: string, status: DocumentStatus, comments?: string): Observable<Bill> {
     return this.http.patch<Bill>(`${this.baseUrl}/${id}/status`, { status, comments });
   }
 }

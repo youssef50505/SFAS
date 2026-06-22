@@ -86,58 +86,41 @@
       
       <form [formGroup]="vendorForm" (ngSubmit)="submitVendor()">
         <div class="form-grid">
-          <div class="form-group full-width">
-            <label class="form-label">Vendor Name <span class="required">*</span></label>
-            <input type="text" class="form-control" [class.is-invalid]="f.name.invalid && f.name.touched" formControlName="name" placeholder="e.g. Acme Supplies Ltd">
-            @if (f.name.invalid && f.name.touched) {
-              <div class="form-error">
-                @if (f.name.errors?.['required']) { <span>Vendor name is required.</span> }
-                @if (f.name.errors?.['minlength']) { <span>Minimum 3 characters needed.</span> }
-              </div>
-            }
-          </div>
+          <app-text-input
+            label="Vendor Name *"
+            id="vendor-name"
+            formControlName="name"
+            placeholder="e.g. Acme Supplies Ltd">
+          </app-text-input>
           
-          <div class="form-group">
-            <label class="form-label">Contact Email <span class="required">*</span></label>
-            <input type="email" class="form-control" [class.is-invalid]="f.contactEmail.invalid && f.contactEmail.touched" formControlName="contactEmail" placeholder="contact@acme.com">
-            @if (f.contactEmail.invalid && f.contactEmail.touched) {
-              <div class="form-error">
-                @if (f.contactEmail.errors?.['required']) { <span>Email is required.</span> }
-                @if (f.contactEmail.errors?.['email']) { <span>Enter a valid email address.</span> }
-              </div>
-            }
-          </div>
+          <app-text-input
+            type="email"
+            label="Contact Email *"
+            id="vendor-email"
+            formControlName="contactEmail"
+            placeholder="contact@acme.com">
+          </app-text-input>
           
-          <div class="form-group">
-            <label class="form-label">Phone Number <span class="required">*</span></label>
-            <input type="text" class="form-control" [class.is-invalid]="f.phoneNumber.invalid && f.phoneNumber.touched" formControlName="phoneNumber" placeholder="+1 234 567 8900">
-            @if (f.phoneNumber.invalid && f.phoneNumber.touched) {
-              <div class="form-error">
-                @if (f.phoneNumber.errors?.['required']) { <span>Phone is required.</span> }
-                @if (f.phoneNumber.errors?.['pattern']) { <span>Enter a valid phone number.</span> }
-              </div>
-            }
-          </div>
+          <app-text-input
+            label="Phone Number *"
+            id="vendor-phone"
+            formControlName="phoneNumber"
+            placeholder="+1 234 567 8900">
+          </app-text-input>
           
-          <div class="form-group full-width">
-            <label class="form-label">Tax ID <span class="required">*</span></label>
-            <input type="text" class="form-control" [class.is-invalid]="f.taxId.invalid && f.taxId.touched" formControlName="taxId" placeholder="e.g. XX-XXXXXXX">
-            @if (f.taxId.invalid && f.taxId.touched) {
-              <div class="form-error">
-                @if (f.taxId.errors?.['required']) { <span>Tax ID is required.</span> }
-              </div>
-            }
-          </div>
+          <app-text-input
+            label="Tax ID *"
+            id="vendor-tax"
+            formControlName="taxId"
+            placeholder="e.g. XX-XXXXXXX">
+          </app-text-input>
           
-          <div class="form-group full-width">
-            <label class="form-label">Address <span class="required">*</span></label>
-            <input type="text" class="form-control" [class.is-invalid]="f.address.invalid && f.address.touched" formControlName="address" placeholder="123 Business Rd, City">
-            @if (f.address.invalid && f.address.touched) {
-              <div class="form-error">
-                @if (f.address.errors?.['required']) { <span>Address is required.</span> }
-              </div>
-            }
-          </div>
+          <app-text-input
+            label="Address *"
+            id="vendor-address"
+            formControlName="address"
+            placeholder="123 Business Rd, City">
+          </app-text-input>
         </div>
         
         <div class="modal-actions">

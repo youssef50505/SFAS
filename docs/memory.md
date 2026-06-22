@@ -536,3 +536,19 @@ The codebase is fundamentally verified. Running `flutter analyze` and `dart run 
 ### 26.2. Reactive UX Enhancements
 - **Automated Lifecycle Fetching:** Upgraded all major screens (`BillsScreen`, `FundsScreen`, `CollectionsScreen`, `ReportsScreen`) to `StatefulWidget`, leveraging the `initState` method to proactively trigger data loading events (`loadBills`, `loadFunds`, etc.) the moment the screen mounts.
 - **Pull-to-Refresh Mechanism:** Wrapped the main `ListView.builder` of every screen inside a `RefreshIndicator`, granting users the ability to perform manual, real-time syncs with the API server by simply swiping down.
+
+## 27. Angular Frontend Bug Fixes & Strict Compilation Compliance
+
+**Context:** The Angular 21 web application (`sfas-ui`) had undergone architectural refactoring that introduced several build-time errors detected by `esbuild` and the Angular Compiler. These issues prevented successful production builds.
+
+**What was accomplished:**
+1. **Strict Null Checks & Optional Chaining Fixes:** Resolved multiple `NG8107` warnings across shared UI components (`text-input`, `select-input`, `file-upload`). Removed optional chaining (`?.`) from the `control` object where the Angular compiler had strictly inferred that the object could not be null or undefined.
+2. **Component Template Corrections:**
+   - Fixed an unexpected closing `</div>` tag in `admin-dashboard.component.html` caused by overlapping `@if` control flow blocks during a previous refactor.
+   - Updated `admin-dashboard.component.ts` to properly import `CurrencyPipe` instead of the unused `DecimalPipe` and provided a non-null fallback `|| '0'` to prevent TS2322 assignment errors when binding to the metric card value.
+3. **Component Inputs Realignment:** Corrected the inputs on `app-metric-card` within the Admin Dashboard to perfectly match the `MetricCardComponent` signature (`label`, `iconClass`, `iconColor`, `valueClass`), eliminating `NG8002` (unknown property) binding errors.
+4. **Enum Template Exposure:** Solved TS2345 type mismatch errors in `bills.component.html` and `funds.component.html` where raw strings (e.g., `'APPROVED'`) were being passed instead of the required `DocumentStatus` enum. Exposed `DocumentStatus` as a public property in the respective TypeScript files and updated the templates to use `DocumentStatus.APPROVED`, `PENDING`, and `REJECTED`.
+5. **Code Duplication Cleanup:** Addressed IDE errors regarding duplicate identifiers and function implementations in `bills.component.ts` and `funds.component.ts`. Safely removed duplicate `ReviewModalConfig` imports and duplicate `getReviewConfig()` implementations while ensuring the correct `ReviewModalConfig` payload was passed to the `app-review-modal` template bindings.
+6. **Performance Standard:** Enforced `ChangeDetectionStrategy.OnPush` across components, significantly improving component rendering performance.
+
+The web application now successfully compiles (`ng serve` and `ng build`) with zero TypeScript errors or Angular Compiler warnings.

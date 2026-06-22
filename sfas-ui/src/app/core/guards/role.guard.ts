@@ -1,6 +1,7 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthStore } from '../stores/auth.store';
+import { Role } from '../models/role.enum';
 
 export const roleGuard: CanActivateFn = (route, state) => {
   const authStore = inject(AuthStore);
@@ -18,7 +19,7 @@ export const roleGuard: CanActivateFn = (route, state) => {
   }
 
   // Redirect based on role if unauthorized for this route
-  if (currentUser.role === 'ADMIN') {
+  if (currentUser.role === Role.ADMIN) {
     return router.createUrlTree(['/admin/dashboard']);
   } else {
     return router.createUrlTree(['/finance/dashboard']);

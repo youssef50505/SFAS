@@ -6,13 +6,14 @@ import { Vendor } from '../../core/models/vendor.model';
 import { AuthStore } from '../../core/stores/auth.store';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { GsapFadeDirective } from '../../shared/directives/gsap-fade.directive';
+import { TextInputComponent } from '../../shared/components/text-input/text-input.component';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { ConfirmationService } from '../../shared/components/confirmation-modal/confirmation.service';
 
 @Component({
   selector: 'app-vendors',
   standalone: true,
-  imports: [ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective],
+  imports: [ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective, TextInputComponent],
   templateUrl: './vendors.component.html',
   styleUrl: './vendors.component.css'
 })

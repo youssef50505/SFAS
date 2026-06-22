@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Fund } from '../models/fund.model';
+import { DocumentStatus } from '../models/status.enum';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -19,7 +20,7 @@ export class FundService {
     return this.http.post<Fund>(this.baseUrl, fund);
   }
 
-  updateFundStatus(id: string, status: 'APPROVED' | 'REJECTED' | 'PENDING', comments?: string): Observable<Fund> {
+  updateFundStatus(id: string, status: DocumentStatus, comments?: string): Observable<Fund> {
     return this.http.patch<Fund>(`${this.baseUrl}/${id}/status`, { status, comments });
   }
 }

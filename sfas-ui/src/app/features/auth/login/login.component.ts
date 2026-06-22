@@ -4,11 +4,13 @@ import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../shared/components/toast/toast.service';
+import { Role } from '../../../core/models/role.enum';
+import { TextInputComponent } from '../../../shared/components/text-input/text-input.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TextInputComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -45,7 +47,7 @@ export class LoginComponent {
       .subscribe({
         next: (res) => {
         this.toast.success('Login successful!');
-        if (res.role === 'ADMIN') {
+        if (res.role === Role.ADMIN) {
           this.router.navigate(['/admin/dashboard']);
         } else {
           this.router.navigate(['/finance/dashboard']);

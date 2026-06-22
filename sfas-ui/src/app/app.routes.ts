@@ -3,6 +3,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 import { inject } from '@angular/core';
 import { AuthStore } from './core/stores/auth.store';
+import { Role } from './core/models/role.enum';
 
 export const routes: Routes = [
   { 
@@ -20,20 +21,20 @@ export const routes: Routes = [
         redirectTo: () => {
           const authStore = inject(AuthStore);
           const role = authStore.currentUser()?.role;
-          return role === 'FINANCE_OFFICER' ? 'finance/dashboard' : 'admin/dashboard';
+          return role === Role.FINANCE_OFFICER ? 'finance/dashboard' : 'admin/dashboard';
         }
       },
       { 
         path: 'admin/dashboard', 
         loadComponent: () => import('./features/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN'] }
+        data: { roles: [Role.ADMIN] }
       },
       { 
         path: 'finance/dashboard', 
         loadComponent: () => import('./features/finance-dashboard/finance-dashboard.component').then(m => m.FinanceDashboardComponent),
         canActivate: [roleGuard],
-        data: { roles: ['FINANCE_OFFICER'] }
+        data: { roles: [Role.FINANCE_OFFICER] }
       },
       { 
         path: 'vendors', 
@@ -51,7 +52,7 @@ export const routes: Routes = [
         path: 'collections', 
         loadComponent: () => import('./features/collections/collections.component').then(m => m.CollectionsComponent),
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN'] }
+        data: { roles: [Role.ADMIN] }
       },
       { 
         path: 'reports', 

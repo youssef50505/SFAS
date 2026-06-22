@@ -1,8 +1,10 @@
+import { Role } from './role.enum';
+
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'ADMIN' | 'FINANCE_OFFICER';
+  role: Role;
 }
 
 export interface AuthResponse {
@@ -10,5 +12,5 @@ export interface AuthResponse {
   userId: string;
   name: string;
   email: string;
-  role: 'ADMIN' | 'FINANCE_OFFICER';
+  role: Role;
 }

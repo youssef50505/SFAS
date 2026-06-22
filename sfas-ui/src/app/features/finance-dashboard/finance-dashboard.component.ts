@@ -7,6 +7,8 @@ import { BillService } from '../../core/services/bill.service';
 import { FundService } from '../../core/services/fund.service';
 import { forkJoin } from 'rxjs';
 import { RouterModule } from '@angular/router';
+import { DocumentStatus } from '../../core/models/status.enum';
+import { FinanceDashboardStore } from './finance-dashboard.store';
 
 @Component({
   selector: 'app-finance-dashboard',
@@ -16,38 +18,10 @@ import { RouterModule } from '@angular/router';
   styleUrl: './finance-dashboard.component.css'
 })
 export class FinanceDashboardComponent implements OnInit {
-  private billService = inject(BillService);
-  private fundService = inject(FundService);
-
-  pendingBillsCount = signal(0);
-  pendingFundsCount = signal(0);
-  isLoading = signal(true);
+  store = inject(FinanceDashboardStore);
   private destroyRef = inject(DestroyRef);
 
   ngOnInit() {
-    this.loadData();
-  }
-
-  private loadData() {
-    forkJoin({
-      bills: this.billService.getAllBills(),
-      funds: this.fundService.getAllFunds()
-    })
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe({
-      next: ({ bills, funds }) => {
-        const pendingBills = bills.filter(b => b.status === 'PENDING').length;
-        this.pendingBillsCount.set(pendingBills);
-
-        const pendingFunds = funds.filter(f => f.status === 'PENDING').length;
-        this.pendingFundsCount.set(pendingFunds);
-
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading finance data', err);
-        this.isLoading.set(false);
-      }
-    });
+    this.store.loadData().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 }

@@ -10,7 +10,7 @@
   </div>
 
   <div class="table-container surface" gsapFade [delay]="0.2">
-    @if (isLoading()) {
+    @if (store.isLoading()) {
       <div class="loading-state">
         <div class="spinner"></div>
         <p>Loading bills...</p>
@@ -28,7 +28,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (bill of bills(); track bill.id) {
+        @for (bill of store.bills(); track bill.id) {
           <tr>
             <td>
               <div class="bill-info">
@@ -102,7 +102,7 @@
             <label class="form-label">Vendor <span class="required">*</span></label>
             <select class="form-control" [class.is-invalid]="f.vendorId.invalid && f.vendorId.touched" formControlName="vendorId">
               <option value="" disabled selected>Select a vendor</option>
-              @for (vendor of vendors(); track vendor.id) {
+              @for (vendor of store.vendors(); track vendor.id) {
                 <option [value]="vendor.id">{{ vendor.name }}</option>
               }
             </select>
@@ -165,9 +165,9 @@
         </div>
         
         <div class="modal-actions">
-          <button type="button" class="btn-secondary" (click)="closeAddModal()" [disabled]="isSubmitting()">Cancel</button>
-          <button type="submit" class="btn-primary" [disabled]="billForm.invalid || isSubmitting()">
-            @if (isSubmitting()) {
+          <button type="button" class="btn-secondary" (click)="closeAddModal()" [disabled]="store.isSubmitting()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="billForm.invalid || store.isSubmitting()">
+            @if (store.isSubmitting()) {
               Saving...
             } @else {
               Submit Bill
@@ -183,8 +183,8 @@
   <app-review-modal
     [config]="getReviewConfig()!"
     (close)="closeReviewModal()"
-    (approve)="handleReviewAction($event, 'APPROVED')"
-    (pending)="handleReviewAction($event, 'PENDING')"
-    (reject)="handleReviewAction($event, 'REJECTED')">
+    (approve)="handleReviewAction($event, DocumentStatus.APPROVED)"
+    (pending)="handleReviewAction($event, DocumentStatus.PENDING)"
+    (reject)="handleReviewAction($event, DocumentStatus.REJECTED)">
   </app-review-modal>
 }

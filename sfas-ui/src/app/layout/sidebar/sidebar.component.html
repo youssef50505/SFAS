@@ -12,7 +12,7 @@
   </div>
 
   <nav class="sidebar-nav">
-    @if (role === 'ADMIN') {
+    @if (authStore.isAdmin()) {
       <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
         <i class="ri-dashboard-3-line nav-icon"></i>
         <span class="nav-text">Dashboard</span>
@@ -43,7 +43,7 @@
       </a>
     }
 
-    @if (role === 'FINANCE_OFFICER') {
+    @if (authStore.isFinanceOfficer()) {
       <a routerLink="/finance/dashboard" routerLinkActive="active" class="nav-item">
         <i class="ri-dashboard-3-line nav-icon"></i>
         <span class="nav-text">Dashboard</span>

@@ -9,7 +9,7 @@
       <div class="avatar">{{ authStore.currentUser()?.name?.charAt(0) || 'U' }}</div>
       <div class="user-info">
         <span class="user-name">{{ authStore.currentUser()?.name || 'User' }}</span>
-        <span class="user-role">{{ authStore.currentUser()?.role === 'FINANCE_OFFICER' ? 'Finance Officer' : authStore.currentUser()?.role || 'Role' }}</span>
+        <span class="user-role">{{ authStore.isFinanceOfficer() ? 'Finance Officer' : authStore.currentUser()?.role || 'Role' }}</span>
       </div>
     </div>
 

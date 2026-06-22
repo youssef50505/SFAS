@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { User } from '../models/user.model';
+import { Role } from '../models/role.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,8 @@ export class AuthStore {
   public readonly currentUser = computed(() => this.userSignal());
   public readonly currentToken = computed(() => this.tokenSignal());
   public readonly isAuthenticated = computed(() => !!this.tokenSignal());
-  public readonly isAdmin = computed(() => this.userSignal()?.role === 'ADMIN');
-  public readonly isFinanceOfficer = computed(() => this.userSignal()?.role === 'FINANCE_OFFICER');
+  public readonly isAdmin = computed(() => this.userSignal()?.role === Role.ADMIN);
+  public readonly isFinanceOfficer = computed(() => this.userSignal()?.role === Role.FINANCE_OFFICER);
 
   constructor() {
     this.loadInitialState();

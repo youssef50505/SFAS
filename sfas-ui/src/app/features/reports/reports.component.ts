@@ -2,12 +2,12 @@ import { Component, inject, OnInit, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe, CurrencyPipe, NgClass } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ReportService } from '../../core/services/report.service';
 import { Report } from '../../core/models/report.model';
 import { AuthStore } from '../../core/stores/auth.store';
+import { ReportType } from '../../core/models/status.enum';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { GsapFadeDirective } from '../../shared/directives/gsap-fade.directive';
-import { ToastService } from '../../shared/components/toast/toast.service';
+import { ReportStore } from './store/report.store';
 
 @Component({
   selector: 'app-reports',
@@ -17,48 +17,28 @@ import { ToastService } from '../../shared/components/toast/toast.service';
   styleUrl: './reports.component.css'
 })
 export class ReportsComponent implements OnInit {
-  private reportService = inject(ReportService);
+  store = inject(ReportStore);
   private fb = inject(FormBuilder);
-  private toast = inject(ToastService);
   authStore = inject(AuthStore);
 
-  reports = signal<Report[]>([]);
   showAddModal = signal(false);
-  isSubmitting = signal(false);
-  isLoading = signal(true);
   private destroyRef = inject(DestroyRef);
 
   reportForm = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(3)]],
     description: ['', [Validators.required, Validators.minLength(10)]],
     date: [new Date().toISOString().slice(0, 16), [Validators.required]],
-    typeOfReport: ['IN_APP', [Validators.required]]
+    typeOfReport: [ReportType.IN_APP as string, [Validators.required]]
   });
 
   ngOnInit() {
-    this.loadReports();
-  }
-
-  loadReports() {
-    this.isLoading.set(true);
-    this.reportService.getAllReports()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data) => {
-          this.reports.set(data);
-          this.isLoading.set(false);
-        },
-        error: () => {
-          this.toast.error('Failed to load reports');
-          this.isLoading.set(false);
-        }
-      });
+    this.store.loadReports().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
   openAddModal() {
     this.reportForm.reset({
       date: new Date().toISOString().slice(0, 16),
-      typeOfReport: 'IN_APP'
+      typeOfReport: ReportType.IN_APP as string
     });
     this.showAddModal.set(true);
   }
@@ -73,21 +53,14 @@ export class ReportsComponent implements OnInit {
       return;
     }
 
-    this.isSubmitting.set(true);
     const reportData = this.reportForm.value as Partial<Report>;
 
-    this.reportService.createReport(reportData)
+    this.store.createReport(reportData)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.toast.success('Report generated successfully');
-          this.loadReports();
+          this.store.loadReports().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
           this.closeAddModal();
-          this.isSubmitting.set(false);
-        },
-        error: () => {
-          this.toast.error('Failed to generate report');
-          this.isSubmitting.set(false);
         }
       });
   }

@@ -10,7 +10,7 @@
   </div>
 
   <div class="table-container surface" gsapFade [delay]="0.2">
-    @if (isLoading()) {
+    @if (store.isLoading()) {
       <div class="loading-state">
         <div class="spinner"></div>
         <p>Loading reports...</p>
@@ -27,7 +27,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (report of reports(); track report.id) {
+        @for (report of store.reports(); track report.id) {
           <tr>
             <td>
               <div class="report-title-cell">
@@ -137,9 +137,9 @@
         </div>
         
         <div class="modal-actions">
-          <button type="button" class="btn-secondary" (click)="closeAddModal()" [disabled]="isSubmitting()">Cancel</button>
-          <button type="submit" class="btn-primary" [disabled]="reportForm.invalid || isSubmitting()">
-            @if (isSubmitting()) {
+          <button type="button" class="btn-secondary" (click)="closeAddModal()" [disabled]="store.isSubmitting()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="reportForm.invalid || store.isSubmitting()">
+            @if (store.isSubmitting()) {
               Generating...
             } @else {
               Generate Report

@@ -1,0 +1,40 @@
+<div class="form-group">
+  @if (label) {
+    <label [for]="id">{{ label }}</label>
+  }
+  
+  <div class="input-wrapper" [class.has-icon]="icon" [class.has-action]="actionIcon">
+    @if (icon) {
+      <i [class]="icon + ' input-icon'"></i>
+    }
+    <input
+      [type]="type"
+      [id]="id"
+      [placeholder]="placeholder"
+      [class.is-invalid]="control.invalid && (control.dirty || control.touched)"
+      [formControl]="control"
+      class="form-control"
+      [class.with-icon]="icon"
+      [class.with-action]="actionIcon"
+    >
+    @if (actionIcon) {
+      <button type="button" class="action-toggle" (click)="onAction()">
+        <i [class]="actionIcon"></i>
+      </button>
+    }
+  </div>
+
+  @if (control.invalid && (control.dirty || control.touched)) {
+    <div class="invalid-feedback d-block">
+      @if (control.errors?.['required']) {
+        <span>This field is required.</span>
+      }
+      @if (control.errors?.['email']) {
+        <span>Please enter a valid email address.</span>
+      }
+      @if (control.errors?.['minlength']) {
+        <span>Must be at least {{ control.errors?.['minlength'].requiredLength }} characters.</span>
+      }
+    </div>
+  }
+</div>

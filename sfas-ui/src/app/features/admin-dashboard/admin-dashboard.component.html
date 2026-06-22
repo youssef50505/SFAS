@@ -3,58 +3,51 @@
     <app-page-header title="Admin Dashboard" subtitle="Real-time financial pulse and activity summary"></app-page-header>
   </div>
 
-  @if (isLoading()) {
+  @if (store.isLoading()) {
     <div class="loading-state surface">
       <div class="spinner"></div>
       <p>Loading financial data...</p>
     </div>
   } @else {
-    <div class="metrics-grid">
-      <app-metric-card 
-        [delay]="0.1" gsapFade
-        label="Total Collections" 
-        [value]="'EGP ' + (totalCollections() | number:'1.0-0')" 
-        iconClass="ri-money-dollar-circle-line" 
-        iconColor="var(--accent-success)" 
-        valueClass="text-success">
+    <div class="metrics-grid" gsapFade [delay]="0.2">
+      <app-metric-card
+        label="Total Collections"
+        [value]="(store.totalCollections() | currency:'EGP ') || '0'"
+        iconClass="ri-money-dollar-circle-line"
+        iconColor="var(--accent-success)">
       </app-metric-card>
-      
-      <app-metric-card 
-        [delay]="0.2" gsapFade
-        label="Pending Bills" 
-        [value]="pendingBillsCount().toString()" 
-        iconClass="ri-article-line" 
-        iconColor="var(--accent-warning)" 
-        valueClass="text-warning">
+      <app-metric-card
+        label="Pending Bills"
+        [value]="store.pendingBillsCount().toString()"
+        iconClass="ri-file-list-3-line"
+        [iconColor]="store.pendingBillsCount() > 5 ? 'var(--accent-danger)' : 'var(--accent-warning)'"
+        [valueClass]="store.pendingBillsCount() > 5 ? 'text-danger' : ''">
       </app-metric-card>
-  
-      <app-metric-card 
-        [delay]="0.3" gsapFade
-        label="Active Fund Requests" 
-        [value]="activeFundsCount().toString()" 
-        iconClass="ri-alert-line" 
-        iconColor="var(--accent-danger)" 
-        valueClass="text-danger">
+      <app-metric-card
+        label="Funds Requires Approval"
+        [value]="store.activeFundsCount().toString()"
+        iconClass="ri-bank-card-line"
+        iconColor="var(--accent-info)">
       </app-metric-card>
     </div>
   
-    <div class="chart-container surface" gsapFade [delay]="0.4">
-      @defer (on viewport) {
+    <div class="chart-container surface" gsapFade [delay]="0.4" [yOffset]="30">
+      @if (store.isLoading()) {
+        <div class="chart-loading">
+          <div class="spinner"></div>
+        </div>
+      } @else {
         <apx-chart
           [series]="chartOptions.series"
           [chart]="chartOptions.chart"
           [xaxis]="chartOptions.xaxis"
           [stroke]="chartOptions.stroke"
-          [colors]="chartOptions.colors"
-          [dataLabels]="chartOptions.dataLabels"
-          [fill]="chartOptions.fill"
-          [title]="chartOptions.title"
           [tooltip]="chartOptions.tooltip"
+          [dataLabels]="chartOptions.dataLabels"
+          [title]="chartOptions.title"
+          [fill]="chartOptions.fill"
+          [colors]="chartOptions.colors"
         ></apx-chart>
-      } @placeholder {
-        <div style="height: 350px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
-          Loading chart...
-        </div>
       }
     </div>
   }

@@ -1,0 +1,25 @@
+<div class="form-group">
+  @if (label) {
+    <label [for]="id">{{ label }}</label>
+  }
+  
+  <select
+    [id]="id"
+    [class.is-invalid]="control.invalid && (control.dirty || control.touched)"
+    [formControl]="control"
+    class="form-select"
+  >
+    <option value="" disabled selected>Select an option</option>
+    @for (opt of options; track opt.value) {
+      <option [value]="opt.value">{{ opt.label }}</option>
+    }
+  </select>
+
+  @if (control.invalid && (control.dirty || control.touched)) {
+    <div class="invalid-feedback d-block">
+      @if (control.errors?.['required']) {
+        <span>This field is required.</span>
+      }
+    </div>
+  }
+</div>

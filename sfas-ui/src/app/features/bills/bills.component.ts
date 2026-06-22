@@ -1,40 +1,33 @@
-import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe, CurrencyPipe, NgClass } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { BillService } from '../../core/services/bill.service';
-import { VendorService } from '../../core/services/vendor.service';
 import { Bill } from '../../core/models/bill.model';
-import { Vendor } from '../../core/models/vendor.model';
 import { AuthStore } from '../../core/stores/auth.store';
+import { DocumentStatus } from '../../core/models/status.enum';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { GsapFadeDirective } from '../../shared/directives/gsap-fade.directive';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { ConfirmationService } from '../../shared/components/confirmation-modal/confirmation.service';
 import { ReviewModalComponent, ReviewModalConfig } from '../../shared/components/review-modal/review-modal.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { BillStore } from './store/bill.store';
 
 @Component({
   selector: 'app-bills',
   standalone: true,
   imports: [DatePipe, CurrencyPipe, NgClass, ReactiveFormsModule, PageHeaderComponent, GsapFadeDirective, ReviewModalComponent, EmptyStateComponent],
   templateUrl: './bills.component.html',
-  styleUrl: './bills.component.css'
+  styleUrl: './bills.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BillsComponent implements OnInit {
-  private billService = inject(BillService);
-  private vendorService = inject(VendorService);
+  store = inject(BillStore);
   private fb = inject(FormBuilder);
-  private toast = inject(ToastService);
   private confirmationService = inject(ConfirmationService);
   authStore = inject(AuthStore);
-
-  bills = signal<Bill[]>([]);
-  vendors = signal<Vendor[]>([]);
-  
   showAddModal = signal(false);
-  isSubmitting = signal(false);
-  isLoading = signal(true);
+  DocumentStatus = DocumentStatus;
   private destroyRef = inject(DestroyRef);
   
   billForm = this.fb.group({
@@ -48,35 +41,10 @@ export class BillsComponent implements OnInit {
   });
 
   ngOnInit() {
-    this.loadBills();
+    this.store.loadBills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
     if (this.authStore.isAdmin()) {
-      this.loadVendors();
+      this.store.loadVendors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
     }
-  }
-
-  loadBills() {
-    this.isLoading.set(true);
-    this.billService.getAllBills()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data) => {
-          this.bills.set(data);
-          this.isLoading.set(false);
-        },
-        error: () => {
-          this.toast.error('Failed to load bills');
-          this.isLoading.set(false);
-        }
-      });
-  }
-
-  loadVendors() {
-    this.vendorService.getAllVendors()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data) => this.vendors.set(data),
-        error: () => this.toast.error('Failed to load vendors')
-      });
   }
 
   openAddModal() {
@@ -105,21 +73,14 @@ export class BillsComponent implements OnInit {
       return;
     }
 
-    this.isSubmitting.set(true);
     const billData = this.billForm.value as Partial<Bill>;
 
-    this.billService.createBill(billData)
+    this.store.createBill(billData)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.toast.success('Bill created successfully');
-          this.loadBills();
+          this.store.loadBills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
           this.closeAddModal();
-          this.isSubmitting.set(false);
-        },
-        error: () => {
-          this.toast.error('Failed to create bill');
-          this.isSubmitting.set(false);
         }
       });
   }
@@ -144,7 +105,7 @@ export class BillsComponent implements OnInit {
       documentName: bill.imagePath,
       status: bill.status,
       comments: bill.reviewComments,
-      isReadOnly: bill.status !== 'PENDING' || !this.authStore.isFinanceOfficer()
+      isReadOnly: bill.status !== DocumentStatus.PENDING || !this.authStore.isFinanceOfficer()
     };
   }
 
@@ -156,29 +117,27 @@ export class BillsComponent implements OnInit {
     this.selectedBillForReview.set(null);
   }
 
-  handleReviewAction(comments: string, status: 'APPROVED' | 'REJECTED' | 'PENDING') {
+  handleReviewAction(comments: string, status: DocumentStatus) {
     const bill = this.selectedBillForReview();
     if (!bill) return;
 
-    const actionText = status === 'APPROVED' ? 'approve' : (status === 'REJECTED' ? 'reject' : 'mark pending');
+    const actionText = status === DocumentStatus.APPROVED ? 'approve' : (status === DocumentStatus.REJECTED ? 'reject' : 'mark pending');
 
     this.confirmationService.confirm({
-      title: `${status === 'APPROVED' ? 'Approve' : (status === 'REJECTED' ? 'Reject' : 'Pending')} Bill`,
+      title: `${status === DocumentStatus.APPROVED ? 'Approve' : (status === DocumentStatus.REJECTED ? 'Reject' : 'Pending')} Bill`,
       message: `Are you sure you want to ${actionText} the bill "${bill.title}" for EGP ${bill.amount}?`,
       confirmText: `Yes, ${actionText}`,
       cancelText: 'Cancel',
       isDanger: status === 'REJECTED'
     }).then(confirmed => {
       if (confirmed) {
-        this.billService.updateBillStatus(bill.id, status, comments)
+        this.store.updateBillStatus(bill.id, status, comments)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
-              this.toast.success(`Bill ${status.toLowerCase()} successfully`);
-              this.loadBills();
+              this.store.loadBills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
               this.closeReviewModal();
-            },
-            error: () => this.toast.error(`Failed to ${actionText} bill`)
+            }
           });
       }
     });

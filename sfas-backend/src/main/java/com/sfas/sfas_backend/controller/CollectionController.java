@@ -1,19 +1,13 @@
 package com.sfas.sfas_backend.controller;
 
-import com.sfas.sfas_backend.dto.request.CollectionRequest;
-import com.sfas.sfas_backend.dto.response.CollectionResponse;
+import com.sfas.sfas_backend.dto.response.CollectionMetricsResponse;
 import com.sfas.sfas_backend.service.CollectionService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/collections")
@@ -22,19 +16,9 @@ public class CollectionController {
 
     private final CollectionService collectionService;
 
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CollectionResponse> createCollection(@Valid @RequestBody CollectionRequest request,
-                                                               @AuthenticationPrincipal UserDetails userDetails) {
-        CollectionResponse createdCollection = collectionService.createCollection(request, userDetails.getUsername());
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(createdCollection.id()).toUri();
-        return ResponseEntity.created(location).body(createdCollection);
-    }
-
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<CollectionResponse>> getAllCollections() {
-        return ResponseEntity.ok(collectionService.getAllCollections());
+    @GetMapping("/metrics")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FINANCE')")
+    public ResponseEntity<CollectionMetricsResponse> getCollectionMetrics() {
+        return ResponseEntity.ok(collectionService.getCollectionMetrics());
     }
 }

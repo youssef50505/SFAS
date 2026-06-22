@@ -1,11 +1,7 @@
 package com.sfas.sfas_backend.service;
 
-import com.sfas.sfas_backend.dto.request.CollectionRequest;
-import com.sfas.sfas_backend.dto.response.CollectionResponse;
-
-import java.util.List;
+import com.sfas.sfas_backend.dto.response.CollectionMetricsResponse;
 
 public interface CollectionService {
-    CollectionResponse createCollection(CollectionRequest request, String userEmail);
-    List<CollectionResponse> getAllCollections();
+    CollectionMetricsResponse getCollectionMetrics();
 }

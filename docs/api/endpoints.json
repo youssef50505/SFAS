@@ -142,7 +142,6 @@
           "title": "شراء كتب للمكتبة",
           "vendorId": "abc12345-e89b-12d3-a456-426614174000",
           "amount": 1500.50,
-          "tax": 150.05,
           "date": "2026-07-01T00:00:00",
           "imagePath": "path/to/image.jpg",
           "description": "شراء كتب للمكتبة المدرسية"
@@ -162,7 +161,6 @@
             "updatedAt": "2026-06-15T12:00:00"
           },
           "amount": 1500.50,
-          "tax": 150.05,
           "date": "2026-07-01T00:00:00",
           "imagePath": "path/to/image.jpg",
           "description": "شراء كتب للمكتبة المدرسية",
@@ -212,7 +210,6 @@
              "updatedAt": "2026-06-15T12:00:00"
           },
           "amount": 1500.50,
-          "tax": 150.05,
           "date": "2026-07-01T00:00:00",
           "imagePath": "path/to/image.jpg",
           "description": "شراء كتب للمكتبة المدرسية",
@@ -310,36 +307,17 @@
       }
     },
     "5_Collections_التحصيلات": {
-      "Create_Collection": {
-        "description": "تسجيل تحصيل مالي جديد (يتطلب صلاحية ADMIN)",
-        "method": "POST",
-        "endpoint": "/api/v1/collections",
-        "requestBody": {
-          "date": "2026-06-15",
-          "type": "MONTHLY",
-          "amount": 12000.00
-        },
-        "responseExample": {
-          "id": "444e4567-e89b-12d3-a456-426614174000",
-          "date": "2026-06-15",
-          "type": "MONTHLY",
-          "amount": 12000.00,
-          "createdBy": {
-             "id": "...",
-             "name": "مدير المدرسة",
-             "email": "admin@school.com",
-             "role": "ADMIN"
-          },
-          "createdAt": "2026-06-15T15:00:00",
-          "updatedAt": "2026-06-15T15:00:00"
-        },
-        "note": "أنواع التحصيلات المتاحة: DAILY, WEEKLY, MONTHLY, ANNUAL"
-      },
-      "Get_All_Collections": {
-        "description": "عرض جميع التحصيلات (يتطلب صلاحية ADMIN)",
+      "Get_Collection_Metrics": {
+        "description": "عرض إحصائيات التحصيلات بناءً على الفواتير (يتطلب صلاحية ADMIN أو FINANCE)",
         "method": "GET",
-        "endpoint": "/api/v1/collections",
-        "requestBody": null
+        "endpoint": "/api/v1/collections/metrics",
+        "requestBody": null,
+        "responseExample": {
+          "today": 1500.50,
+          "weekly": 8000.00,
+          "monthly": 32000.00,
+          "annually": 150000.00
+        }
       }
     },
     "6_Reports_التقارير": {

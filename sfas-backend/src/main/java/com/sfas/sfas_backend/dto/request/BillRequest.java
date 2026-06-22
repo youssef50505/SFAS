@@ -18,10 +18,6 @@ public record BillRequest(
         @DecimalMin(value = "0.0", inclusive = false, message = "Amount must be greater than zero")
         BigDecimal amount,
 
-        @NotNull(message = "Tax is required")
-        @DecimalMin(value = "0.0", inclusive = true, message = "Tax must be zero or greater")
-        BigDecimal tax,
-
         @NotNull(message = "Date is required")
         LocalDateTime date,
 

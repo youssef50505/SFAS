@@ -22,7 +22,7 @@
           <th>Bill Details</th>
           <th>Vendor</th>
           <th>Date</th>
-          <th>Amount / Tax</th>
+          <th>Amount</th>
           <th>Status</th>
           <th>Actions</th>
         </tr>
@@ -46,7 +46,6 @@
             <td>
               <div class="amount-group">
                 <span class="amount-total">{{ bill.amount | currency }}</span>
-                @if (bill.tax > 0) { <span class="amount-tax">Tax: {{ bill.tax | currency }}</span> }
               </div>
             </td>
             <td>
@@ -124,16 +123,7 @@
             }
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Tax (EGP) <span class="required">*</span></label>
-            <input type="number" class="form-control" [class.is-invalid]="f.tax.invalid && f.tax.touched" formControlName="tax" placeholder="0.00" step="0.01">
-            @if (f.tax.invalid && f.tax.touched) {
-              <div class="form-error">
-                @if (f.tax.errors?.['required']) { <span>Tax amount is required.</span> }
-                @if (f.tax.errors?.['min']) { <span>Tax cannot be negative.</span> }
-              </div>
-            }
-          </div>
+
 
           <div class="form-group full-width">
             <label class="form-label">Date <span class="required">*</span></label>

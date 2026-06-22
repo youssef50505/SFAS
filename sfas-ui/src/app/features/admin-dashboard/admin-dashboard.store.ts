@@ -30,12 +30,11 @@ export class AdminDashboardStore {
     return forkJoin({
       bills: this.billService.getAllBills(),
       funds: this.fundService.getAllFunds(),
-      collections: this.collectionService.getAllCollections()
+      metrics: this.collectionService.getCollectionMetrics()
     }).pipe(
       tap({
-        next: ({ bills, funds, collections }) => {
-          const totalColl = collections.reduce((sum, coll) => sum + coll.amount, 0);
-          this.totalCollections.set(totalColl);
+        next: ({ bills, funds, metrics }) => {
+          this.totalCollections.set(metrics.annually);
 
           const pendingBills = bills.filter(b => b.status === DocumentStatus.PENDING).length;
           this.pendingBillsCount.set(pendingBills);
@@ -44,24 +43,19 @@ export class AdminDashboardStore {
           this.activeFundsCount.set(activeFunds);
 
           const currentMonth = new Date().getMonth();
-          const collectionData = [0, 0, 0, 0, 0, 0];
           const billData = [0, 0, 0, 0, 0, 0];
           
-          collections.forEach(c => {
-             const m = new Date(c.date).getMonth();
-             if (m <= currentMonth && currentMonth - m < 6) {
-               const idx = 5 - (currentMonth - m);
-               if(idx >= 0) collectionData[idx] += c.amount;
-             }
-          });
-
           bills.forEach(b => {
              const m = new Date(b.date).getMonth();
              if (m <= currentMonth && currentMonth - m < 6) {
                const idx = 5 - (currentMonth - m);
-               if(idx >= 0) billData[idx] += b.amount;
+               if(idx >= 0) {
+                 billData[idx] += b.amount;
+               }
              }
           });
+
+          const collectionData = [...billData]; // Since collections are derived directly from all bills
 
           const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
           const categories = [];

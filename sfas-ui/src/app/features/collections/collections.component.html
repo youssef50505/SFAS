@@ -1,140 +1,51 @@
 <div class="page-container">
   <div class="page-header-wrapper" gsapFade [delay]="0" [yOffset]="20">
-    <app-page-header title="Collections Tracking" subtitle="Monitor school income and financial receipts">
-      @if (authStore.isAdmin()) {
-        <button class="btn-primary" (click)="openAddModal()">
-          <i class="ri-add-line"></i> Record Collection
-        </button>
-      }
+    <app-page-header title="Collections Dashboard" subtitle="Overview of collected bills amounts across different timeframes">
     </app-page-header>
   </div>
 
-  <div class="metrics-summary" gsapFade [delay]="0.1">
-    <div class="metric-card surface">
-      <div class="metric-icon"><i class="ri-calendar-check-line"></i></div>
-      <div class="metric-content">
-        <span class="metric-label">Total Collections</span>
-        <span class="metric-value">{{ store.collections().length }}</span>
-      </div>
+  @if (store.isLoading()) {
+    <div class="loading-state" gsapFade [delay]="0.2">
+      <div class="spinner"></div>
+      <p>Loading collection metrics...</p>
     </div>
-  </div>
+  } @else if (store.metrics()) {
+    <div class="metrics-grid">
+      <app-metric-card
+        title="Today's Collections"
+        [value]="(store.metrics()!.today | currency) || '0'"
+        icon="ri-calendar-event-line"
+        trend="Up to date"
+        trendType="neutral"
+        gsapFade [delay]="0.1" [yOffset]="20"
+      ></app-metric-card>
 
-  <div class="table-container surface" gsapFade [delay]="0.2">
-    @if (store.isLoading()) {
-      <div class="loading-state">
-        <div class="spinner"></div>
-        <p>Loading collections...</p>
-      </div>
-    } @else {
-      <table class="data-table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Type</th>
-          <th>Amount</th>
-          <th>Recorded By</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (coll of store.collections(); track coll.id) {
-          <tr>
-            <td>
-              <div class="date-cell">
-                <i class="ri-calendar-line text-muted"></i>
-                {{ coll.date | date:'mediumDate' }}
-              </div>
-            </td>
-            <td>
-              <span class="type-badge" [ngClass]="coll.type.toLowerCase()">
-                {{ coll.type }}
-              </span>
-            </td>
-            <td class="amount text-success">+{{ coll.amount | currency }}</td>
-            <td>
-              <div class="user-cell">
-                <div class="avatar-small">{{ (coll.createdBy?.name || 'S').charAt(0) }}</div>
-                <span>{{ coll.createdBy?.name || 'System' }}</span>
-              </div>
-            </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="4" class="empty-state">
-              <div class="empty-content">
-                <i class="ri-safe-2-line empty-icon"></i>
-                <p>No collections recorded yet.</p>
-                <p class="empty-subtext">Add a new collection to track incoming funds.</p>
-              </div>
-            </td>
-          </tr>
-        }
-      </tbody>
-      </table>
-    }
-  </div>
+      <app-metric-card
+        title="Weekly Collections"
+        [value]="(store.metrics()!.weekly | currency) || '0'"
+        icon="ri-calendar-line"
+        trend="This Week"
+        trendType="neutral"
+        gsapFade [delay]="0.2" [yOffset]="20"
+      ></app-metric-card>
+
+      <app-metric-card
+        title="Monthly Collections"
+        [value]="(store.metrics()!.monthly | currency) || '0'"
+        icon="ri-calendar-2-line"
+        trend="This Month"
+        trendType="neutral"
+        gsapFade [delay]="0.3" [yOffset]="20"
+      ></app-metric-card>
+
+      <app-metric-card
+        title="Annual Collections"
+        [value]="(store.metrics()!.annually | currency) || '0'"
+        icon="ri-calendar-check-line"
+        trend="This Year"
+        trendType="neutral"
+        gsapFade [delay]="0.4" [yOffset]="20"
+      ></app-metric-card>
+    </div>
+  }
 </div>
-
-<!-- Add Modal -->
-@if (showAddModal()) {
-  <div class="modal-backdrop" gsapFade [duration]="0.3" [yOffset]="0">
-    <div class="modal-content surface" gsapFade [delay]="0.1" [yOffset]="-30">
-      <div class="modal-header">
-        <h2>Record New Collection</h2>
-        <button class="btn-icon" (click)="closeAddModal()"><i class="ri-close-line"></i></button>
-      </div>
-      
-      <form [formGroup]="collectionForm" (ngSubmit)="submitCollection()">
-        <div class="form-grid">
-          
-          <div class="form-group full-width">
-            <label class="form-label">Date <span class="required">*</span></label>
-            <input type="date" class="form-control" [class.is-invalid]="f.date.invalid && f.date.touched" formControlName="date">
-            @if (f.date.invalid && f.date.touched) {
-              <div class="form-error">
-                @if (f.date.errors?.['required']) { <span>Date is required.</span> }
-              </div>
-            }
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Type <span class="required">*</span></label>
-            <select class="form-control" [class.is-invalid]="f.type.invalid && f.type.touched" formControlName="type">
-              <option value="DAILY">Daily</option>
-              <option value="WEEKLY">Weekly</option>
-              <option value="MONTHLY">Monthly</option>
-              <option value="ANNUAL">Annual</option>
-            </select>
-            @if (f.type.invalid && f.type.touched) {
-              <div class="form-error">
-                @if (f.type.errors?.['required']) { <span>Collection type is required.</span> }
-              </div>
-            }
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Amount (EGP) <span class="required">*</span></label>
-            <input type="number" class="form-control" [class.is-invalid]="f.amount.invalid && f.amount.touched" formControlName="amount" placeholder="0.00" step="0.01">
-            @if (f.amount.invalid && f.amount.touched) {
-              <div class="form-error">
-                @if (f.amount.errors?.['required']) { <span>Amount is required.</span> }
-                @if (f.amount.errors?.['min']) { <span>Amount must be greater than 0.</span> }
-              </div>
-            }
-          </div>
-          
-        </div>
-        
-        <div class="modal-actions">
-          <button type="button" class="btn-secondary" (click)="closeAddModal()" [disabled]="store.isSubmitting()">Cancel</button>
-          <button type="submit" class="btn-primary" [disabled]="collectionForm.invalid || store.isSubmitting()">
-            @if (store.isSubmitting()) {
-              Saving...
-            } @else {
-              Save Collection
-            }
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-}

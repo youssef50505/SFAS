@@ -7,7 +7,7 @@ export interface Bill {
   title: string;
   vendor: Vendor;
   amount: number;
-  tax: number;
+
   date: string;
   imagePath: string | null;
   description: string;

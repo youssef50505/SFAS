@@ -47,10 +47,6 @@ public class Bill {
 
     @Column(nullable = false)
     @NonNull
-    private BigDecimal tax;
-
-    @Column(nullable = false)
-    @NonNull
     private LocalDateTime date;
 
     @Column(name = "image_path")

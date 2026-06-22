@@ -1,51 +1,49 @@
 package com.sfas.sfas_backend.service.impl;
 
-import com.sfas.sfas_backend.domain.entity.Collection;
-import com.sfas.sfas_backend.domain.entity.User;
-import com.sfas.sfas_backend.dto.request.CollectionRequest;
-import com.sfas.sfas_backend.dto.response.CollectionResponse;
-import com.sfas.sfas_backend.event.NotificationEvent;
-import com.sfas.sfas_backend.exception.ResourceNotFoundException;
-import com.sfas.sfas_backend.mapper.CollectionMapper;
-import com.sfas.sfas_backend.repository.CollectionRepository;
-import com.sfas.sfas_backend.repository.UserRepository;
+import com.sfas.sfas_backend.dto.response.CollectionMetricsResponse;
+import com.sfas.sfas_backend.repository.BillRepository;
 import com.sfas.sfas_backend.service.CollectionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.DayOfWeek;
+import java.time.temporal.TemporalAdjusters;
 
 @Service
 @RequiredArgsConstructor
 public class CollectionServiceImpl implements CollectionService {
 
-    private final CollectionRepository collectionRepository;
-    private final UserRepository userRepository;
-    private final CollectionMapper collectionMapper;
-    private final ApplicationEventPublisher eventPublisher;
-
-    @Override
-    @Transactional
-    public CollectionResponse createCollection(CollectionRequest request, String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
-
-        Collection collection = collectionMapper.toEntity(request);
-        collection.setCreatedBy(user);
-        Collection savedCollection = collectionRepository.save(collection);
-
-        eventPublisher.publishEvent(new NotificationEvent("New Collection Recorded: " + collection.getType() + " for amount " + collection.getAmount(), userEmail));
-
-        return collectionMapper.toResponse(savedCollection);
-    }
+    private final BillRepository billRepository;
 
     @Override
     @Transactional(readOnly = true)
-    public List<CollectionResponse> getAllCollections() {
-        return collectionRepository.findAll().stream()
-                .map(collectionMapper::toResponse)
-                .toList();
+    public CollectionMetricsResponse getCollectionMetrics() {
+        LocalDateTime now = LocalDateTime.now();
+
+        // Today: From start of today to start of tomorrow
+        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+        LocalDateTime startOfTomorrow = startOfToday.plusDays(1);
+        BigDecimal today = billRepository.sumAmountByDateBetween(startOfToday, startOfTomorrow);
+
+        // Weekly: From start of this week (e.g., Monday) to start of next week
+        LocalDateTime startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay();
+        LocalDateTime startOfNextWeek = startOfWeek.plusWeeks(1);
+        BigDecimal weekly = billRepository.sumAmountByDateBetween(startOfWeek, startOfNextWeek);
+
+        // Monthly: From start of this month to start of next month
+        LocalDateTime startOfMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime startOfNextMonth = startOfMonth.plusMonths(1);
+        BigDecimal monthly = billRepository.sumAmountByDateBetween(startOfMonth, startOfNextMonth);
+
+        // Annually: From start of this year to start of next year
+        LocalDateTime startOfYear = LocalDate.now().withDayOfYear(1).atStartOfDay();
+        LocalDateTime startOfNextYear = startOfYear.plusYears(1);
+        BigDecimal annually = billRepository.sumAmountByDateBetween(startOfYear, startOfNextYear);
+
+        return new CollectionMetricsResponse(today, weekly, monthly, annually);
     }
 }

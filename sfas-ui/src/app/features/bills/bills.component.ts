@@ -34,7 +34,7 @@ export class BillsComponent implements OnInit {
     title: ['', [Validators.required, Validators.minLength(3)]],
     vendorId: ['', [Validators.required]],
     amount: [null as number | null, [Validators.required, Validators.min(0.01)]],
-    tax: [0, [Validators.required, Validators.min(0)]],
+
     description: [''],
     date: [new Date().toISOString().split('T')[0], [Validators.required]],
     imagePath: ['']
@@ -49,7 +49,7 @@ export class BillsComponent implements OnInit {
 
   openAddModal() {
     this.billForm.reset({
-      tax: 0,
+
       date: new Date().toISOString().split('T')[0],
       imagePath: ''
     });
@@ -98,8 +98,7 @@ export class BillsComponent implements OnInit {
       title: bill.title,
       grossAmount: bill.amount,
       details: [
-        { label: 'VENDOR', value: bill.vendor.name },
-        { label: 'TAX', value: 'EGP ' + (bill.tax || 0).toFixed(2) }
+        { label: 'VENDOR', value: bill.vendor.name }
       ],
       description: bill.description,
       documentName: bill.imagePath,

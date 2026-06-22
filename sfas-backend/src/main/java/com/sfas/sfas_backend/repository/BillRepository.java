@@ -17,4 +17,7 @@ public interface BillRepository extends JpaRepository<Bill, UUID> {
 
     @EntityGraph(attributePaths = {"createdBy", "vendor", "reviewedBy"})
     Optional<Bill> findById(UUID id);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(b.amount), 0) FROM Bill b WHERE b.date >= :startDate AND b.date < :endDate")
+    java.math.BigDecimal sumAmountByDateBetween(@org.springframework.data.repository.query.Param("startDate") java.time.LocalDateTime startDate, @org.springframework.data.repository.query.Param("endDate") java.time.LocalDateTime endDate);
 }

@@ -11,7 +11,7 @@ public record BillResponse(
         String title,
         VendorResponse vendor,
         BigDecimal amount,
-        BigDecimal tax,
+
         LocalDateTime date,
         String imagePath,
         String description,

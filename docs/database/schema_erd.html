@@ -40,9 +40,7 @@
     .bills-table { left: 80px; top: 850px; border-color: #64b5f6; }
     .bills-table .table-header { background-color: #e3f2fd; color: #1565c0; border-bottom-color: #64b5f6; }
     
-    .collections-table { left: 660px; top: 850px; border-color: #4db6ac; }
-    .collections-table .table-header { background-color: #e0f2f1; color: #00695c; border-bottom-color: #4db6ac; }
-    
+
     .reports-table { left: 1240px; top: 850px; border-color: #e57373; }
     .reports-table .table-header { background-color: #ffebee; color: #c62828; border-bottom-color: #e57373; }
 
@@ -133,25 +131,12 @@
         <div class="erd-row"><span class="col-name">created_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
         <div class="erd-row"><span class="col-name">title</span><span class="col-type">string</span></div>
         <div class="erd-row"><span class="col-name">amount</span><span class="col-type">decimal</span></div>
-        <div class="erd-row"><span class="col-name">tax</span><span class="col-type">decimal</span></div>
         <div class="erd-row"><span class="col-name">date</span><span class="col-type">datetime</span></div>
         <div class="erd-row"><span class="col-name">image_path</span><span class="col-type">string</span></div>
         <div class="erd-row"><span class="col-name">description</span><span class="col-type">string</span></div>
         <div class="erd-row"><span class="col-name">status</span><span class="col-type">enum</span></div>
         <div class="erd-row"><span class="col-name">reviewed_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
         <div class="erd-row"><span class="col-name">review_comments</span><span class="col-type">string</span></div>
-        <div class="erd-row"><span class="col-name">created_date</span><span class="col-type">timestamp</span></div>
-        <div class="erd-row"><span class="col-name">last_modified_date</span><span class="col-type">timestamp</span></div>
-    </div>
-
-    <!-- Collections Table -->
-    <div id="collections" class="table-box collections-table">
-        <div class="table-header">Collections</div>
-        <div class="erd-row"><span class="col-name">id</span><span class="col-type">uuid <span class="col-key pk">PK</span></span></div>
-        <div class="erd-row"><span class="col-name">date</span><span class="col-type">date</span></div>
-        <div class="erd-row"><span class="col-name">type</span><span class="col-type">enum</span></div>
-        <div class="erd-row"><span class="col-name">amount</span><span class="col-type">decimal</span></div>
-        <div class="erd-row"><span class="col-name">created_by</span><span class="col-type">uuid <span class="col-key fk">FK</span></span></div>
         <div class="erd-row"><span class="col-name">created_date</span><span class="col-type">timestamp</span></div>
         <div class="erd-row"><span class="col-name">last_modified_date</span><span class="col-type">timestamp</span></div>
     </div>
@@ -210,7 +195,6 @@
   <tr><td>title</td><td>VARCHAR</td><td>NOT NULL</td><td>Short title of the bill.</td></tr>
   <tr><td>vendor_id</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to vendors.id.</td></tr>
   <tr><td>amount</td><td>NUMERIC</td><td>NOT NULL</td><td>Total amount.</td></tr>
-  <tr><td>tax</td><td>NUMERIC</td><td>-</td><td>Applied tax.</td></tr>
   <tr><td>date</td><td>TIMESTAMP</td><td>NOT NULL</td><td>Due/issuance date.</td></tr>
   <tr><td>image_path</td><td>VARCHAR</td><td>-</td><td>Reference to the bill proof.</td></tr>
   <tr><td>status</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: PENDING, APPROVED, REJECTED.</td></tr>
@@ -231,16 +215,6 @@
   <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
   <tr><td>reviewed_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
   <tr><td>review_comments</td><td>VARCHAR</td><td>-</td><td>Comments provided by reviewer.</td></tr>
-</table>
-
-<h3><code>collections</code></h3>
-<table>
-  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
-  <tr><td>id</td><td>UUID</td><td>PRIMARY KEY</td><td>Unique identifier.</td></tr>
-  <tr><td>date</td><td>DATE</td><td>NOT NULL</td><td>Collection date.</td></tr>
-  <tr><td>type</td><td>VARCHAR</td><td>NOT NULL</td><td>Enum: DAILY, WEEKLY, MONTHLY, ANNUAL.</td></tr>
-  <tr><td>amount</td><td>NUMERIC</td><td>NOT NULL</td><td>Amount collected.</td></tr>
-  <tr><td>created_by</td><td>UUID</td><td>FOREIGN KEY</td><td>Links to users.id.</td></tr>
 </table>
 
 <h3><code>reports</code></h3>
@@ -371,7 +345,6 @@ window.onload = function() {
 
         // Vertical/Staggered relations (absolute offset from center of table width, staggerY is absolute Y coord)
         drawLine('vendors', 'bills', 'provides', '1', 'M', 'bottom', 'top', 0, 0, 630);
-        drawLine('users', 'collections', 'enters', '1', 'M', 'bottom', 'top', 0, 0, 680);
         drawLine('users', 'reports', 'generates', '1', 'M', 'bottom', 'top', 60, 0, 680);
 
         drawLine('users', 'bills', 'creates', '1', 'M', 'bottom', 'top', -60, 80, 680);

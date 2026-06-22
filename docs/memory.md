@@ -552,3 +552,18 @@ The codebase is fundamentally verified. Running `flutter analyze` and `dart run 
 6. **Performance Standard:** Enforced `ChangeDetectionStrategy.OnPush` across components, significantly improving component rendering performance.
 
 The web application now successfully compiles (`ng serve` and `ng build`) with zero TypeScript errors or Angular Compiler warnings.
+
+## 28. Frontend Metrics Integration & Template Cleanup
+
+**Context:** The `Collections` table from the database and the `tax` column from the `Bills` table were removed from the backend schema to simplify the application architecture. The frontend required updates to remove the corresponding UI elements and instead derive "Collections" metrics dynamically directly from the Approved Bills.
+
+**What was accomplished:**
+1. **Removed Collections Table:** Deleted the `Collections` table and `tax` column from the ERD schema and `schema_erd.html`.
+2. **Removed Tax from Bills UI:** Stripped the `tax` column, data display, and input fields from `bills.component.html` and `bills.component.ts`.
+3. **Refactored Collection Metrics Logic:** 
+   - Updated `CollectionMetrics` interface in `collection.model.ts` to strictly represent aggregated stats (`today`, `weekly`, `monthly`, `annually`).
+   - Refactored `collection.service.ts` to fetch `/api/v1/collections/metrics` instead of the old CRUD endpoints.
+   - Refactored `collection.store.ts` to expose a `metrics` signal instead of a list of collections.
+4. **Collections Screen Overhaul:** Replaced the legacy table and forms in `collections.component.html` with a modern metrics grid displaying "Today's Collections", "Weekly", "Monthly", and "Annual" derived dynamically from the backend metrics endpoint. Fixed the `CurrencyPipe` null binding issues using `(store.metrics()!.today | currency) || '0'`.
+5. **Admin Dashboard Refactor:** Refactored `admin-dashboard.store.ts` to fetch metrics from `CollectionService` and derive the charts data dynamically by mapping `approved` bills to Collections instead of fetching a non-existent collections array.
+6. **Frontend Build Verification:** Verified the entire angular application with `ng build` resolving minor binding issues along the way, ensuring flawless compilation.

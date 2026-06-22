@@ -4,7 +4,6 @@ erDiagram
     USER ||--o{ REQUEST_FUND : "submits"
     USER ||--o{ REPORT : "generates"
     USER ||--o{ VENDOR : "registers"
-    USER ||--o{ COLLECTION : "enters"
     USER ||--o{ BILL : "reviews"
     USER ||--o{ REQUEST_FUND : "reviews"
     VENDOR ||--o{ BILL : "provides"
@@ -38,7 +37,6 @@ erDiagram
         uuid created_by_id FK "Refers to User.id"
         string title
         decimal amount
-        decimal tax
         datetime date
         string image_path
         string description
@@ -61,16 +59,6 @@ erDiagram
         enum status "PENDING, APPROVED, REJECTED"
         uuid reviewed_by_id FK "Refers to User.id"
         string review_comments
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    COLLECTION {
-        uuid id PK
-        date date
-        enum type "DAILY, WEEKLY, MONTHLY, ANNUAL"
-        decimal amount
-        uuid created_by_id FK "Refers to User.id"
         timestamp created_at
         timestamp updated_at
     }

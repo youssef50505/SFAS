@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.DayOfWeek;
-import java.time.temporal.TemporalAdjusters;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +21,6 @@ public class CollectionServiceImpl implements CollectionService {
     @Override
     @Transactional(readOnly = true)
     public CollectionMetricsResponse getCollectionMetrics() {
-        LocalDateTime now = LocalDateTime.now();
 
         // Today: From start of today to start of tomorrow
         LocalDateTime startOfToday = LocalDate.now().atStartOfDay();

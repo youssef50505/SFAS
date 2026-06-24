@@ -22,7 +22,7 @@ class Bill {
   factory Bill.fromJson(Map<String, dynamic> json) {
     return Bill(
       id: json['id'] ?? '',
-      invoiceNumber: json['invoiceNumber'] ?? '',
+      invoiceNumber: json['title'] ?? '',
       date: json['date'] ?? '',
       amount: (json['amount'] ?? 0).toDouble(),
       description: json['description'] ?? '',
@@ -35,7 +35,7 @@ class Bill {
 
   Map<String, dynamic> toJson() {
     return {
-      'invoiceNumber': invoiceNumber,
+      'title': invoiceNumber,
       'date': date,
       'amount': amount,
       'description': description,

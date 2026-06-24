@@ -81,7 +81,7 @@ class _BillFormScreenState extends State<BillFormScreen> {
       final billData = Bill(
         id: widget.bill?.id ?? '', // backend generated
         invoiceNumber: _invoiceNumberController.text.trim(),
-        date: _selectedDate.toIso8601String().split('T')[0],
+        date: _selectedDate.toIso8601String(),
         amount: double.tryParse(_amountController.text.trim()) ?? 0.0,
         description: _descriptionController.text.trim(),
         status: widget.bill?.status ?? 'PENDING',

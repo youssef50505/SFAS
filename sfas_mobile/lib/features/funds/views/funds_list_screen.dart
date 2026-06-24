@@ -159,7 +159,9 @@ class _FundsListScreenState extends State<FundsListScreen> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
                       onTap: () {
-                        // TODO: View fund details
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Fund details coming soon!')),
+                        );
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),

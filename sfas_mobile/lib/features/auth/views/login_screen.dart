@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
                       ),
                       child: Image.asset(
-                        'assets/images/logo.jpg',
+                        'assets/images/logo.png',
                         height: 80,
                       ),
                     ).animate().scale(duration: 500.ms, curve: Curves.easeOutBack),

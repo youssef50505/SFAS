@@ -44,7 +44,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 child: const Icon(Icons.picture_as_pdf_rounded, color: AppColors.primary),
               ),
               onPressed: () {
-                // TODO: Generate new report
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Report generation coming soon!')),
+                );
               },
             ),
           ),
@@ -128,7 +130,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
                       onTap: () {
-                        // TODO: Open report URL
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Report download coming soon!')),
+                        );
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),

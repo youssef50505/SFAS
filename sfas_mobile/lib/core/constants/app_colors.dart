@@ -20,6 +20,11 @@ class AppColors {
   static const Color accentPrimary = Color(0xFFC8102E);
   static const Color accentPrimaryHover = Color(0xFFA00D25);
   
+  static const Color primary = accentPrimary;
+  static const Color secondary = textSecondaryLight;
+  static const Color textPrimary = textPrimaryLight;
+  static const Color textSecondary = textSecondaryLight;
+  
   static const Color success = Color(0xFF059669);
   static const Color successBg = Color(0xFFD1FAE5);
 

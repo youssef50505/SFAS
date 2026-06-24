@@ -2,15 +2,15 @@ class Item {
   final String id;
   final String name;
   final String description;
-  final double unitPrice;
-  final int currentStock;
+  final double price;
+  final String category;
 
   Item({
     required this.id,
     required this.name,
     required this.description,
-    required this.unitPrice,
-    required this.currentStock,
+    required this.price,
+    required this.category,
   });
 
   factory Item.fromJson(Map<String, dynamic> json) {
@@ -18,8 +18,8 @@ class Item {
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       description: json['description'] ?? '',
-      unitPrice: (json['unitPrice'] ?? 0).toDouble(),
-      currentStock: json['currentStock'] ?? 0,
+      price: (json['price'] ?? 0).toDouble(),
+      category: json['category'] ?? 'OTHER',
     );
   }
 
@@ -27,8 +27,8 @@ class Item {
     return {
       'name': name,
       'description': description,
-      'unitPrice': unitPrice,
-      'currentStock': currentStock,
+      'price': price,
+      'category': category,
     };
   }
 }

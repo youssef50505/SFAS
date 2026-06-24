@@ -18,15 +18,17 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
   late TextEditingController _priceController;
-  late TextEditingController _stockController;
+  String _category = 'ELECTRONICS';
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.item?.name ?? '');
     _descriptionController = TextEditingController(text: widget.item?.description ?? '');
-    _priceController = TextEditingController(text: widget.item?.unitPrice.toString() ?? '');
-    _stockController = TextEditingController(text: widget.item?.currentStock.toString() ?? '');
+    _priceController = TextEditingController(text: widget.item?.price.toString() ?? '');
+    if (widget.item != null) {
+      _category = widget.item!.category;
+    }
   }
 
   @override
@@ -34,7 +36,6 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     _nameController.dispose();
     _descriptionController.dispose();
     _priceController.dispose();
-    _stockController.dispose();
     super.dispose();
   }
 
@@ -46,8 +47,8 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
         id: widget.item?.id ?? '', // backend generated
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim(),
-        unitPrice: double.tryParse(_priceController.text.trim()) ?? 0.0,
-        currentStock: int.tryParse(_stockController.text.trim()) ?? 0,
+        price: double.tryParse(_priceController.text.trim()) ?? 0.0,
+        category: _category,
       );
 
       bool success;
@@ -101,7 +102,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
               TextFormField(
                 controller: _priceController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(labelText: 'Unit Price (EGP)'),
+                decoration: const InputDecoration(labelText: 'Price (EGP)'),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Required';
                   if (double.tryParse(value) == null) return 'Must be a valid number';
@@ -109,14 +110,14 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _stockController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Initial Stock'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Required';
-                  if (int.tryParse(value) == null) return 'Must be a valid integer';
-                  return null;
+              DropdownButtonFormField<String>(
+                initialValue: _category,
+                decoration: const InputDecoration(labelText: 'Category'),
+                items: ['ELECTRONICS', 'FURNITURE', 'BOOKS', 'SUPPLIES', 'OTHER'].map((cat) {
+                  return DropdownMenuItem(value: cat, child: Text(cat));
+                }).toList(),
+                onChanged: (val) {
+                  if (val != null) setState(() => _category = val);
                 },
               ),
               const SizedBox(height: 24),

@@ -1,32 +1,41 @@
 class Fund {
   final String id;
-  final String name;
-  final double initialAmount;
+  final String title;
+  final String description;
+  final double amountOfFund;
+  final String urgencyLevel;
+  final String date;
   final String status;
-  final String dateCreated;
 
   Fund({
     required this.id,
-    required this.name,
-    required this.initialAmount,
+    required this.title,
+    required this.description,
+    required this.amountOfFund,
+    required this.urgencyLevel,
+    required this.date,
     required this.status,
-    required this.dateCreated,
   });
 
   factory Fund.fromJson(Map<String, dynamic> json) {
     return Fund(
       id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      initialAmount: (json['initialAmount'] ?? 0).toDouble(),
-      status: json['status'] ?? 'ACTIVE',
-      dateCreated: json['dateCreated'] ?? DateTime.now().toIso8601String(),
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      amountOfFund: (json['amountOfFund'] ?? 0).toDouble(),
+      urgencyLevel: json['urgencyLevel'] ?? 'LOW',
+      date: json['date'] ?? DateTime.now().toIso8601String(),
+      status: json['status'] ?? 'PENDING',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
-      'initialAmount': initialAmount,
+      'title': title,
+      'description': description,
+      'amountOfFund': amountOfFund,
+      'urgencyLevel': urgencyLevel,
+      'date': date,
       'status': status,
     };
   }

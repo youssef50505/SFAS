@@ -17,7 +17,7 @@ public class CollectionController {
     private final CollectionService collectionService;
 
     @GetMapping("/metrics")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FINANCE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FINANCE_OFFICER')")
     public ResponseEntity<CollectionMetricsResponse> getCollectionMetrics() {
         return ResponseEntity.ok(collectionService.getCollectionMetrics());
     }

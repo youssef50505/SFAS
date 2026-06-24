@@ -590,3 +590,22 @@ The web application now successfully compiles (`ng serve` and `ng build`) with z
 5. **Datetime-Local Input Fix:** Fixed the date form control initialization in ills.component.ts. 
 ew Date().toISOString().split('T')[0] only provides YYYY-MM-DD, which is invalid for 	ype="datetime-local". Swapped initialization to a timezone-adjusted string truncated to YYYY-MM-DDTHH:mm, resolving the empty/blank initial state of the native date picker.
 
+
+## 34. Complete Flutter Mobile Architecture Rewrite (MVVM)
+
+**Context:** The sfas_mobile Flutter application required a complete architectural recreation to implement a strict MVVM (Model-View-ViewModel) pattern, moving away from lutter_bloc to a simpler and more native provider-based state management approach.
+
+**What was accomplished:**
+1. **MVVM Transition:** 
+   - Restructured the entire sfas_mobile app into a strict MVVM pattern using ChangeNotifier and provider.
+   - Created isolated ViewModels (AuthViewModel, DashboardViewModel, VendorViewModel, BillViewModel, FundViewModel, ItemViewModel, ReportViewModel) to handle all business logic.
+2. **Networking & State Management:** 
+   - Retained dio with a custom DioClient for interceptors, but routed all API calls through Services (e.g., BillService) which are injected into ViewModels.
+   - Configured MultiProvider at the root of the app in main.dart to initialize and provide all ViewModels and Services.
+3. **Routing & UI Integration:**
+   - Integrated go_router featuring a nested ShellRoute (MainLayout) that provides a persistent Drawer for side navigation.
+   - Refined the UI with custom AppColors, extracting dynamic elements into shared widgets like StatusBadge and EmptyState.
+4. **Complete Feature Parity:** 
+   - Implemented full CRUD features for Vendors, Bills, Funds, Items, and Reports.
+   - Integrated dashboard metric aggregation via real-time fetching logic in ViewModels.
+   - Replaced deprecated form fields (alue to initialValue) and fixed withOpacity to withValues across the codebase following Flutter updates.

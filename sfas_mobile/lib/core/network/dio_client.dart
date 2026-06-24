@@ -1,28 +1,44 @@
 import 'package:dio/dio.dart';
-import 'auth_interceptor.dart';
-import 'error_interceptor.dart';
-import '../security/secure_storage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/foundation.dart';
+import '../constants/endpoints.dart';
 
 class DioClient {
-  late final Dio dio;
+  final Dio _dio;
+  final FlutterSecureStorage _storage;
 
-  DioClient(SecureStorage secureStorage) {
-    dio = Dio(
-      BaseOptions(
-        baseUrl: 'http://10.0.2.2:8080/api/v1', // 10.0.2.2 for Android emulator to host localhost
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      ),
-    );
-
-    dio.interceptors.addAll([
-      AuthInterceptor(secureStorage),
-      ErrorInterceptor(),
-      LogInterceptor(requestBody: true, responseBody: true),
-    ]);
+  DioClient({required FlutterSecureStorage storage})
+      : _storage = storage,
+        _dio = Dio(BaseOptions(
+          baseUrl: Endpoints.baseUrl,
+          connectTimeout: const Duration(seconds: 15),
+          receiveTimeout: const Duration(seconds: 15),
+          contentType: 'application/json',
+        )) {
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        // Do not add token for login request
+        if (!options.path.contains(Endpoints.login)) {
+          final token = await _storage.read(key: 'jwt_token');
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+        }
+        return handler.next(options);
+      },
+      onError: (DioException e, handler) {
+        // Handle global errors if needed (e.g. token expiration)
+        return handler.next(e);
+      },
+    ));
+    
+    // Add logging interceptor for development
+    _dio.interceptors.add(LogInterceptor(
+      requestBody: true,
+      responseBody: true,
+      logPrint: (obj) => debugPrint(obj.toString()),
+    ));
   }
+
+  Dio get dio => _dio;
 }

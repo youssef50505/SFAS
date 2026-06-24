@@ -1,32 +1,94 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'core/theme/app_theme.dart';
-import 'core/routes/app_router.dart';
-import 'core/security/secure_storage.dart';
-import 'core/network/dio_client.dart';
-import 'data/repositories/auth_repository.dart';
-import 'data/repositories/bill_repository.dart';
-import 'data/repositories/fund_repository.dart';
-import 'data/repositories/collection_repository.dart';
-import 'data/repositories/vendor_repository.dart';
-import 'data/repositories/report_repository.dart';
-import 'data/repositories/notification_repository.dart';
-import 'presentation/features/auth/bloc/auth_bloc.dart';
-import 'presentation/features/dashboard/bloc/dashboard_bloc.dart';
-import 'presentation/features/dashboard/bloc/dashboard_event.dart';
-import 'presentation/features/bills/bloc/bills_bloc.dart';
-import 'presentation/features/bills/bloc/bills_event.dart';
-import 'presentation/features/funds/bloc/funds_bloc.dart';
-import 'presentation/features/funds/bloc/funds_event.dart';
-import 'presentation/features/collections/bloc/collections_bloc.dart';
-import 'presentation/features/collections/bloc/collections_event.dart';
-import 'presentation/features/reports/bloc/reports_bloc.dart';
-import 'presentation/features/reports/bloc/reports_event.dart';
-import 'presentation/features/notifications/bloc/notifications_bloc.dart';
-import 'presentation/features/notifications/bloc/notifications_event.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'core/constants/app_theme.dart';
+import 'core/network/dio_client.dart';
+
+import 'features/auth/services/auth_service.dart';
+import 'features/auth/viewmodels/auth_viewmodel.dart';
+import 'features/auth/views/login_screen.dart';
+
+import 'features/collections/services/collection_service.dart';
+import 'features/collections/viewmodels/collection_viewmodel.dart';
+import 'features/dashboard/views/dashboard_screen.dart';
+import 'features/dashboard/views/main_layout.dart';
+
+import 'features/vendors/models/vendor.dart';
+import 'features/vendors/services/vendor_service.dart';
+import 'features/vendors/viewmodels/vendor_viewmodel.dart';
+import 'features/vendors/views/vendors_list_screen.dart';
+import 'features/vendors/views/vendor_form_screen.dart';
+
+import 'features/bills/models/bill.dart';
+import 'features/bills/services/bill_service.dart';
+import 'features/bills/viewmodels/bill_viewmodel.dart';
+import 'features/bills/views/bills_list_screen.dart';
+import 'features/bills/views/bill_form_screen.dart';
+
+import 'features/funds/services/fund_service.dart';
+import 'features/funds/viewmodels/fund_viewmodel.dart';
+import 'features/funds/views/funds_list_screen.dart';
+import 'features/funds/views/fund_form_screen.dart';
+
+import 'features/items/models/item.dart';
+import 'features/items/services/item_service.dart';
+import 'features/items/viewmodels/item_viewmodel.dart';
+import 'features/items/views/items_list_screen.dart';
+import 'features/items/views/item_form_screen.dart';
+
+import 'features/reports/services/report_service.dart';
+import 'features/reports/viewmodels/report_viewmodel.dart';
+import 'features/reports/views/reports_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  const storage = FlutterSecureStorage();
+  final dioClient = DioClient(storage: storage);
+  final authService = AuthService(dioClient.dio);
+
+  final authViewModel = AuthViewModel(
+    authService: authService,
+    storage: storage,
+  );
+
+  final collectionService = CollectionService(dioClient.dio);
+  final collectionViewModel = CollectionViewModel(collectionService);
+
+  final vendorService = VendorService(dioClient.dio);
+  final vendorViewModel = VendorViewModel(vendorService);
+
+  final billService = BillService(dioClient.dio);
+  final billViewModel = BillViewModel(billService);
+
+  final fundService = FundService(dioClient.dio);
+  final fundViewModel = FundViewModel(fundService);
+
+  final itemService = ItemService(dioClient.dio);
+  final itemViewModel = ItemViewModel(itemService);
+
+  final reportService = ReportService(dioClient.dio);
+  final reportViewModel = ReportViewModel(reportService);
+
+  // Check initial auth status
+  await authViewModel.checkAuthStatus();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: authViewModel),
+        ChangeNotifierProvider.value(value: collectionViewModel),
+        ChangeNotifierProvider.value(value: vendorViewModel),
+        ChangeNotifierProvider.value(value: billViewModel),
+        ChangeNotifierProvider.value(value: fundViewModel),
+        ChangeNotifierProvider.value(value: itemViewModel),
+        ChangeNotifierProvider.value(value: reportViewModel),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -34,77 +96,107 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider<SecureStorage>(
-          create: (context) => SecureStorage(),
+    final authViewModel = context.watch<AuthViewModel>();
+
+    final router = GoRouter(
+      initialLocation: authViewModel.currentUser == null ? '/login' : '/dashboard',
+      redirect: (context, state) {
+        final isLoggedIn = authViewModel.currentUser != null;
+        final isLoggingIn = state.matchedLocation == '/login';
+
+        if (!isLoggedIn && !isLoggingIn) return '/login';
+        if (isLoggedIn && isLoggingIn) return '/dashboard';
+        return null;
+      },
+      routes: [
+        GoRoute(
+          path: '/login',
+          builder: (context, state) => const LoginScreen(),
         ),
-        RepositoryProvider<DioClient>(
-          create: (context) => DioClient(context.read<SecureStorage>()),
-        ),
-        RepositoryProvider<AuthRepository>(
-          create: (context) => AuthRepository(
-            context.read<DioClient>(),
-            context.read<SecureStorage>(),
-          ),
-        ),
-        RepositoryProvider<BillRepository>(
-          create: (context) => BillRepository(context.read<DioClient>()),
-        ),
-        RepositoryProvider<FundRepository>(
-          create: (context) => FundRepository(context.read<DioClient>()),
-        ),
-        RepositoryProvider<CollectionRepository>(
-          create: (context) => CollectionRepository(context.read<DioClient>()),
-        ),
-        RepositoryProvider<VendorRepository>(
-          create: (context) => VendorRepository(context.read<DioClient>()),
-        ),
-        RepositoryProvider<ReportRepository>(
-          create: (context) => ReportRepository(context.read<DioClient>()),
-        ),
-        RepositoryProvider<NotificationRepository>(
-          create: (context) => NotificationRepository(context.read<DioClient>()),
+        ShellRoute(
+          builder: (context, state, child) => MainLayout(child: child),
+          routes: [
+            GoRoute(
+              path: '/dashboard',
+              builder: (context, state) => const DashboardScreen(),
+            ),
+            GoRoute(
+              path: '/vendors',
+              builder: (context, state) => const VendorsListScreen(),
+              routes: [
+                GoRoute(
+                  path: 'add',
+                  builder: (context, state) => const VendorFormScreen(),
+                ),
+                GoRoute(
+                  path: 'edit',
+                  builder: (context, state) {
+                    final vendor = state.extra as Vendor?;
+                    return VendorFormScreen(vendor: vendor);
+                  },
+                ),
+              ],
+            ),
+            GoRoute(
+              path: '/bills',
+              builder: (context, state) => const BillsListScreen(),
+              routes: [
+                GoRoute(
+                  path: 'add',
+                  builder: (context, state) => const BillFormScreen(),
+                ),
+                GoRoute(
+                  path: 'edit',
+                  builder: (context, state) {
+                    final bill = state.extra as Bill?;
+                    return BillFormScreen(bill: bill);
+                  },
+                ),
+              ],
+            ),
+            GoRoute(
+              path: '/funds',
+              builder: (context, state) => const FundsListScreen(),
+              routes: [
+                GoRoute(
+                  path: 'add',
+                  builder: (context, state) => const FundFormScreen(),
+                ),
+              ],
+            ),
+            GoRoute(
+              path: '/items',
+              builder: (context, state) => const ItemsListScreen(),
+              routes: [
+                GoRoute(
+                  path: 'add',
+                  builder: (context, state) => const ItemFormScreen(),
+                ),
+                GoRoute(
+                  path: 'edit',
+                  builder: (context, state) {
+                    final item = state.extra as Item?;
+                    return ItemFormScreen(item: item);
+                  },
+                ),
+              ],
+            ),
+            GoRoute(
+              path: '/reports',
+              builder: (context, state) => const ReportsScreen(),
+            ),
+          ],
         ),
       ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<AuthBloc>(
-            create: (context) => AuthBloc(context.read<AuthRepository>()),
-          ),
-          BlocProvider<DashboardBloc>(
-            create: (context) => DashboardBloc(
-              fundRepository: context.read<FundRepository>(),
-              billRepository: context.read<BillRepository>(),
-              collectionRepository: context.read<CollectionRepository>(),
-              vendorRepository: context.read<VendorRepository>(),
-            )..add(const DashboardEvent.loadDashboardData()),
-          ),
-          BlocProvider<BillsBloc>(
-            create: (context) => BillsBloc(billRepository: context.read<BillRepository>())..add(const BillsEvent.loadBills()),
-          ),
-          BlocProvider<FundsBloc>(
-            create: (context) => FundsBloc(fundRepository: context.read<FundRepository>())..add(const FundsEvent.loadFunds()),
-          ),
-          BlocProvider<CollectionsBloc>(
-            create: (context) => CollectionsBloc(collectionRepository: context.read<CollectionRepository>())..add(const CollectionsEvent.loadCollections()),
-          ),
-          BlocProvider<ReportsBloc>(
-            create: (context) => ReportsBloc(reportRepository: context.read<ReportRepository>())..add(const ReportsEvent.loadReports()),
-          ),
-          BlocProvider<NotificationsBloc>(
-            create: (context) => NotificationsBloc(notificationRepository: context.read<NotificationRepository>())..add(const NotificationsEvent.loadNotifications()),
-          ),
-        ],
-        child: MaterialApp.router(
-          title: 'SFAS',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.system,
-          routerConfig: AppRouter.router,
-          debugShowCheckedModeBanner: false,
-        ),
-      ),
+    );
+
+    return MaterialApp.router(
+      title: 'SFAS Mobile',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      routerConfig: router,
     );
   }
 }

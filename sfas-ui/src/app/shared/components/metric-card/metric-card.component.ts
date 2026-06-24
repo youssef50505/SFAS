@@ -58,7 +58,7 @@ import { CommonModule } from '@angular/common';
     }
     .metric-value {
       font-family: var(--font-display);
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: 800;
       color: var(--text-primary);
     }

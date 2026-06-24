@@ -63,7 +63,7 @@
           </tr>
         } @empty {
           <tr>
-            <td [colSpan]="authStore.isFinanceOfficer() ? 6 : 5" style="padding:0">
+            <td colspan="6" style="padding:0">
               <app-empty-state title="No Bills Found" description="There are currently no bills in the system." icon="ri-receipt-line"></app-empty-state>
             </td>
           </tr>

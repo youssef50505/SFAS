@@ -193,7 +193,8 @@
         "method": "PATCH",
         "endpoint": "/api/v1/bills/{id}/status",
         "requestBody": {
-          "status": "APPROVED"
+          "status": "APPROVED",
+          "comments": "تمت الموافقة على شراء الكتب"
         },
         "responseExample": {
           "id": "123e4567-e89b-12d3-a456-426614174000",
@@ -277,7 +278,8 @@
         "method": "PATCH",
         "endpoint": "/api/v1/funds/{id}/status",
         "requestBody": {
-          "status": "APPROVED"
+          "status": "APPROVED",
+          "comments": "تمت الموافقة لتجهيز المعمل"
         },
         "responseExample": {
           "id": "333e4567-e89b-12d3-a456-426614174000",
@@ -364,6 +366,79 @@
         "responseExample": [
           "Notification to admin@school.com: تم إنشاء فاتورة جديدة بقيمة 1500.5"
         ]
+      }
+    },
+    "8_Items_العناصر": {
+      "Create_Item": {
+        "description": "إضافة عنصر جديد (يتطلب صلاحية ADMIN)",
+        "method": "POST",
+        "endpoint": "/api/v1/items",
+        "requestBody": {
+          "name": "جهاز عرض Projector",
+          "description": "جهاز عرض عالي الدقة",
+          "price": 1200.50,
+          "category": "ELECTRONICS"
+        },
+        "responseExample": {
+          "id": "111e4567-e89b-12d3-a456-426614174000",
+          "name": "جهاز عرض Projector",
+          "description": "جهاز عرض عالي الدقة",
+          "price": 1200.50,
+          "category": "ELECTRONICS",
+          "createdBy": {
+             "id": "...",
+             "name": "مدير المدرسة",
+             "email": "admin@school.com",
+             "role": "ADMIN"
+          },
+          "createdAt": "2026-06-15T12:00:00",
+          "updatedAt": "2026-06-15T12:00:00"
+        }
+      },
+      "Get_All_Items": {
+        "description": "عرض جميع العناصر (يتطلب صلاحية ADMIN أو FINANCE_OFFICER)",
+        "method": "GET",
+        "endpoint": "/api/v1/items",
+        "requestBody": null
+      },
+      "Get_Item_By_ID": {
+        "description": "عرض تفاصيل عنصر معين بالـ ID (يتطلب صلاحية ADMIN أو FINANCE_OFFICER)",
+        "method": "GET",
+        "endpoint": "/api/v1/items/{id}",
+        "requestBody": null
+      },
+      "Update_Item": {
+        "description": "تعديل بيانات عنصر (يتطلب صلاحية ADMIN)",
+        "method": "PUT",
+        "endpoint": "/api/v1/items/{id}",
+        "requestBody": {
+          "name": "جهاز عرض Projector 4K",
+          "description": "جهاز عرض 4K",
+          "price": 1500.00,
+          "category": "ELECTRONICS"
+        },
+        "responseExample": {
+          "id": "111e4567-e89b-12d3-a456-426614174000",
+          "name": "جهاز عرض Projector 4K",
+          "description": "جهاز عرض 4K",
+          "price": 1500.00,
+          "category": "ELECTRONICS",
+          "createdBy": {
+             "id": "...",
+             "name": "مدير المدرسة",
+             "email": "admin@school.com",
+             "role": "ADMIN"
+          },
+          "createdAt": "2026-06-15T12:00:00",
+          "updatedAt": "2026-06-15T12:30:00"
+        }
+      },
+      "Delete_Item": {
+        "description": "حذف عنصر (يتطلب صلاحية ADMIN)",
+        "method": "DELETE",
+        "endpoint": "/api/v1/items/{id}",
+        "requestBody": null,
+        "note": "يرجع 204 No Content عند النجاح"
       }
     }
   }

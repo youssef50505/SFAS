@@ -567,3 +567,26 @@ The web application now successfully compiles (`ng serve` and `ng build`) with z
 4. **Collections Screen Overhaul:** Replaced the legacy table and forms in `collections.component.html` with a modern metrics grid displaying "Today's Collections", "Weekly", "Monthly", and "Annual" derived dynamically from the backend metrics endpoint. Fixed the `CurrencyPipe` null binding issues using `(store.metrics()!.today | currency) || '0'`.
 5. **Admin Dashboard Refactor:** Refactored `admin-dashboard.store.ts` to fetch metrics from `CollectionService` and derive the charts data dynamically by mapping `approved` bills to Collections instead of fetching a non-existent collections array.
 6. **Frontend Build Verification:** Verified the entire angular application with `ng build` resolving minor binding issues along the way, ensuring flawless compilation.
+
+## 32. Backend Bug Fixes and API Documentation (Swagger)
+
+**Context:** The user reported a Server 500 error when attempting to add a new Vendor from the frontend, and requested full backend API documentation.
+
+**What was accomplished:**
+1. **Fixed Vendor Creation 500 Error:** Investigated the backend logs and identified a `NullPointerException` thrown by `MapStruct` during the mapping of `VendorRequest` to `Vendor` entity. The entity had an excessive `@NonNull` annotation on the `createdBy` field. Removed `@NonNull` to allow the Service layer to populate the `createdBy` field safely post-mapping. Tested successfully via REST clients and frontend.
+2. **Swagger API Documentation:** Integrated `springdoc-openapi-starter-webmvc-ui` into `pom.xml`. This automatically inspects all controllers and generates a professional, interactive API specification.
+3. **Security Config Update:** Modified `SecurityConfig.java` to explicitly permit unauthenticated access to `/v3/api-docs/**` and `/swagger-ui/**`. 
+4. **Accessing Docs:** The live backend API documentation can now be accessed via `http://localhost:8080/swagger-ui.html`.
+
+## 33. UI Consistency and Bug Fixes
+
+**Context:** The user requested visual improvements for the frontend empty states and the native datetime pickers, along with a bug report regarding the Collections metrics logic where newly created bills were not immediately appearing in daily/weekly metrics.
+
+**What was accomplished:**
+1. **Frontend Empty States Hover Effect:** Fixed the pp-empty-state hover effect within tables. Standardized colspan="6" across component tables and applied padding: 0 to parent 	d cells. Modified empty-state.component.css to use margin: 1rem on all sides to produce a unified, perfectly framed background highlight (accent color) when hovering over empty states.
+2. **Collections UI Overhaul:** Refactored the collections.component.html and .css files. Replaced the stacked cards layout with a 2x2 grid grid-template-columns: repeat(2, 1fr). Fixed a property mapping error in pp-metric-card where 	itle was used instead of label. Renamed labels to: Daily Collections, Weekly Collections, Monthly Collections, and Yearly Collections.
+3. **Global Native Controls Styling:** Implemented CSS color-scheme: light dark to automatically switch the browser's native popups (like date/time picker calendars) based on the application's active theme. Integrated ccent-color: var(--accent-primary) so checkboxes, radios, and native calendar selections use the brand's primary red color globally. Configured the calendar icon (::-webkit-calendar-picker-indicator) to properly invert its color when dark mode is activated.
+4. **Backend Metrics Logic Fix:** Diagnosed the daily and weekly collections bug reported by the user. The CollectionServiceImpl calculated metrics using .date (the invoice document date). Modified the sumAmountByDateBetween JPQL query in BillRepository.java to filter using .createdAt. This ensures collections accurately track when money/bills were registered in the system (the day of entry) rather than when the invoice was allegedly created.
+5. **Datetime-Local Input Fix:** Fixed the date form control initialization in ills.component.ts. 
+ew Date().toISOString().split('T')[0] only provides YYYY-MM-DD, which is invalid for 	ype="datetime-local". Swapped initialization to a timezone-adjusted string truncated to YYYY-MM-DDTHH:mm, resolving the empty/blank initial state of the native date picker.
+

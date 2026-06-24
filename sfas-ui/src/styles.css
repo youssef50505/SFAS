@@ -90,6 +90,7 @@
 
 /* --- Dark Theme --- */
 .dark-theme {
+  color-scheme: dark;
   --bg-primary: #0c1222;
   --bg-surface: #15202e;
   --bg-elevated: #1c2a3f;
@@ -151,6 +152,7 @@ html {
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  color-scheme: light;
 }
 
 body {
@@ -192,6 +194,7 @@ input, textarea, select {
   font-family: inherit;
   font-size: 0.9375rem;
   color: var(--text-primary);
+  accent-color: var(--accent-primary);
 }
 
 img, svg {
@@ -458,6 +461,21 @@ select.form-control {
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2.25rem;
+}
+
+/* Date/Time Picker Overrides */
+::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+.dark-theme ::-webkit-calendar-picker-indicator {
+  filter: invert(1) hue-rotate(180deg);
 }
 
 /* ----------------------------------------------------------------

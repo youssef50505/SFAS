@@ -1,0 +1,127 @@
+<div class="page-container">
+  <div class="page-header-wrapper" gsapFade [delay]="0" [yOffset]="20">
+    <app-page-header title="Items Catalog" subtitle="Manage school items and inventory">
+      @if (authStore.isAdmin()) {
+        <button class="btn-primary" (click)="openAddModal()"><i class="ri-add-line"></i> Add Item</button>
+      }
+    </app-page-header>
+  </div>
+
+  <div class="table-container surface" gsapFade [delay]="0.2">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading items catalog...</p>
+      </div>
+    } @else {
+      <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Description</th>
+          <th>Price (EGP)</th>
+          <th>Added By</th>
+          @if (authStore.isAdmin()) {
+            <th class="actions-col">Actions</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items(); track item.id) {
+          <tr>
+            <td>
+              <div class="vendor-name-cell">
+                <div class="vendor-avatar">{{ item.name.charAt(0) }}</div>
+                <span class="vendor-name">{{ item.name }}</span>
+              </div>
+            </td>
+            <td><span class="badge-neutral">{{ item.category || 'N/A' }}</span></td>
+            <td><span class="address-text">{{ item.description || 'No description' }}</span></td>
+            <td><span class="metric-value" style="font-size: 1rem; color: var(--accent-success); font-weight: 700;">{{ item.price | currency:'EGP ' }}</span></td>
+            <td>{{ item.createdBy.name || 'System' }}</td>
+            @if (authStore.isAdmin()) {
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" (click)="openEditModal(item)" title="Edit Item">
+                    <i class="ri-edit-line"></i>
+                  </button>
+                  <button class="btn-icon text-danger" (click)="deleteItem(item.id)" title="Delete Item">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                </div>
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td [attr.colspan]="authStore.isAdmin() ? 6 : 5" style="padding:0">
+              <app-empty-state 
+                icon="ri-box-3-line" 
+                message="No items found." 
+                subtext="Add a new item to the catalog to get started.">
+              </app-empty-state>
+            </td>
+          </tr>
+        }
+      </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+<!-- Add Modal -->
+@if (showAddModal()) {
+  <div class="modal-backdrop" gsapFade [duration]="0.3" [yOffset]="0">
+    <div class="modal-content surface" gsapFade [delay]="0.1" [yOffset]="-30">
+      <div class="modal-header">
+        <h2>{{ isEditing() ? 'Edit Item' : 'Add New Item' }}</h2>
+        <button class="btn-icon" (click)="closeAddModal()"><i class="ri-close-line"></i></button>
+      </div>
+      
+      <form [formGroup]="itemForm" (ngSubmit)="submitItem()">
+        <div class="form-grid">
+          <app-text-input
+            label="Item Name *"
+            id="item-name"
+            formControlName="name"
+            placeholder="e.g. Projector 4K">
+          </app-text-input>
+          
+          <app-text-input
+            label="Category"
+            id="item-category"
+            formControlName="category"
+            placeholder="e.g. Electronics">
+          </app-text-input>
+
+          <app-text-input
+            type="number"
+            label="Price (EGP) *"
+            id="item-price"
+            formControlName="price"
+            placeholder="0.00">
+          </app-text-input>
+          
+          <app-text-input
+            label="Description"
+            id="item-description"
+            formControlName="description"
+            placeholder="Brief details about the item">
+          </app-text-input>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeAddModal()" [disabled]="isSubmitting()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="itemForm.invalid || isSubmitting()">
+            @if (isSubmitting()) {
+              Saving...
+            } @else {
+              {{ isEditing() ? 'Update Item' : 'Save Item' }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

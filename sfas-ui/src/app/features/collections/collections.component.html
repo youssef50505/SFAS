@@ -12,7 +12,7 @@
   } @else if (store.metrics()) {
     <div class="metrics-grid">
       <app-metric-card
-        title="Today's Collections"
+        label="Daily Collections"
         [value]="(store.metrics()!.today | currency) || '0'"
         icon="ri-calendar-event-line"
         trend="Up to date"
@@ -21,7 +21,7 @@
       ></app-metric-card>
 
       <app-metric-card
-        title="Weekly Collections"
+        label="Weekly Collections"
         [value]="(store.metrics()!.weekly | currency) || '0'"
         icon="ri-calendar-line"
         trend="This Week"
@@ -30,7 +30,7 @@
       ></app-metric-card>
 
       <app-metric-card
-        title="Monthly Collections"
+        label="Monthly Collections"
         [value]="(store.metrics()!.monthly | currency) || '0'"
         icon="ri-calendar-2-line"
         trend="This Month"
@@ -39,7 +39,7 @@
       ></app-metric-card>
 
       <app-metric-card
-        title="Annual Collections"
+        label="Yearly Collections"
         [value]="(store.metrics()!.annually | currency) || '0'"
         icon="ri-calendar-check-line"
         trend="This Year"

@@ -36,7 +36,7 @@ export class BillsComponent implements OnInit {
     amount: [null as number | null, [Validators.required, Validators.min(0.01)]],
 
     description: [''],
-    date: [new Date().toISOString().split('T')[0], [Validators.required]],
+    date: [new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16), [Validators.required]],
     imagePath: ['']
   });
 
@@ -49,8 +49,7 @@ export class BillsComponent implements OnInit {
 
   openAddModal() {
     this.billForm.reset({
-
-      date: new Date().toISOString().split('T')[0],
+      date: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16),
       imagePath: ''
     });
     this.showAddModal.set(true);

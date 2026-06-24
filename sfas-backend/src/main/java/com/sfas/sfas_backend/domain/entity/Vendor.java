@@ -48,7 +48,6 @@ public class Vendor {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "created_by_id", nullable = false)
-    @NonNull
     private User createdBy;
 
     @CreatedDate
